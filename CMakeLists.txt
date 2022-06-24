@@ -65,7 +65,7 @@ if (WITH_EXAMPLES)
 endif ()
 
 # pkg-config file
-configure_file(cmocka.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/cmocka.pc)
+configure_file(cmocka.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/cmocka.pc @ONLY)
 install(
   FILES
     ${CMAKE_CURRENT_BINARY_DIR}/cmocka.pc
