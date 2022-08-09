@@ -40,6 +40,7 @@
 #  define strcasecmp _stricmp
 #  define strncasecmp _strnicmp
 #  define strtok_r strtok_s
+#  define strdup _strdup
 
 #  if defined(HAVE__SNPRINTF_S)
 #   undef snprintf
