@@ -1394,11 +1394,11 @@ static int memory_equal_display_error(const char* const a, const char* const b,
     size_t differences = 0;
     size_t i;
     for (i = 0; i < size; i++) {
-        const char l = a[i];
-        const char r = b[i];
+        const unsigned char l = a[i];
+        const unsigned char r = b[i];
         if (l != r) {
             if (differences < 16) {
-                cm_print_error("difference at offset %" PRIdS " 0x%02x 0x%02x\n",
+                cm_print_error("difference at offset %" PRIdS " 0x%02hhx 0x%02hhx\n",
                                i, l, r);
             }
             differences ++;
