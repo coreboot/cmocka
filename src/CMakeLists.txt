@@ -47,6 +47,8 @@ set_target_properties(cmocka PROPERTIES
                       LINK_FLAGS            "${DEFAULT_LINK_FLAGS}"
                       C_STANDARD            99
                       C_STANDARD_REQUIRED   ON
+                      # cmocka uses POSIX-2008 C extensions
+                      C_EXTENSIONS          ON
 )
 
 add_library(cmocka::cmocka ALIAS cmocka)
