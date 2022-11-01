@@ -38,7 +38,10 @@
 #   executable.
 #
 # ``LINK_OPTIONS``:
-#   Optional, expects one or more options to be passed to the linker
+#   Optional, expects one or more ``LINK_FLAGS`` to be passed to the linker.
+#   For CMake <3.13 compatibility, this is **not** set as the ``LINK_OPTIONS``
+#   property. Instead, these values are set the ``LINK_FLAGS`` property.
+#   See https://cmake.org/cmake/help/latest/prop_tgt/LINK_FLAGS.html
 #
 #
 # Example:
