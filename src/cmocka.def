@@ -8,6 +8,7 @@ EXPORTS
     _assert_int_equal
     _assert_int_in_range
     _assert_int_not_equal
+    _assert_int_not_in_range
     _assert_memory_equal
     _assert_memory_not_equal
     _assert_not_in_range
