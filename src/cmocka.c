@@ -193,6 +193,12 @@ typedef struct CheckIntegerSet {
     size_t size_of_set;
 } CheckIntegerSet;
 
+struct check_integer_set {
+    CheckParameterEvent event;
+    const intmax_t *set;
+    size_t size_of_set;
+};
+
 /* Used to check whether a parameter matches the area of memory referenced by
  * this structure.  */
 typedef struct CheckMemoryData {
@@ -1335,6 +1341,46 @@ static int value_in_set_display_error(
     return 0;
 }
 
+static bool int_value_in_set_display_error(
+    const intmax_t value,
+    const struct check_integer_set *const check_integer_set,
+    const bool invert)
+{
+    bool succeeded = invert;
+
+    assert_non_null(check_integer_set);
+
+    {
+        const intmax_t *const set = check_integer_set->set;
+        const size_t size_of_set = check_integer_set->size_of_set;
+        size_t i;
+
+        for (i = 0; i < size_of_set; i++) {
+            if (set[i] == value) {
+                /* If invert = 0 and item is found, succeeded = 1. */
+                /* If invert = 1 and item is found, succeeded = 0. */
+                succeeded = !succeeded;
+                break;
+            }
+        }
+        if (succeeded) {
+            return true;
+        }
+        cmocka_print_error("%jd is %sin the set (",
+                           value,
+                           invert ? "" : "not ");
+
+        for (i = 0; i < size_of_set; i++) {
+            if (i == size_of_set - 1) {
+                cmocka_print_error("%jd", set[i]);
+            } else {
+                cmocka_print_error("%jd, ", set[i]);
+            }
+        }
+        cmocka_print_error(")\n");
+    }
+    return false;
+}
 
 /*
  * Determine whether a value is within the specified range.
@@ -2082,6 +2128,23 @@ void _assert_not_in_set(const uintmax_t value,
     }
 }
 
+void _assert_int_in_set(const intmax_t value,
+                        const intmax_t values[],
+                        const size_t number_of_values,
+                        const char *const file,
+                        const int line)
+{
+    struct check_integer_set check_integer_set = {
+        .set = values,
+        .size_of_set = number_of_values,
+    };
+    bool ok;
+
+    ok = int_value_in_set_display_error(value, &check_integer_set, false);
+    if (!ok) {
+        _fail(file, line);
+    }
+}
 
 /* Get the list of allocated blocks. */
 static ListNode* get_allocated_blocks_list(void) {
