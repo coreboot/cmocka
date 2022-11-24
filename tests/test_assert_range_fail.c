@@ -37,6 +37,12 @@ static void test_assert_int_not_in_range_fail_1(void **state)
     assert_int_not_in_range(0, INTMAX_MIN, INTMAX_MAX);
 }
 
+static void test_assert_uint_not_in_range_fail_1(void **state)
+{
+    (void)state; /* unused */
+    assert_uint_not_in_range(1, 0, UINTMAX_MAX);
+}
+
 int main(void) {
     const struct CMUnitTest range_fail_tests[] = {
         cmocka_unit_test(test_assert_int_in_range_fail_1),
@@ -44,6 +50,7 @@ int main(void) {
         cmocka_unit_test(test_assert_int_in_range_fail_3),
         cmocka_unit_test(test_assert_int_in_range_fail_4),
         cmocka_unit_test(test_assert_int_not_in_range_fail_1),
+        cmocka_unit_test(test_assert_uint_not_in_range_fail_1),
     };
 
     return cmocka_run_group_tests(range_fail_tests, NULL, NULL);

@@ -88,7 +88,7 @@ set_tests_properties(
     test_assert_range_fail
         PROPERTIES
         PASS_REGULAR_EXPRESSION
-        "\\[  FAILED  \\] range_fail_tests: 5 test"
+        "\\[  FAILED  \\] range_fail_tests: 6 test"
 )
 
 # test_expect_check_fail
