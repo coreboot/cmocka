@@ -20,6 +20,7 @@ EXPORTS
     _assert_uint_equal
     _assert_uint_in_range
     _assert_uint_not_equal
+    _assert_uint_not_in_range
     _check_expected
     _cmocka_run_group_tests
     _expect_any

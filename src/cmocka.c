@@ -1391,6 +1391,22 @@ static bool int_not_in_range_display_error(const intmax_t value,
     return false;
 }
 
+static bool uint_not_in_range_display_error(const uintmax_t value,
+                                       const uintmax_t range_min,
+                                       const uintmax_t range_max)
+{
+    if (value < range_min || value > range_max) {
+        return true;
+    }
+
+    cmocka_print_error("%ju is within the range [%ju, %ju]\n",
+                       value,
+                       range_min,
+                       range_max);
+
+    return false;
+}
+
 
 /*
  * Determine whether a value is within the specified range.  If the value
@@ -2025,6 +2041,18 @@ void _assert_uint_in_range(const uintmax_t value,
                            const int line)
 {
     if (!uint_in_range_display_error(value, minimum, maximum)) {
+        _fail(file, line);
+    }
+}
+
+
+void _assert_uint_not_in_range(const uintmax_t value,
+                           const uintmax_t minimum,
+                           const uintmax_t maximum,
+                           const char* const file,
+                           const int line)
+{
+    if (!uint_not_in_range_display_error(value, minimum, maximum)) {
         _fail(file, line);
     }
 }
