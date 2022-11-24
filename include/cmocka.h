@@ -1465,22 +1465,12 @@ void assert_uint_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum)
 
 #ifdef DOXYGEN
 /**
- * @brief Assert that the specified value is not smaller than the minimum
- * and and not greater than the maximum.
- *
- * The function prints an error message to standard error and terminates the
- * test by calling fail() if value is not in range.
- *
- * @param[in]  value  The value to check.
- *
- * @param[in]  minimum  The minimum value allowed.
- *
- * @param[in]  maximum  The maximum value allowed.
+ * @deprecated Use assert_int_in_range() and assert_uint_in_range()
  */
 void assert_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 #else
 #define assert_in_range(value, minimum, maximum) \
-    _assert_in_range( \
+    _assert_uint_in_range( \
         cast_to_uintmax_type(value), \
         cast_to_uintmax_type(minimum), \
         cast_to_uintmax_type(maximum), __FILE__, __LINE__)
@@ -2411,9 +2401,6 @@ void _assert_uint_in_range(const uintmax_t value,
                            const uintmax_t maximum,
                            const char* const file,
                            const int line);
-void _assert_in_range(
-    const uintmax_t value, const uintmax_t minimum,
-    const uintmax_t maximum, const char* const file, const int line);
 void _assert_not_in_range(
     const uintmax_t value, const uintmax_t minimum,
     const uintmax_t maximum, const char* const file, const int line);
