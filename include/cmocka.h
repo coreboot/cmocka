@@ -1635,6 +1635,31 @@ void assert_int_not_in_set(intmax_t value, intmax_t values[], size_t count);
     }
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the specified unsigned integer value is within a set.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is not within a set.
+ *
+ * @param[in]  value  The value to look up
+ *
+ * @param[in]  values[]  The array to check for the value.
+ *
+ * @param[in]  count  The size of the values array.
+ */
+void assert_uint_in_set(uintmax_t value, uintmax_t values[], size_t count);
+#else
+#define assert_uint_in_set(value, values, number_of_values) \
+    if (number_of_values > 0) { \
+        uintmax_t _cmocka_set[number_of_values]; \
+        for (size_t _i = 0; _i < number_of_values; _i++) { \
+            _cmocka_set[_i] = values[_i]; \
+        } \
+        _assert_uint_in_set(value, _cmocka_set, number_of_values, __FILE__, __LINE__); \
+    }
+#endif
+
 /** @} */
 
 /**
@@ -2525,6 +2550,11 @@ void _assert_int_not_in_set(const intmax_t value,
                             const size_t number_of_values,
                             const char *const file,
                             const int line);
+void _assert_uint_in_set(const uintmax_t value,
+                         const uintmax_t values[],
+                         const size_t number_of_values,
+                         const char *const file,
+                         const int line);
 
 void* _test_malloc(const size_t size, const char* file, const int line);
 void* _test_realloc(void *ptr, const size_t size, const char* file, const int line);
