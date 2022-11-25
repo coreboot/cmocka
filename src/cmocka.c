@@ -2058,15 +2058,6 @@ void _assert_uint_not_in_range(const uintmax_t value,
 }
 
 
-void _assert_not_in_range(
-        const uintmax_t value, const uintmax_t minimum,
-        const uintmax_t maximum, const char* const file,
-        const int line) {
-    if (!integer_not_in_range_display_error(value, minimum, maximum)) {
-        _fail(file, line);
-    }
-}
-
 void _assert_in_set(const uintmax_t value,
                     const uintmax_t values[],
                     const size_t number_of_values, const char* const file,
