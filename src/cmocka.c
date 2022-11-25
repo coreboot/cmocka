@@ -2228,6 +2228,24 @@ void _assert_uint_in_set(const uintmax_t value,
     }
 }
 
+void _assert_uint_not_in_set(const uintmax_t value,
+                             const uintmax_t values[],
+                             const size_t number_of_values,
+                             const char *const file,
+                             const int line)
+{
+    struct check_unsigned_integer_set check_uint_set = {
+        .set = values,
+        .size_of_set = number_of_values,
+    };
+    bool ok;
+
+    ok = uint_value_in_set_display_error(value, &check_uint_set, true);
+    if (!ok) {
+        _fail(file, line);
+    }
+}
+
 /* Get the list of allocated blocks. */
 static ListNode* get_allocated_blocks_list(void) {
     /* If it initialized, initialize the list of allocated blocks. */
