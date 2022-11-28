@@ -1549,21 +1549,12 @@ void assert_not_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 
 #ifdef DOXYGEN
 /**
- * @brief Assert that the specified value is within a set.
- *
- * The function prints an error message to standard error and terminates the
- * test by calling fail() if value is not within a set.
- *
- * @param[in]  value  The value to look up
- *
- * @param[in]  values[]  The array to check for the value.
- *
- * @param[in]  count  The size of the values array.
+ * @deprecated Use assert_int_in_set() or assert_uint_in_set()
  */
 void assert_in_set(uintmax_t value, uintmax_t values[], size_t count);
 #else
 #define assert_in_set(value, values, number_of_values) \
-    _assert_in_set(value, values, number_of_values, __FILE__, __LINE__)
+    _assert_uint_in_set(value, values, number_of_values, __FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -2559,9 +2550,6 @@ void _assert_uint_not_in_range(const uintmax_t value,
                            const uintmax_t maximum,
                            const char* const file,
                            const int line);
-void _assert_in_set(
-    const uintmax_t value, const uintmax_t values[],
-    const size_t number_of_values, const char* const file, const int line);
 void _assert_not_in_set(
     const uintmax_t value, const uintmax_t values[],
     const size_t number_of_values, const char* const file, const int line);

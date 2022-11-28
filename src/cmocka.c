@@ -2150,18 +2150,6 @@ void _assert_uint_not_in_range(const uintmax_t value,
 }
 
 
-void _assert_in_set(const uintmax_t value,
-                    const uintmax_t values[],
-                    const size_t number_of_values, const char* const file,
-                    const int line) {
-    CheckIntegerSet check_integer_set;
-    check_integer_set.set = values;
-    check_integer_set.size_of_set = number_of_values;
-    if (!value_in_set_display_error(value, &check_integer_set, 0)) {
-        _fail(file, line);
-    }
-}
-
 void _assert_not_in_set(const uintmax_t value,
                         const uintmax_t values[],
                         const size_t number_of_values, const char* const file,
