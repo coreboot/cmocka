@@ -1,7 +1,4 @@
-#define LargestIntegralType unsigned long long
-
-
-void _assert_true(const LargestIntegralType result,
+void _assert_true(const uintmax_t result,
                   const char* const expression,
                   const char * const file, const int line)
 {
@@ -11,7 +8,7 @@ void _assert_true(const LargestIntegralType result,
 }
 
 void _assert_int_equal(
-    const LargestIntegralType a, const LargestIntegralType b,
+    const intmax_t a, const intmax_t b,
     const char * const file, const int line)
 {
     if (a != b) {
@@ -20,7 +17,7 @@ void _assert_int_equal(
 }
 
 void _assert_int_not_equal(
-    const LargestIntegralType a, const LargestIntegralType b,
+    const intmax_t a, const intmax_t b,
     const char * const file, const int line)
 {
     if (a == b) {
@@ -28,9 +25,9 @@ void _assert_int_not_equal(
     }
 }
 
-void _assert_return_code(const LargestIntegralType result,
+void _assert_return_code(const intmax_t result,
                          size_t rlen,
-                         const LargestIntegralType error,
+                         const uintmax_t error,
                          const char * const expression,
                          const char * const file,
                          const int line)
@@ -111,8 +108,8 @@ void _assert_memory_not_equal(const void * const a, const void * const b,
 }
 
 void _assert_in_range(
-    const LargestIntegralType value, const LargestIntegralType minimum,
-    const LargestIntegralType maximum, const char* const file, const int line)
+    const uintmax_t value, const uintmax_t minimum,
+    const uintmax_t maximum, const char* const file, const int line)
 {
     if (value < minimum || value > maximum) {
         __coverity_panic__();
@@ -120,8 +117,8 @@ void _assert_in_range(
 }
 
 void _assert_not_in_range(
-    const LargestIntegralType value, const LargestIntegralType minimum,
-    const LargestIntegralType maximum, const char* const file, const int line)
+    const uintmax_t value, const uintmax_t minimum,
+    const uintmax_t maximum, const char* const file, const int line)
 {
     if (value > minimum && value < maximum) {
         __coverity_panic__();
@@ -129,7 +126,7 @@ void _assert_not_in_range(
 }
 
 void _assert_in_set(
-    const LargestIntegralType value, const LargestIntegralType values[],
+    const uintmax_t value, const uintmax_t values[],
     const size_t number_of_values, const char* const file, const int line)
 {
     size_t i;
@@ -143,7 +140,7 @@ void _assert_in_set(
 }
 
 void _assert_not_in_set(
-    const LargestIntegralType value, const LargestIntegralType values[],
+    const uintmax_t value, const uintmax_t values[],
     const size_t number_of_values, const char* const file, const int line)
 {
     size_t i;
