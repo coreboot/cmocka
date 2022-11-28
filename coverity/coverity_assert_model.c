@@ -16,9 +16,29 @@ void _assert_int_equal(
     }
 }
 
+void _assert_uint_equal(const uintmax_t a,
+                        const uintmax_t b,
+                        const char *const file,
+                        const int line)
+{
+    if (a != b) {
+        __coverity_panic__();
+    }
+}
+
 void _assert_int_not_equal(
     const intmax_t a, const intmax_t b,
     const char * const file, const int line)
+{
+    if (a == b) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_uint_not_equal(const uintmax_t a,
+                            const uintmax_t b,
+                            const char *const file,
+                            const int line)
 {
     if (a == b) {
         __coverity_panic__();
@@ -107,9 +127,22 @@ void _assert_memory_not_equal(const void * const a, const void * const b,
     }
 }
 
-void _assert_in_range(
-    const uintmax_t value, const uintmax_t minimum,
-    const uintmax_t maximum, const char* const file, const int line)
+void _assert_int_in_range(const intmax_t value,
+                          const intmax_t minimum,
+                          const intmax_t maximum,
+                          const char *const file,
+                          const int line)
+{
+    if (value < minimum || value > maximum) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_uint_in_range(const uintmax_t value,
+                           const uintmax_t minimum,
+                           const uintmax_t maximum,
+                           const char *const file,
+                           const int line)
 {
     if (value < minimum || value > maximum) {
         __coverity_panic__();
@@ -125,9 +158,11 @@ void _assert_not_in_range(
     }
 }
 
-void _assert_in_set(
-    const uintmax_t value, const uintmax_t values[],
-    const size_t number_of_values, const char* const file, const int line)
+void _assert_int_in_set(const intmax_t value,
+                        const intmax_t values[],
+                        const size_t number_of_values,
+                        const char *const file,
+                        const int line)
 {
     size_t i;
 
@@ -139,9 +174,42 @@ void _assert_in_set(
     __coverity_panic__();
 }
 
-void _assert_not_in_set(
-    const uintmax_t value, const uintmax_t values[],
-    const size_t number_of_values, const char* const file, const int line)
+void _assert_uint_in_set(const uintmax_t value,
+                         const uintmax_t values[],
+                         const size_t number_of_values,
+                         const char *const file,
+                         const int line)
+{
+    size_t i;
+
+    for (i = 0; i < number_of_values; i++) {
+        if (value == values[i]) {
+            return;
+        }
+    }
+    __coverity_panic__();
+}
+
+void _assert_int_not_in_set(const intmax_t value,
+                            const intmax_t values[],
+                            const size_t number_of_values,
+                            const char *const file,
+                            const int line)
+{
+    size_t i;
+
+    for (i = 0; i < number_of_values; i++) {
+        if (value == values[i]) {
+            __coverity_panic__();
+        }
+    }
+}
+
+void _assert_uint_not_in_set(const uintmax_t value,
+                             const uintmax_t values[],
+                             const size_t number_of_values,
+                             const char *const file,
+                             const int line)
 {
     size_t i;
 
