@@ -1,6 +1,9 @@
 project(tests C)
 
-set(TEST_EXCEPTION_HANDLER TRUE)
+set(TEST_EXCEPTION_HANDLER FALSE)
+if (HAVE_SIGNAL_H)
+    set(TEST_EXCEPTION_HANDLER TRUE)
+endif()
 if (WIN32)
     # FIXME: The exception handler doesn't work on Windows
     set(TEST_EXCEPTION_HANDLER FALSE)
