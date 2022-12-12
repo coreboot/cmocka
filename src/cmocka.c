@@ -72,7 +72,12 @@
 #define MALLOC_FREE_PATTERN 0xCD
 /* Alignment of allocated blocks.  NOTE: This must be base2. */
 #ifndef MALLOC_ALIGNMENT
-#define MALLOC_ALIGNMENT sizeof(size_t)
+// TODO: switch to alignof(max_align_t) once C11 is the minimum supported
+// version On most platforms, `long double` is the largest scalar type, and has
+// an alignment of 16 bytes. However, sizeof(long double) may be 12, which is
+// not a power of 2. As a temporary measure, we can over-align to 16-bytes on
+// all platforms.
+#define MALLOC_ALIGNMENT 16
 #endif
 
 /* Printf formatting for source code locations. */
