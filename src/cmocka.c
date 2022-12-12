@@ -2327,9 +2327,16 @@ static void vcm_free_error(char *err_msg)
     libc_free(err_msg);
 }
 
+/* Rounds the given pointer down to a multiple of the given alignment. */
+#ifdef HAVE_BUILTIN_ALIGN_DOWN
+#define ALIGN_DOWN(x, a) (__builtin_align_down((x), (a)))
+#else
+#define ALIGN_DOWN(x, a) ((uintptr_t)(x) & ~((a)-1))
+#endif
+
 /* Use the real malloc in this function. */
 #undef malloc
-void* _test_malloc(const size_t size, const char* file, const int line) {
+void* _test_malloc(const size_t size, const char *file, const int line) {
     char *ptr = NULL;
     MallocBlockInfo block_info;
     ListNode * const block_list = get_allocated_blocks_list();
@@ -2344,9 +2351,10 @@ void* _test_malloc(const size_t size, const char* file, const int line) {
     assert_non_null(block);
 
     /* Calculate the returned address. */
-    ptr = (char*)(((size_t)block + MALLOC_GUARD_SIZE +
-                  sizeof(struct MallocBlockInfoData) +
-                  MALLOC_ALIGNMENT) & ~(MALLOC_ALIGNMENT - 1));
+    ptr = (char *)(ALIGN_DOWN((block + MALLOC_GUARD_SIZE +
+                               sizeof(struct MallocBlockInfoData) +
+                               MALLOC_ALIGNMENT),
+                              MALLOC_ALIGNMENT));
 
     /* Initialize the guard blocks. */
     memset(ptr - MALLOC_GUARD_SIZE, MALLOC_GUARD_PATTERN, MALLOC_GUARD_SIZE);

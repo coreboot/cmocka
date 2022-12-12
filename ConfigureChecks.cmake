@@ -1,5 +1,6 @@
 include(CheckIncludeFile)
 include(CheckSymbolExists)
+include(CheckCSourceCompiles)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckTypeSize)
@@ -89,6 +90,8 @@ check_function_exists(signal HAVE_SIGNAL)
 check_function_exists(strsignal HAVE_STRSIGNAL)
 check_function_exists(strcmp HAVE_STRCMP)
 check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+# Supported by Clang v10+
+check_c_source_compiles("int main(void) { int a = 1; return __builtin_align_down(&a, 8);}" HAVE_BUILTIN_ALIGN_DOWN)
 
 if (WIN32)
     check_function_exists(_vsnprintf_s HAVE__VSNPRINTF_S)
