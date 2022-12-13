@@ -601,14 +601,17 @@ static void fail_if_leftover_values(const char *test_name) {
 
 static void teardown_testing(const char *test_name) {
     (void)test_name;
-    list_free(&global_function_result_map_head, free_symbol_map_value,
-              (void*)0);
+    uintmax_t symbol_map_value_data = 0;
+    list_free(&global_function_result_map_head,
+              free_symbol_map_value,
+              &symbol_map_value_data);
     initialize_source_location(&global_last_mock_value_location);
-    list_free(&global_function_parameter_map_head, free_symbol_map_value,
-              (void*)1);
+    uintmax_t symbol_map_value_data_1 = 1;
+    list_free(&global_function_parameter_map_head,
+              free_symbol_map_value,
+              &symbol_map_value_data_1);
     initialize_source_location(&global_last_parameter_location);
-    list_free(&global_call_ordering_head, free_value,
-              (void*)0);
+    list_free(&global_call_ordering_head, free_value, NULL);
     initialize_source_location(&global_last_call_ordering_location);
 }
 
@@ -738,16 +741,17 @@ static void free_value(const void *value, void *cleanup_value_data) {
 static void free_symbol_map_value(const void *value,
                                   void *cleanup_value_data) {
     SymbolMapValue * const map_value = (SymbolMapValue*)value;
-    const uintmax_t children = cast_ptr_to_uintmax_type(cleanup_value_data);
+    const uintmax_t children = *(uintmax_t *)cleanup_value_data;
     assert_non_null(value);
     if (children == 0) {
         list_free(&map_value->symbol_values_list_head,
                   free_value,
                   NULL);
     } else {
+        uintmax_t new_children_value = children - 1;
         list_free(&map_value->symbol_values_list_head,
                   free_symbol_map_value,
-                  (void *)((uintptr_t)children - 1));
+                  &new_children_value);
     }
 
     free(map_value);
@@ -849,7 +853,10 @@ static int get_symbol_value(
                 output);
         }
         if (list_empty(child_list)) {
-            list_remove_free(target_node, free_symbol_map_value, (void*)0);
+            uintmax_t symbol_map_value_data = 0;
+            list_remove_free(target_node,
+                             free_symbol_map_value,
+                             &symbol_map_value_data);
         }
         return return_value;
     }
