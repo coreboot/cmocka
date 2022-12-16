@@ -1326,6 +1326,28 @@ static bool int_values_not_equal_display_error(const intmax_t left,
     return not_equal;
 }
 
+/* Returns 1 if the specified pointers are equal.  If the pointers are not equal
+ * an error is displayed and 0 is returned. */
+static bool ptr_values_equal_display_error(const void *left, const void *right)
+{
+    const bool equal = left == right;
+    if (!equal) {
+        cmocka_print_error("%p != %p\n", left, right);
+    }
+    return equal;
+}
+
+/* Returns 1 if the specified pointers are equal.  If the pointers are not equal
+ * an error is displayed and 0 is returned. */
+static bool ptr_values_not_equal_display_error(const void *left,
+                                               const void *right)
+{
+    const bool equal = left != right;
+    if (!equal) {
+        cmocka_print_error("%p == %p\n", left, right);
+    }
+    return equal;
+}
 
 /*
  * Determine whether value is contained within check_integer_set.
@@ -2086,6 +2108,25 @@ void _assert_uint_not_equal(const uintmax_t a,
     }
 }
 
+void _assert_ptr_equal(const void *a,
+                       const void *b,
+                       const char *const file,
+                       const int line)
+{
+    if (!ptr_values_equal_display_error(a, b)) {
+        _fail(file, line);
+    }
+}
+
+void _assert_ptr_not_equal(const void *a,
+                           const void *b,
+                           const char *const file,
+                           const int line)
+{
+    if (!ptr_values_not_equal_display_error(a, b)) {
+        _fail(file, line);
+    }
+}
 
 void _assert_string_equal(const char * const a, const char * const b,
                           const char * const file, const int line) {
@@ -2408,7 +2449,7 @@ void _test_free(void* const ptr, const char* file, const int line) {
         return;
     }
 
-    _assert_true(cast_ptr_to_uintmax_type(ptr), "ptr", file, line);
+    _assert_ptr_not_equal(ptr, NULL, file, line);
     block_info.ptr = block - (MALLOC_GUARD_SIZE +
                               sizeof(struct MallocBlockInfoData));
     /* Check the guard blocks. */
@@ -3404,9 +3445,6 @@ int _cmocka_run_group_tests(const char *group_name,
     double total_runtime = 0;
     size_t i;
     int rc;
-
-    /* Make sure uintmax_t is at least the size of a pointer. */
-    assert_true(sizeof(uintmax_t) >= sizeof(void*));
 
     cm_tests = libc_calloc(1, sizeof(struct CMUnitTestState) * num_tests);
     if (cm_tests == NULL) {

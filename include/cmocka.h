@@ -1240,8 +1240,7 @@ void assert_return_code(intmax_t rc, int32_t error);
  */
 void assert_non_null(void *pointer);
 #else
-#define assert_non_null(c) _assert_true(cast_ptr_to_uintmax_type(c), #c, \
-                                        __FILE__, __LINE__)
+#define assert_non_null(c) assert_ptr_not_equal((c), NULL)
 #endif
 
 #ifdef DOXYGEN
@@ -1257,8 +1256,7 @@ void assert_non_null(void *pointer);
  */
 void assert_null(void *pointer);
 #else
-#define assert_null(c) _assert_true(!(cast_ptr_to_uintmax_type(c)), #c, \
-__FILE__, __LINE__)
+#define assert_null(c) assert_ptr_equal((c), NULL)
 #endif
 
 #ifdef DOXYGEN
@@ -1274,10 +1272,7 @@ __FILE__, __LINE__)
  */
 void assert_ptr_equal(void *a, void *b);
 #else
-#define assert_ptr_equal(a, b) \
-    _assert_uint_equal(cast_ptr_to_uintmax_type(a), \
-                       cast_ptr_to_uintmax_type(b), \
-                       __FILE__, __LINE__)
+#define assert_ptr_equal(a, b) _assert_ptr_equal((a), (b), __FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -1294,9 +1289,7 @@ void assert_ptr_equal(void *a, void *b);
 void assert_ptr_not_equal(void *a, void *b);
 #else
 #define assert_ptr_not_equal(a, b) \
-    _assert_uint_not_equal(cast_ptr_to_uintmax_type(a), \
-                           cast_ptr_to_uintmax_type(b), \
-                           __FILE__, __LINE__)
+    _assert_ptr_not_equal((a), (b), __FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -2667,6 +2660,14 @@ void _assert_uint_not_equal(const uintmax_t a,
                             const uintmax_t b,
                             const char * const file,
                             const int line);
+void _assert_ptr_equal(const void *a,
+                       const void *b,
+                       const char *const file,
+                       const int line);
+void _assert_ptr_not_equal(const void *a,
+                           const void *b,
+                           const char *const file,
+                           const int line);
 void _assert_string_equal(const char * const a, const char * const b,
                           const char * const file, const int line);
 void _assert_string_not_equal(const char * const a, const char * const b,
