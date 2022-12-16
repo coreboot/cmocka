@@ -150,7 +150,7 @@ int __stdcall IsDebuggerPresent();
  * mock object to return a particular value:
  *
  * @code
- * will_return(chef_cook, "hotdog");
+ * will_return_ptr(chef_cook, "hotdog");
  * will_return(chef_cook, 0);
  * @endcode
  *
@@ -160,12 +160,15 @@ int __stdcall IsDebuggerPresent();
  * @code
  * int chef_cook(const char *order, char **dish_out)
  * {
- *     check_expected(order);
+ *     *dish_out = mock_ptr_type(char *); // "hotdog"
+ *     int return_code = mock(); // 0
+ *     return return_code;
  * }
  * @endcode
  *
  * For a complete example please take a look
- * <a href="https://git.cryptomilk.org/projects/cmocka.git/tree/example/mock">here</a>.
+ * <a
+ * href="https://git.cryptomilk.org/projects/cmocka.git/tree/example/mock">here</a>.
  *
  * @{
  */
@@ -180,7 +183,7 @@ int __stdcall IsDebuggerPresent();
  */
 uintmax_t mock(void);
 #else
-#define mock() _mock(__func__, __FILE__, __LINE__)
+#define mock() (_mock(__func__, __FILE__, __LINE__)).uint_val
 #endif
 
 #ifdef DOXYGEN
@@ -214,8 +217,7 @@ uintmax_t mock(void);
  * @brief Retrieve a typed return value of the current function.
  *
  * The value would be casted to type internally to avoid having the
- * caller to do the cast manually but also casted to uintptr_t to make
- * sure the result has a valid size to be used as a pointer.
+ * caller to do the cast manually.
  *
  * @param[in]  #type  The expected type of the return value
  *
@@ -233,7 +235,7 @@ uintmax_t mock(void);
  */
 type mock_ptr_type(#type);
 #else
-#define mock_ptr_type(type) ((type) (uintptr_t) mock())
+#define mock_ptr_type(type) ((type)(_mock(__func__, __FILE__, __LINE__)).ptr)
 #endif
 
 
@@ -266,7 +268,7 @@ void will_return(#function, uintmax_t value);
 #else
 #define will_return(function, value) \
     _will_return(#function, __FILE__, __LINE__, \
-                 cast_to_uintmax_type(value), 1)
+                 cast_int_to_cmocka_value(value), 1)
 #endif
 
 #ifdef DOXYGEN
@@ -289,7 +291,7 @@ void will_return_count(#function, uintmax_t value, int count);
 #else
 #define will_return_count(function, value, count) \
     _will_return(#function, __FILE__, __LINE__, \
-                 cast_to_uintmax_type(value), count)
+                 cast_int_to_cmocka_value(value), count)
 #endif
 
 #ifdef DOXYGEN
@@ -340,6 +342,111 @@ void will_return_maybe(#function, uintmax_t value);
 #else
 #define will_return_maybe(function, value) \
     will_return_count(function, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a pointer value to be returned by mock_ptr_type() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_ptr_type().
+ *
+ * @code
+ * const char * return_pointer(void)
+ * {
+ *      return mock_ptr_type(const char *);
+ * }
+ *
+ * static void test_pointer_return(void **state)
+ * {
+ *      will_return(return_pointer, "hello world");
+ *
+ *      assert_string_equal(my_function_calling_return_integer(), 42);
+ * }
+ * @endcode
+ *
+ * @see mock_ptr_type()
+ * @see will_return_ptr_count()
+ */
+void will_return_ptr(#function, void *value);
+#else
+#define will_return_ptr(function, value) \
+    _will_return(#function, __FILE__, __LINE__, \
+                 cast_ptr_to_cmocka_value(value), 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a pointer value to be returned by mock_ptr_type() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_ptr_type().
+ *
+ * @param[in]  count The parameter indicates the number of times the value should
+ *                   be returned by mock(). If count is set to -1, the value
+ *                   will always be returned but must be returned at least once.
+ *                   If count is set to -2, the value will always be returned
+ *                   by mock(), but is not required to be returned.
+ *
+ * @see mock_ptr_type()
+ */
+void will_return_ptr_count(#function, void *value, int count);
+#else
+#define will_return_ptr_count(function, value, count) \
+    _will_return(#function, __FILE__, __LINE__, \
+                 cast_ptr_to_cmocka_value(value), count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a value that will be always returned by mock_ptr_type().
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  #value The value to be returned by mock_ptr_type().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_ptr_count(function, value, -1);
+ * @endcode
+ *
+ * @see will_return_ptr_count()
+ * @see mock_ptr_type()
+ */
+void will_return_ptr_always(#function, void *value);
+#else
+#define will_return_ptr_always(function, value) \
+    will_return_ptr_count(function, (value), WILL_RETURN_ALWAYS)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a value that may be always returned by mock_ptr_type().
+ *
+ * This stores a value which will always be returned by mock_ptr_type() but is
+ * not required to be returned by at least one call to mock_ptr_type().
+ * Therefore, in contrast to will_return_ptr_always() which causes a test
+ * failure if it is not returned at least once, will_return_ptr_maybe() will
+ * never cause a test to fail if its value is not returned.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  #value The value to be returned by mock_ptr_type().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_ptr_count(function, value, -2);
+ * @endcode
+ *
+ * @see will_return_ptr_count()
+ * @see mock_ptr_type()
+ */
+void will_return_ptr_maybe(#function, void *value);
+#else
+#define will_return_ptr_maybe(function, value) \
+    will_return_ptr_count(function, (value), WILL_RETURN_ONCE)
 #endif
 /** @} */
 
@@ -2447,8 +2554,8 @@ extern jmp_buf global_expect_assert_env;
 extern const char * global_last_failed_assert;
 
 /* Retrieves a value for the given function, as set by "will_return". */
-uintmax_t _mock(const char * const function, const char* const file,
-                          const int line);
+CMockaValueData
+_mock(const char *const function, const char *const file, const int line);
 
 void _expect_function_call(
     const char * const function_name,
@@ -2522,7 +2629,7 @@ void _check_expected(
     const char* file, const int line, const CMockaValueData value);
 
 void _will_return(const char * const function_name, const char * const file,
-                  const int line, const uintmax_t value,
+                  const int line, const CMockaValueData value,
                   const int count);
 void _assert_true(const uintmax_t result,
                   const char* const expression,

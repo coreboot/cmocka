@@ -160,7 +160,7 @@ typedef int (*EqualityFunction)(const void *left, const void *right);
 /* Value of a symbol and the place it was declared. */
 typedef struct SymbolValue {
     SourceLocation location;
-    uintmax_t value;
+    CMockaValueData value;
 } SymbolValue;
 
 /*
@@ -988,14 +988,15 @@ static size_t check_for_leftover_values(
 
 
 /* Get the next return value for the specified mock function. */
-uintmax_t _mock(const char * const function, const char* const file,
-                          const int line) {
+CMockaValueData
+_mock(const char *const function, const char *const file, const int line)
+{
     void *result;
     const int rc = get_symbol_value(&global_function_result_map_head,
                                     &function, 1, &result);
     if (rc) {
         SymbolValue * const symbol = (SymbolValue*)result;
-        const uintmax_t value = symbol->value;
+        const CMockaValueData value = symbol->value;
         global_last_mock_value_location = symbol->location;
         if (rc == 1) {
             free(symbol);
@@ -1015,7 +1016,7 @@ uintmax_t _mock(const char * const function, const char* const file,
         }
         exit_test(true);
     }
-    return 0;
+    return (CMockaValueData){.ptr = NULL};
 }
 
 /* Ensure that function is being called in proper order */
@@ -1085,7 +1086,7 @@ void _function_called(const char *const function,
 
 /* Add a return value for the specified mock function name. */
 void _will_return(const char * const function_name, const char * const file,
-                  const int line, const uintmax_t value,
+                  const int line, const CMockaValueData value,
                   const int count) {
     SymbolValue * const return_value =
         (SymbolValue*)malloc(sizeof(*return_value));
