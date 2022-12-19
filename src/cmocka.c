@@ -1954,7 +1954,7 @@ void mock_assert(const int result, const char* const expression,
     if (!result) {
         if (global_expecting_assert) {
             global_last_failed_assert = expression;
-            longjmp(global_expect_assert_env, result);
+            longjmp(global_expect_assert_env, 1);
         } else {
             cmocka_print_error("ASSERT: %s\n", expression);
             _fail(file, line);
