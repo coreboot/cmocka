@@ -1332,7 +1332,7 @@ void assert_double_equal(double a, double b, double epsilon);
 void assert_double_not_equal(double a, double b, double epsilon);
 #else
 #define assert_double_not_equal(a, b, epsilon) \
-	_assert_double_not_equal((float)a, \
+	_assert_double_not_equal((double)a, \
 			(double)b, \
 			(double)epsilon, \
 			__FILE__, __LINE__)
