@@ -45,6 +45,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <float.h>
+#include <errno.h>
+#include <limits.h>
 
 /*
  * This allows to add a platform specific header file. Some embedded platforms
@@ -2464,7 +2466,14 @@ void* _test_malloc(const size_t size, const char *file, const int line) {
 
 void* _test_calloc(const size_t number_of_elements, const size_t size,
                    const char* file, const int line) {
-    void* const ptr = _test_malloc(number_of_elements * size, file, line);
+    void *ptr = NULL;
+
+    if (size > 0 && number_of_elements > SIZE_MAX / size) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    ptr = _test_malloc(number_of_elements * size, file, line);
     if (ptr) {
         memset(ptr, 0, number_of_elements * size);
     }
