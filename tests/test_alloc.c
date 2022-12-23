@@ -11,6 +11,25 @@
 #include <stdio.h>
 #include <string.h>
 
+static void torture_test_calloc(void **state)
+{
+    void *ptr;
+
+    (void)state; /* unsused */
+
+    ptr = test_calloc(2, SIZE_MAX);
+    assert_null(ptr);
+    ptr = test_calloc(SIZE_MAX, 2);
+    assert_null(ptr);
+
+    /*  overflows to 0  */
+    ptr = test_calloc(2, (SIZE_MAX/2)+1);
+    assert_null(ptr);
+
+    ptr = test_calloc(3, (SIZE_MAX/2)+42);
+    assert_null(ptr);
+}
+
 static void torture_test_malloc(void **state)
 {
     char *str;
@@ -83,6 +102,7 @@ static void torture_test_realloc_set0(void **state)
 
 int main(void) {
     const struct CMUnitTest alloc_tests[] = {
+        cmocka_unit_test(torture_test_calloc),
         cmocka_unit_test(torture_test_malloc),
         cmocka_unit_test(torture_test_realloc),
         cmocka_unit_test(torture_test_realloc_set0),
