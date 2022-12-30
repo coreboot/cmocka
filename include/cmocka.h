@@ -72,6 +72,19 @@ int __stdcall IsDebuggerPresent();
 #define cast_ptr_to_uintmax_type(value) \
     cast_to_uintmax_type(cast_to_uintptr_type(value))
 
+/**
+ * Perform a cast from an integer to CMockaValueData.
+ *
+ * For backwards compatibility reasons, this explicitly casts to `uintmax_t`.
+ * For most compilers, this will supress warnings about passing float/intmax_t
+ * to this macro.
+ */
+#define cast_int_to_cmocka_value(value) \
+    (CMockaValueData)                   \
+    {                                   \
+        .uint_val = (uintmax_t)(value)  \
+    }
+
 /* GCC have printf type attribute check.  */
 #ifdef __GNUC__
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b) \
