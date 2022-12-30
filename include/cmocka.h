@@ -85,6 +85,13 @@ int __stdcall IsDebuggerPresent();
         .uint_val = (uintmax_t)(value)  \
     }
 
+/** Perform a cast from a pointer to CMockaValueData. */
+#define cast_ptr_to_cmocka_value(value) \
+    (CMockaValueData)                   \
+    {                                   \
+        .ptr = (value)                  \
+    }
+
 /* GCC have printf type attribute check.  */
 #ifdef __GNUC__
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b) \
