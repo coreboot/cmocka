@@ -28,6 +28,8 @@ set(CMOCKA_TESTS
     test_double_macros
     test_assert_macros
     test_assert_macros_fail
+    test_assert_ptr
+    test_assert_ptr_fail
     test_assert_u_int
     test_assert_u_int_fail
     test_assert_range
@@ -80,6 +82,13 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] tests: 1 test"
+)
+
+set_tests_properties(
+    test_assert_ptr_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] ptr_tests: 4 test"
 )
 
 set_tests_properties(
