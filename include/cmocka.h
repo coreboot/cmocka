@@ -64,10 +64,6 @@ int __stdcall IsDebuggerPresent();
 #define cast_to_uintmax_type(value) \
     ((uintmax_t)(value))
 
-/* Perform an unsigned cast to uintptr_t. */
-#define cast_to_uintptr_type(value) \
-    ((uintptr_t)(value))
-
 /**
  * Perform a cast from an integer to CMockaValueData.
  *
