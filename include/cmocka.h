@@ -410,11 +410,11 @@ void will_return_maybe(#function, uintmax_t value);
  *
  * @param[in]  check_data       The data to pass to the check function.
  */
-void expect_check(#function, #parameter, #check_function, const void *check_data);
+void expect_check(#function, #parameter, #check_function, CMockaValueData check_data);
 #else
 #define expect_check(function, parameter, check_function, check_data) \
     _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
-                  cast_to_uintmax_type(check_data), NULL, 1)
+                  check_data, NULL, 1)
 #endif
 
 /*
@@ -448,11 +448,11 @@ void expect_check(#function, #parameter, #check_function, const void *check_data
  *                    calls to check_expected() is accepted, including zero.
  *
  */
-void expect_check_count(#function, #parameter, #check_function, const void *check_data, size_t count);
+void expect_check_count(#function, #parameter, #check_function, CMockaValueData check_data, size_t count);
 #else
 #define expect_check_count(function, parameter, check_function, check_data, count) \
     _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
-                  cast_to_uintmax_type(check_data), NULL, count)
+                  check_data, NULL, count)
 #endif
 
 #ifdef DOXYGEN
@@ -1020,7 +1020,7 @@ void check_expected(#parameter);
 #else
 #define check_expected(parameter) \
     _check_expected(__func__, #parameter, __FILE__, __LINE__, \
-                    cast_to_uintmax_type(parameter))
+                    cast_int_to_cmocka_value(parameter))
 #endif
 
 #ifdef DOXYGEN
@@ -1038,7 +1038,7 @@ void check_expected_ptr(#parameter);
 #else
 #define check_expected_ptr(parameter) \
     _check_expected(__func__, #parameter, __FILE__, __LINE__, \
-                    cast_ptr_to_uintmax_type(parameter))
+                    cast_ptr_to_cmocka_value(parameter))
 #endif
 
 /** @} */
@@ -2375,8 +2375,8 @@ typedef union {
 typedef void (*UnitTestFunction)(void **state);
 
 /* Function that determines whether a function parameter value is correct. */
-typedef int (*CheckParameterValue)(const uintmax_t value,
-                                   const uintmax_t check_value_data);
+typedef int (*CheckParameterValue)(const CMockaValueData value,
+                                   const CMockaValueData check_value_data);
 
 /* Function that determines whether a function parameter value is correct. */
 typedef int (*CheckIntParameterValue)(const intmax_t value,
@@ -2438,7 +2438,7 @@ typedef struct CheckParameterEvent {
     SourceLocation location;
     const char *parameter_name;
     CheckParameterValue check_value;
-    uintmax_t check_value_data;
+    CMockaValueData check_value_data;
 } CheckParameterEvent;
 
 /* Used by expect_assert_failure() and mock_assert(). */
@@ -2463,7 +2463,7 @@ void _expect_check(
     const char* const function, const char* const parameter,
     const char* const file, const int line,
     const CheckParameterValue check_function,
-    const uintmax_t check_data, CheckParameterEvent * const event,
+    const CMockaValueData check_data, CheckParameterEvent * const event,
     const int count);
 
 void _expect_in_set(
@@ -2519,7 +2519,7 @@ void _expect_any(
 
 void _check_expected(
     const char * const function_name, const char * const parameter_name,
-    const char* file, const int line, const uintmax_t value);
+    const char* file, const int line, const CMockaValueData value);
 
 void _will_return(const char * const function_name, const char * const file,
                   const int line, const uintmax_t value,

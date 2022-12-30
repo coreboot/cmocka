@@ -115,17 +115,15 @@
 #endif
 
 /*
- * Declare and initialize a uintmax_t variable name
+ * Declare and initialize a CMockaValueData variable name
  * with value the conversion of ptr.
  */
-#define declare_initialize_value_pointer_pointer(name, ptr) \
-    uintmax_t name ; \
-    name = (uintmax_t)((uintptr_t)(ptr))
+#define declare_initialize_value_pointer_pointer(name, ptr_value) \
+    CMockaValueData name = {.ptr = (ptr_value)};
 
 /* Cast a uintmax_t to pointer_type. */
-#define cast_uintmax_type_to_pointer( \
-    pointer_type, largest_integral_type) \
-    ((pointer_type)(uintptr_t)(largest_integral_type))
+#define cast_cmocka_value_to_pointer(pointer_type, cmocka_value_data) \
+    ((pointer_type)((cmocka_value_data).ptr))
 
 /* Doubly linked list node. */
 typedef struct ListNode {
@@ -1109,7 +1107,7 @@ void _expect_check(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const CheckParameterValue check_function,
-        const uintmax_t check_data,
+        const CMockaValueData check_data,
         CheckParameterEvent * const event, const int count) {
     CheckParameterEvent * const check =
         event ? event : (CheckParameterEvent*)malloc(sizeof(*check));
@@ -1624,19 +1622,19 @@ static int memory_not_equal_display_error(
 
 
 /* CheckParameterValue callback to check whether a value is within a set. */
-static int check_in_set(const uintmax_t value,
-                        const uintmax_t check_value_data) {
-    return value_in_set_display_error(value,
-        cast_uintmax_type_to_pointer(CheckIntegerSet*,
+static int check_in_set(const CMockaValueData value,
+                        const CMockaValueData check_value_data) {
+    return value_in_set_display_error(value.uint_val,
+        cast_cmocka_value_to_pointer(CheckIntegerSet*,
                                               check_value_data), 0);
 }
 
 
 /* CheckParameterValue callback to check whether a value isn't within a set. */
-static int check_not_in_set(const uintmax_t value,
-                            const uintmax_t check_value_data) {
-    return value_in_set_display_error(value,
-        cast_uintmax_type_to_pointer(CheckIntegerSet*,
+static int check_not_in_set(const CMockaValueData value,
+                            const CMockaValueData check_value_data) {
+    return value_in_set_display_error(value.uint_val,
+        cast_cmocka_value_to_pointer(CheckIntegerSet*,
                                               check_value_data), 1);
 }
 
@@ -1688,28 +1686,28 @@ void _expect_not_in_set(
 
 
 /* CheckParameterValue callback to check whether a value is within a range. */
-static int check_in_range(const uintmax_t value,
-                          const uintmax_t check_value_data) {
+static int check_in_range(const CMockaValueData value,
+                          const CMockaValueData check_value_data) {
     CheckIntegerRange * const check_integer_range =
-        cast_uintmax_type_to_pointer(CheckIntegerRange*,
+        cast_cmocka_value_to_pointer(CheckIntegerRange*,
                                               check_value_data);
     assert_non_null(check_integer_range);
 
-    return uint_in_range_display_error(value,
+    return uint_in_range_display_error(value.uint_val,
                                        check_integer_range->minimum,
                                        check_integer_range->maximum);
 }
 
 
 /* CheckParameterValue callback to check whether a value is not within a range. */
-static int check_not_in_range(const uintmax_t value,
-                              const uintmax_t check_value_data) {
+static int check_not_in_range(const CMockaValueData value,
+                              const CMockaValueData check_value_data) {
     CheckIntegerRange * const check_integer_range =
-        cast_uintmax_type_to_pointer(CheckIntegerRange*,
+        cast_cmocka_value_to_pointer(CheckIntegerRange*,
                                               check_value_data);
     assert_non_null(check_integer_range);
     return integer_not_in_range_display_error(
-        value, check_integer_range->minimum, check_integer_range->maximum);
+        value.uint_val, check_integer_range->minimum, check_integer_range->maximum);
 }
 
 
@@ -1754,9 +1752,9 @@ void _expect_not_in_range(
 
 /* CheckParameterValue callback to check whether a value is equal to an
  * expected value. */
-static int check_value(const uintmax_t value,
-                       const uintmax_t check_value_data) {
-    return uint_values_equal_display_error(value, check_value_data);
+static int check_value(const CMockaValueData value,
+                       const CMockaValueData check_value_data) {
+    return uint_values_equal_display_error(value.uint_val, check_value_data.uint_val);
 }
 
 
@@ -1765,16 +1763,16 @@ void _expect_value(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t value, const int count) {
-    _expect_check(function, parameter, file, line, check_value, value, NULL,
+    _expect_check(function, parameter, file, line, check_value, (CMockaValueData){.uint_val = value}, NULL,
                   count);
 }
 
 
 /* CheckParameterValue callback to check whether a value is not equal to an
  * expected value. */
-static int check_not_value(const uintmax_t value,
-                           const uintmax_t check_value_data) {
-    return uint_values_not_equal_display_error(value, check_value_data);
+static int check_not_value(const CMockaValueData value,
+                           const CMockaValueData check_value_data) {
+    return uint_values_not_equal_display_error(value.uint_val, check_value_data.uint_val);
 }
 
 
@@ -1783,17 +1781,18 @@ void _expect_not_value(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t value, const int count) {
-    _expect_check(function, parameter, file, line, check_not_value, value,
+    _expect_check(function, parameter, file, line, check_not_value,
+                  (CMockaValueData){.uint_val = value},
                   NULL, count);
 }
 
 
 /* CheckParameterValue callback to check whether a parameter equals a string. */
-static int check_string(const uintmax_t value,
-                        const uintmax_t check_value_data) {
+static int check_string(const CMockaValueData value,
+                        const CMockaValueData check_value_data) {
     return string_equal_display_error(
-        cast_uintmax_type_to_pointer(char*, value),
-        cast_uintmax_type_to_pointer(char*, check_value_data));
+        cast_cmocka_value_to_pointer(char*, value),
+        cast_cmocka_value_to_pointer(char*, check_value_data));
 }
 
 
@@ -1811,11 +1810,11 @@ void _expect_string(
 
 /* CheckParameterValue callback to check whether a parameter is not equals to
  * a string. */
-static int check_not_string(const uintmax_t value,
-                            const uintmax_t check_value_data) {
+static int check_not_string(const CMockaValueData value,
+                            const CMockaValueData check_value_data) {
     return string_not_equal_display_error(
-        cast_uintmax_type_to_pointer(char*, value),
-        cast_uintmax_type_to_pointer(char*, check_value_data));
+        cast_cmocka_value_to_pointer(char*, value),
+        cast_cmocka_value_to_pointer(char*, check_value_data));
 }
 
 
@@ -1832,13 +1831,13 @@ void _expect_not_string(
 
 /* CheckParameterValue callback to check whether a parameter equals an area of
  * memory. */
-static int check_memory(const uintmax_t value,
-                        const uintmax_t check_value_data) {
-    CheckMemoryData * const check = cast_uintmax_type_to_pointer(
+static int check_memory(const CMockaValueData value,
+                        const CMockaValueData check_value_data) {
+    CheckMemoryData * const check = cast_cmocka_value_to_pointer(
         CheckMemoryData*, check_value_data);
     assert_non_null(check);
     return memory_equal_display_error(
-        cast_uintmax_type_to_pointer(const char*, value),
+        cast_cmocka_value_to_pointer(const char*, value),
         (const char*)check->memory, check->size);
 }
 
@@ -1876,13 +1875,13 @@ void _expect_memory(
 
 /* CheckParameterValue callback to check whether a parameter is not equal to
  * an area of memory. */
-static int check_not_memory(const uintmax_t value,
-                            const uintmax_t check_value_data) {
-    CheckMemoryData * const check = cast_uintmax_type_to_pointer(
+static int check_not_memory(const CMockaValueData value,
+                            const CMockaValueData check_value_data) {
+    CheckMemoryData * const check = cast_cmocka_value_to_pointer(
         CheckMemoryData*, check_value_data);
     assert_non_null(check);
     return memory_not_equal_display_error(
-        cast_uintmax_type_to_pointer(const char*, value),
+        cast_cmocka_value_to_pointer(const char*, value),
         (const char*)check->memory,
         check->size);
 }
@@ -1899,8 +1898,8 @@ void _expect_not_memory(
 
 
 /* CheckParameterValue callback that always returns 1. */
-static int check_any(const uintmax_t value,
-                     const uintmax_t check_value_data) {
+static int check_any(const CMockaValueData value,
+                     const CMockaValueData check_value_data) {
     (void)value;
     (void)check_value_data;
     return 1;
@@ -1911,14 +1910,14 @@ static int check_any(const uintmax_t value,
 void _expect_any(
         const char* const function, const char* const parameter,
         const char* const file, const int line, const int count) {
-    _expect_check(function, parameter, file, line, check_any, 0, NULL,
+    _expect_check(function, parameter, file, line, check_any, (CMockaValueData){.ptr = NULL}, NULL,
                   count);
 }
 
 
 void _check_expected(
         const char * const function_name, const char * const parameter_name,
-        const char* file, const int line, const uintmax_t value) {
+        const char* file, const int line, const CMockaValueData value) {
     void *result = NULL;
     const char* symbols[] = {function_name, parameter_name};
     const int rc = get_symbol_value(&global_function_parameter_map_head,
