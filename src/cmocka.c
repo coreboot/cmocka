@@ -2279,7 +2279,7 @@ static void vcmocka_print_error(const char* const format,
  */
 static void vcmocka_print_error(const char* const format, va_list args)
 {
-    char buffer[1024];
+    char buffer[256];
     size_t msg_len = 0;
     va_list ap;
     int len;
@@ -2629,12 +2629,12 @@ void cmocka_print_error(const char * const format, ...)
 /* Standard output and error print methods. */
 void vprint_message(const char* const format, va_list args)
 {
+    vprintf(format, args);
+    fflush(stdout);
+#ifdef _WIN32
     char buffer[4096];
 
     vsnprintf(buffer, sizeof(buffer), format, args);
-    printf("%s", buffer);
-    fflush(stdout);
-#ifdef _WIN32
     OutputDebugString(buffer);
 #endif /* _WIN32 */
 }
@@ -2642,12 +2642,12 @@ void vprint_message(const char* const format, va_list args)
 
 void vprint_error(const char* const format, va_list args)
 {
+    vfprintf(stderr, format, args);
+    fflush(stderr);
+#ifdef _WIN32
     char buffer[4096];
 
     vsnprintf(buffer, sizeof(buffer), format, args);
-    fprintf(stderr, "%s", buffer);
-    fflush(stderr);
-#ifdef _WIN32
     OutputDebugString(buffer);
 #endif /* _WIN32 */
 }
