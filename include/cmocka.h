@@ -105,6 +105,9 @@ int __stdcall IsDebuggerPresent();
         .real_val = (value)                  \
     }
 
+/* Nested macros are not expanded when they appear along with # or ## */
+#define cmocka_tostring(val) #val
+
 /* GCC have printf type attribute check.  */
 #ifdef __GNUC__
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b) \
@@ -343,7 +346,7 @@ type mock_ptr_type(#type);
 void will_return(#function, uintmax_t value);
 #else
 #define will_return(function, value)              \
-    _will_return(#function,                       \
+    _will_return(cmocka_tostring(function),       \
                  __FILE__,                        \
                  __LINE__,                        \
                  NULL,                            \
@@ -478,7 +481,7 @@ void will_return_float(#function, intmax_t value);
 void will_return_count(#function, uintmax_t value, int count);
 #else
 #define will_return_count(function, value, count) \
-    _will_return(#function,                       \
+    _will_return(cmocka_tostring(function),       \
                  __FILE__,                        \
                  __LINE__,                        \
                  NULL,                            \
@@ -756,7 +759,7 @@ void expect_check(function,
                   CMockaValueData check_data);
 #else
 #define expect_check(function, parameter, check_function, check_data) \
-    _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
+    _expect_check(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, check_function, \
                   check_data, NULL, 1)
 #endif
 
@@ -793,7 +796,7 @@ void expect_check_count(function,
                         size_t count);
 #else
 #define expect_check_count(function, parameter, check_function, check_data, count) \
-    _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
+    _expect_check(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, check_function, \
                   check_data, NULL, count)
 #endif
 
@@ -840,7 +843,7 @@ void expect_in_set(#function, #parameter, uintmax_t value_array[]);
 void expect_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
 #else
 #define expect_in_set_count(function, parameter, value_array, count) \
-    _expect_in_set(#function, #parameter, __FILE__, __LINE__, value_array, \
+    _expect_in_set(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, value_array, \
                    sizeof(value_array) / sizeof((value_array)[0]), count)
 #endif
 
@@ -888,7 +891,7 @@ void expect_not_in_set_count(#function, #parameter, uintmax_t value_array[], siz
 #else
 #define expect_not_in_set_count(function, parameter, value_array, count) \
     _expect_not_in_set( \
-        #function, #parameter, __FILE__, __LINE__, value_array, \
+        cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, value_array, \
         sizeof(value_array) / sizeof((value_array)[0]), count)
 #endif
 
@@ -940,7 +943,7 @@ void expect_in_range(#function, #parameter, uintmax_t minimum, uintmax_t maximum
 void expect_in_range_count(#function, #parameter, uintmax_t minimum, uintmax_t maximum, size_t count);
 #else
 #define expect_in_range_count(function, parameter, minimum, maximum, count) \
-    _expect_in_range(#function, #parameter, __FILE__, __LINE__, minimum, \
+    _expect_in_range(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, minimum, \
                      maximum, count)
 #endif
 
@@ -992,7 +995,7 @@ void expect_not_in_range_count(#function, #parameter, uintmax_t minimum, uintmax
 #else
 #define expect_not_in_range_count(function, parameter, minimum, maximum, \
                                   count) \
-    _expect_not_in_range(#function, #parameter, __FILE__, __LINE__, \
+    _expect_not_in_range(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                          minimum, maximum, count)
 #endif
 
@@ -1043,7 +1046,7 @@ void expect_value(#function, #parameter, uintmax_t value);
 void expect_value_count(#function, #parameter, uintmax_t value, size_t count);
 #else
 #define expect_value_count(function, parameter, value, count) \
-    _expect_value(#function, #parameter, __FILE__, __LINE__, \
+    _expect_value(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                   cast_to_uintmax_type(value), count)
 #endif
 
@@ -1088,7 +1091,7 @@ void expect_not_value(#function, #parameter, uintmax_t value);
 void expect_not_value_count(#function, #parameter, uintmax_t value, size_t count);
 #else
 #define expect_not_value_count(function, parameter, value, count) \
-    _expect_not_value(#function, #parameter, __FILE__, __LINE__, \
+    _expect_not_value(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                       cast_to_uintmax_type(value), count)
 #endif
 
@@ -1135,7 +1138,7 @@ void expect_string(#function, #parameter, const char *string);
 void expect_string_count(#function, #parameter, const char *string, size_t count);
 #else
 #define expect_string_count(function, parameter, string, count) \
-    _expect_string(#function, #parameter, __FILE__, __LINE__, \
+    _expect_string(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                    (const char*)(string), count)
 #endif
 
@@ -1182,7 +1185,7 @@ void expect_not_string(#function, #parameter, const char *string);
 void expect_not_string_count(#function, #parameter, const char *string, size_t count);
 #else
 #define expect_not_string_count(function, parameter, string, count) \
-    _expect_not_string(#function, #parameter, __FILE__, __LINE__, \
+    _expect_not_string(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                        (const char*)(string), count)
 #endif
 
@@ -1232,7 +1235,7 @@ void expect_memory(#function, #parameter, void *memory, size_t size);
 void expect_memory_count(#function, #parameter, void *memory, size_t size, size_t count);
 #else
 #define expect_memory_count(function, parameter, memory, size, count) \
-    _expect_memory(#function, #parameter, __FILE__, __LINE__, \
+    _expect_memory(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                    (const void*)(memory), size, count)
 #endif
 
@@ -1283,7 +1286,7 @@ void expect_not_memory(#function, #parameter, void *memory, size_t size);
 void expect_not_memory_count(#function, #parameter, void *memory, size_t size, size_t count);
 #else
 #define expect_not_memory_count(function, parameter, memory, size, count) \
-    _expect_not_memory(#function, #parameter, __FILE__, __LINE__, \
+    _expect_not_memory(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
                        (const void*)(memory), size, count)
 #endif
 
@@ -1344,7 +1347,7 @@ void expect_any_always(#function, #parameter);
 void expect_any_count(#function, #parameter, size_t count);
 #else
 #define expect_any_count(function, parameter, count) \
-    _expect_any(#function, #parameter, __FILE__, __LINE__, count)
+    _expect_any(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, count)
 #endif
 
 #ifdef DOXYGEN
@@ -2120,7 +2123,7 @@ void function_called(void);
 void expect_function_calls(#function, const int times);
 #else
 #define expect_function_calls(function, times) \
-    _expect_function_call(#function, __FILE__, __LINE__, times)
+    _expect_function_call(cmocka_tostring(function), __FILE__, __LINE__, times)
 #endif
 
 #ifdef DOXYGEN
@@ -2135,7 +2138,7 @@ void expect_function_calls(#function, const int times);
 void expect_function_call(#function);
 #else
 #define expect_function_call(function) \
-    _expect_function_call(#function, __FILE__, __LINE__, 1)
+    _expect_function_call(cmocka_tostring(function), __FILE__, __LINE__, 1)
 #endif
 
 #ifdef DOXYGEN
@@ -2149,7 +2152,7 @@ void expect_function_call(#function);
 void expect_function_call_any(#function);
 #else
 #define expect_function_call_any(function) \
-    _expect_function_call(#function, __FILE__, __LINE__, -1)
+    _expect_function_call(cmocka_tostring(function), __FILE__, __LINE__, -1)
 #endif
 
 #ifdef DOXYGEN
@@ -2163,7 +2166,7 @@ void expect_function_call_any(#function);
 void ignore_function_calls(#function);
 #else
 #define ignore_function_calls(function) \
-    _expect_function_call(#function, __FILE__, __LINE__, -2)
+    _expect_function_call(cmocka_tostring(function), __FILE__, __LINE__, -2)
 #endif
 
 /** @} */
