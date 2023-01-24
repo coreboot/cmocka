@@ -55,14 +55,16 @@ add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(doc)
 
-include(AddCMockaTest)
-if (UNIT_TESTING)
-    add_subdirectory(tests)
-endif (UNIT_TESTING)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(AddCMockaTest)
+    if (UNIT_TESTING)
+        add_subdirectory(tests)
+    endif (UNIT_TESTING)
 
-if (WITH_EXAMPLES)
-    add_subdirectory(example)
-endif ()
+    if (WITH_EXAMPLES)
+        add_subdirectory(example)
+    endif ()
+endif()
 
 # pkg-config file
 configure_file(cmocka.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/cmocka.pc @ONLY)
