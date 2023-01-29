@@ -14,7 +14,25 @@ void mock_function_call_times(size_t times, int expectedValue);
 
 int mock_function(void)
 {
-  return (int) mock();
+    return (int) mock();
+}
+
+intmax_t mock_function_int(void);
+intmax_t mock_function_int(void)
+{
+    return mock_int();
+}
+
+uintmax_t mock_function_uint(void);
+uintmax_t mock_function_uint(void)
+{
+    return mock_uint();
+}
+
+double mock_function_float(void);
+double mock_function_float(void)
+{
+    return mock_float();
 }
 
 void mock_function_call_times(size_t times, int expectedValue)
@@ -56,11 +74,40 @@ static void test_will_return_maybe_for_more_than_one_call(void **state)
     mock_function_call_times(numberOfCalls, value);
 }
 
+static void test_will_return_int(void **state)
+{
+    intmax_t value;
+
+    value = rand();
+    will_return_int(mock_function_int, value);
+    assert_int_equal(value, mock_function_int());
+}
+
+static void test_will_return_uint(void **state)
+{
+    uintmax_t value;
+
+    value = rand();
+    will_return_uint(mock_function_uint, value);
+    assert_uint_equal(value, mock_function_uint());
+}
+
+static void test_will_return_float(void **state)
+{
+    double value = 1.0;
+
+    will_return_float(mock_function_float, value);
+    assert_float_equal(value, mock_function_float(), 0.0);
+}
+
 int main(int argc, char **argv) {
     const struct CMUnitTest alloc_tests[] = {
-        cmocka_unit_test(test_will_return_maybe_for_no_calls)
-        ,cmocka_unit_test(test_will_return_maybe_for_one_mock_call)
-        ,cmocka_unit_test(test_will_return_maybe_for_more_than_one_call)
+        cmocka_unit_test(test_will_return_maybe_for_no_calls),
+        cmocka_unit_test(test_will_return_maybe_for_one_mock_call),
+        cmocka_unit_test(test_will_return_maybe_for_more_than_one_call),
+        cmocka_unit_test(test_will_return_int),
+        cmocka_unit_test(test_will_return_uint),
+        cmocka_unit_test(test_will_return_float),
     };
 
     (void)argc;
