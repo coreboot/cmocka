@@ -13,7 +13,8 @@ Compiling
 
 To compile the cmocka library and example applications run, create a build dir,
 and in the build dir call 'cmake /path/to/cmocka' followed by 'make'. On
-Windows you can use the cmake gui. More details can be found in the INSTALL file.
+Windows you can use the cmake gui. More details can be found in the INSTALL.md
+file.
 
 Website
 -------
