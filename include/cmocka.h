@@ -84,6 +84,27 @@ int __stdcall IsDebuggerPresent();
         .ptr = (value)                  \
     }
 
+/** Assign an integer value to CMockaValueData. */
+#define assign_int_to_cmocka_value(value) \
+    (CMockaValueData)                     \
+    {                                     \
+        .int_val = (value)                \
+    }
+
+/** Assign an unsigned integer value to CMockaValueData. */
+#define assign_uint_to_cmocka_value(value) \
+    (CMockaValueData)                      \
+    {                                      \
+        .uint_val = (value)                \
+    }
+
+/** Assign a floating point value to CMockaValueData. */
+#define assign_double_to_cmocka_value(value) \
+    (CMockaValueData)                        \
+    {                                        \
+        .real_val = (value)                  \
+    }
+
 /* GCC have printf type attribute check.  */
 #ifdef __GNUC__
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b) \
