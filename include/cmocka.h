@@ -199,6 +199,7 @@ uintmax_t mock(void);
 #define mock() (_mock(__func__, __FILE__, __LINE__)).uint_val
 #endif
 
+
 #ifdef DOXYGEN
 /**
  * @brief Retrieve a typed return value of the current function.
@@ -224,6 +225,61 @@ uintmax_t mock(void);
 #else
 #define mock_type(type) ((type) mock())
 #endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve an integer return value of the current function.
+ *
+ * The value would be casted to type internally to avoid having the
+ * caller to do the cast manually.
+ *
+ * @param[in]  #type  The expected type of the return value
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @code
+ * int param;
+ *
+ * param = mock_int();
+ * @endcode
+ *
+ * @see will_return()
+ * @see mock()
+ * @see mock_ptr_type()
+ */
+intmax_t mock_int();
+#else
+#define mock_int() (_mock(__func__, __FILE__, __LINE__)).int_val
+#endif
+
+
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve an unsinged integer return value of the current function.
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @see will_return_uint()
+ */
+uintmax_t mock_uint(void);
+#else
+#define mock_uint() (_mock(__func__, __FILE__, __LINE__)).uint_val
+#endif
+
+
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve an unsinged integer return value of the current function.
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @see will_return_float()
+ */
+double mock_float(void);
+#else
+#define mock_float() (_mock(__func__, __FILE__, __LINE__)).real_val
+#endif
+
 
 #ifdef DOXYGEN
 /**
@@ -275,6 +331,9 @@ type mock_ptr_type(#type);
  * @endcode
  *
  * @see mock()
+ * @see mock_int()
+ * @see mock_uint()
+ * @see mock_double()
  * @see will_return_count()
  */
 void will_return(#function, uintmax_t value);
@@ -283,6 +342,113 @@ void will_return(#function, uintmax_t value);
     _will_return(#function, __FILE__, __LINE__, \
                  cast_int_to_cmocka_value(value), 1)
 #endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an integer value to be returned by mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @code
+ * int32_t return_int32(void)
+ * {
+ *      return (int32_t)mock_int();
+ * }
+ *
+ * static void test_integer_return(void **state)
+ * {
+ *      will_return_int(return_int32, -42);
+ *
+ *      assert_int_equal(my_function_calling_return_int32(), -42);
+ * }
+ * @endcode
+ *
+ * @see mock_int()
+ * @see will_return_count()
+ */
+void will_return_int(#function, intmax_t value);
+#else
+#define will_return_int(function, value)            \
+    _will_return(#function,                         \
+                 __FILE__,                          \
+                 __LINE__,                          \
+                 assign_int_to_cmocka_value(value), \
+                 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a unsigned integer value to be returned by mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @code
+ * uint32_t return_uint32(void)
+ * {
+ *      return (uint32_t)mock_uint();
+ * }
+ *
+ * static void test_integer_return(void **state)
+ * {
+ *      will_return_int(return_uint32, 42);
+ *
+ *      assert_uint_equal(my_function_calling_return_uint32(), 42);
+ * }
+ * @endcode
+ *
+ * @see mock_uint()
+ * @see will_return_count()
+ */
+void will_return_uint(#function, uintmax_t value);
+#else
+#define will_return_uint(function, value)            \
+    _will_return(#function,                          \
+                 __FILE__,                           \
+                 __LINE__,                           \
+                 assign_uint_to_cmocka_value(value), \
+                 1)
+#endif
+
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a floating point value to be returned by mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @code
+ * float return_float(void)
+ * {
+ *      return (float)mock_double();
+ * }
+ *
+ * static void test_integer_return(void **state)
+ * {
+ *      will_return_int(return_float, 1.0);
+ *
+ *      assert_float_equal(my_function_calling_return_float(), 1.0);
+ * }
+ * @endcode
+ *
+ * @see mock_float()
+ * @see will_return_count()
+ */
+void will_return_float(#function, intmax_t value);
+#else
+#define will_return_float(function, value)             \
+    _will_return(#function,                            \
+                 __FILE__,                             \
+                 __LINE__,                             \
+                 assign_double_to_cmocka_value(value), \
+                 1)
+#endif
+
 
 #ifdef DOXYGEN
 /**
