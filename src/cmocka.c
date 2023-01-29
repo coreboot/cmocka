@@ -159,6 +159,8 @@ typedef int (*EqualityFunction)(const void *left, const void *right);
 
 /* Value of a symbol and the place it was declared. */
 typedef struct SymbolValue {
+    /* The name will be used to implement some kind of type safety. */
+    const char *name;
     SourceLocation location;
     CMockaValueData value;
 } SymbolValue;
@@ -988,14 +990,38 @@ static size_t check_for_leftover_values(
 
 
 /* Get the next return value for the specified mock function. */
-CMockaValueData
-_mock(const char *const function, const char *const file, const int line)
+CMockaValueData _mock(const char *const function,
+                      const char *const file,
+                      const int line,
+                      const char *name)
 {
     void *result;
     const int rc = get_symbol_value(&global_function_result_map_head,
                                     &function, 1, &result);
     if (rc) {
         SymbolValue * const symbol = (SymbolValue*)result;
+        /* If a name will be passed, check for type safety. */
+        if (name != NULL) {
+            if (symbol->name == NULL || strcmp(name, symbol->name) != 0) {
+                cmocka_print_error(
+                    SOURCE_LOCATION_FORMAT
+                    ": error: Type mismatch: name[%s] expected[%s]in %s\n",
+                    file,
+                    line,
+                    symbol->name ? symbol->name : "NULL",
+                    name,
+                    function);
+                if (source_location_is_set(&global_last_mock_value_location)) {
+                    cmocka_print_error("NOTE: The value to be returned by mock "
+                                       "declared here: " SOURCE_LOCATION_FORMAT
+                                       "\n",
+                                       global_last_mock_value_location.file,
+                                       global_last_mock_value_location.line);
+                }
+                free(symbol);
+                exit_test(true);
+            }
+        }
         const CMockaValueData value = symbol->value;
         global_last_mock_value_location = symbol->location;
         if (rc == 1) {
@@ -1085,18 +1111,27 @@ void _function_called(const char *const function,
 }
 
 /* Add a return value for the specified mock function name. */
-void _will_return(const char * const function_name, const char * const file,
-                  const int line, const CMockaValueData value,
-                  const int count) {
-    SymbolValue * const return_value =
-        (SymbolValue*)malloc(sizeof(*return_value));
+void _will_return(const char *const function_name,
+                  const char *const file,
+                  const int line,
+                  const char *name,
+                  const CMockaValueData value,
+                  const int count)
+{
+    SymbolValue *const return_value = calloc(1, sizeof(SymbolValue));
+    assert_non_null(return_value);
     assert_true(count != 0);
+
+    /* Store name for type safety checks. */
+    if (name != NULL) {
+        return_value->name = name;
+    }
     return_value->value = value;
+
     set_source_location(&return_value->location, file, line);
     add_symbol_value(&global_function_result_map_head, &function_name, 1,
                      return_value, count);
 }
-
 
 /*
  * Add a custom parameter checking function.  If the event parameter is NULL

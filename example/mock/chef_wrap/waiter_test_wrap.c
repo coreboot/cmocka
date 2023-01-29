@@ -121,7 +121,7 @@ static void test_order_hotdog(void **state)
     will_return(__wrap_chef_cook, true);
     will_return(__wrap_chef_cook, true);
     /* The result will be a hotdog and the cooking process will succeed */
-    will_return_ptr(__wrap_chef_cook, "hotdog");
+    will_return_ptr_type(__wrap_chef_cook, "hotdog", char *);
     will_return(__wrap_chef_cook, 0);
 
     /* Test the waiter */
@@ -154,7 +154,7 @@ static void test_bad_dish(void **state)
      * We expect the waiter to handle the bad dish and return an error
      * code
      */
-    will_return_ptr(__wrap_chef_cook, "burger");
+    will_return_ptr_type(__wrap_chef_cook, "burger", char *);
     will_return(__wrap_chef_cook, 0);
 
     /* Test the waiter */

@@ -196,7 +196,7 @@ int __stdcall IsDebuggerPresent();
  */
 uintmax_t mock(void);
 #else
-#define mock() (_mock(__func__, __FILE__, __LINE__)).uint_val
+#define mock() (_mock(__func__, __FILE__, __LINE__, NULL)).uint_val
 #endif
 
 
@@ -249,7 +249,8 @@ uintmax_t mock(void);
  */
 intmax_t mock_int();
 #else
-#define mock_int() (_mock(__func__, __FILE__, __LINE__)).int_val
+/* TODO: Enable type safety check by passing intmax_t instead of NULL */
+#define mock_int() (_mock(__func__, __FILE__, __LINE__, NULL)).int_val
 #endif
 
 
@@ -263,7 +264,7 @@ intmax_t mock_int();
  */
 uintmax_t mock_uint(void);
 #else
-#define mock_uint() (_mock(__func__, __FILE__, __LINE__)).uint_val
+#define mock_uint() (_mock(__func__, __FILE__, __LINE__, "uintmax_t")).uint_val
 #endif
 
 
@@ -277,7 +278,7 @@ uintmax_t mock_uint(void);
  */
 double mock_float(void);
 #else
-#define mock_float() (_mock(__func__, __FILE__, __LINE__)).real_val
+#define mock_float() (_mock(__func__, __FILE__, __LINE__, NULL)).real_val
 #endif
 
 
@@ -298,13 +299,13 @@ double mock_float(void);
  * param = mock_ptr_type(char *);
  * @endcode
  *
- * @see will_return()
- * @see mock()
- * @see mock_type()
+ * @see will_return_ptr_type()
+ * @see mock_ptr_type()
  */
 type mock_ptr_type(#type);
 #else
-#define mock_ptr_type(type) ((type)(_mock(__func__, __FILE__, __LINE__)).ptr)
+#define mock_ptr_type(type) \
+    ((type)(_mock(__func__, __FILE__, __LINE__, #type)).ptr)
 #endif
 
 
@@ -338,9 +339,13 @@ type mock_ptr_type(#type);
  */
 void will_return(#function, uintmax_t value);
 #else
-#define will_return(function, value) \
-    _will_return(#function, __FILE__, __LINE__, \
-                 cast_int_to_cmocka_value(value), 1)
+#define will_return(function, value)              \
+    _will_return(#function,                       \
+                 __FILE__,                        \
+                 __LINE__,                        \
+                 NULL,                            \
+                 cast_int_to_cmocka_value(value), \
+                 1)
 #endif
 
 #ifdef DOXYGEN
@@ -374,6 +379,7 @@ void will_return_int(#function, intmax_t value);
     _will_return(#function,                         \
                  __FILE__,                          \
                  __LINE__,                          \
+                 "intmax_t",                        \
                  assign_int_to_cmocka_value(value), \
                  1)
 #endif
@@ -409,6 +415,7 @@ void will_return_uint(#function, uintmax_t value);
     _will_return(#function,                          \
                  __FILE__,                           \
                  __LINE__,                           \
+                 "uintmax_t",                        \
                  assign_uint_to_cmocka_value(value), \
                  1)
 #endif
@@ -445,6 +452,7 @@ void will_return_float(#function, intmax_t value);
     _will_return(#function,                            \
                  __FILE__,                             \
                  __LINE__,                             \
+                 "float",                              \
                  assign_double_to_cmocka_value(value), \
                  1)
 #endif
@@ -469,8 +477,12 @@ void will_return_float(#function, intmax_t value);
 void will_return_count(#function, uintmax_t value, int count);
 #else
 #define will_return_count(function, value, count) \
-    _will_return(#function, __FILE__, __LINE__, \
-                 cast_int_to_cmocka_value(value), count)
+    _will_return(#function,                       \
+                 __FILE__,                        \
+                 __LINE__,                        \
+                 NULL,                            \
+                 cast_int_to_cmocka_value(value), \
+                 count)
 #endif
 
 #ifdef DOXYGEN
@@ -550,9 +562,51 @@ void will_return_maybe(#function, uintmax_t value);
  */
 void will_return_ptr(#function, void *value);
 #else
-#define will_return_ptr(function, value) \
-    _will_return(#function, __FILE__, __LINE__, \
-                 cast_ptr_to_cmocka_value(value), 1)
+#define will_return_ptr(function, value)          \
+    _will_return(#function,                       \
+                 __FILE__,                        \
+                 __LINE__,                        \
+                 NULL,                            \
+                 cast_ptr_to_cmocka_value(value), \
+                 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a pointer value to be returned by mock_ptr_type() later.
+ *
+ * This will also check that the type matches and if not will fail().
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_ptr_type().
+ *
+ * @param[in]  value The type of the pointer.
+ * @code
+ * const char *return_pointer(void)
+ * {
+ *      return mock_ptr_type(const char *);
+ * }
+ *
+ * static void test_pointer_return(void **state)
+ * {
+ *      will_return_ptr_type(return_pointer, "hello world", const char *);
+ *
+ *      assert_string_equal(my_func_calling_return_pointer(), "hello world");
+ * }
+ * @endcode
+ *
+ * @see mock_ptr_type()
+ */
+void will_return_ptr_type(#function, void *value, type);
+#else
+#define will_return_ptr_type(function, value, type) \
+    _will_return(#function,                         \
+                 __FILE__,                          \
+                 __LINE__,                          \
+                 #type,                             \
+                 cast_ptr_to_cmocka_value(value),   \
+                 1)
 #endif
 
 #ifdef DOXYGEN
@@ -574,8 +628,12 @@ void will_return_ptr(#function, void *value);
 void will_return_ptr_count(#function, void *value, int count);
 #else
 #define will_return_ptr_count(function, value, count) \
-    _will_return(#function, __FILE__, __LINE__, \
-                 cast_ptr_to_cmocka_value(value), count)
+    _will_return(#function,                           \
+                 __FILE__,                            \
+                 __LINE__,                            \
+                 NULL,                                \
+                 cast_ptr_to_cmocka_value(value),     \
+                 count)
 #endif
 
 #ifdef DOXYGEN
@@ -2726,8 +2784,10 @@ extern jmp_buf global_expect_assert_env;
 extern const char * global_last_failed_assert;
 
 /* Retrieves a value for the given function, as set by "will_return". */
-CMockaValueData
-_mock(const char *const function, const char *const file, const int line);
+CMockaValueData _mock(const char *const function,
+                      const char *const file,
+                      const int line,
+                      const char *name);
 
 void _expect_function_call(
     const char * const function_name,
@@ -2800,8 +2860,11 @@ void _check_expected(
     const char * const function_name, const char * const parameter_name,
     const char* file, const int line, const CMockaValueData value);
 
-void _will_return(const char * const function_name, const char * const file,
-                  const int line, const CMockaValueData value,
+void _will_return(const char *const function_name,
+                  const char *const file,
+                  const int line,
+                  const char *name,
+                  const CMockaValueData value,
                   const int count);
 void _assert_true(const uintmax_t result,
                   const char* const expression,
