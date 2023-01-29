@@ -732,12 +732,7 @@ void will_return_ptr_maybe(#function, void *value);
  * @{
  */
 
-/*
- * Add a custom parameter checking function.  If the event parameter is NULL
- * the event structure is allocated internally by this function.  If event
- * parameter is provided it must be allocated on the heap and doesn't need to
- * be deallocated by the caller.
- */
+
 #ifdef DOXYGEN
 /**
  * @brief Add a custom parameter checking function.
@@ -755,19 +750,17 @@ void will_return_ptr_maybe(#function, void *value);
  *
  * @param[in]  check_data       The data to pass to the check function.
  */
-void expect_check(#function, #parameter, #check_function, CMockaValueData check_data);
+void expect_check(function,
+                  parameter,
+                  CheckParameterValue check_function,
+                  CMockaValueData check_data);
 #else
 #define expect_check(function, parameter, check_function, check_data) \
     _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
                   check_data, NULL, 1)
 #endif
 
-/*
- * Add a custom parameter checking function.  If the event parameter is NULL
- * the event structure is allocated internally by this function.  If event
- * parameter is provided it must be allocated on the heap and doesn't need to
- * be deallocated by the caller.
- */
+
 #ifdef DOXYGEN
 /**
  * @brief Add a custom parameter checking function.
@@ -793,7 +786,11 @@ void expect_check(#function, #parameter, #check_function, CMockaValueData check_
  *                    calls to check_expected() is accepted, including zero.
  *
  */
-void expect_check_count(#function, #parameter, #check_function, CMockaValueData check_data, size_t count);
+void expect_check_count(function,
+                        parameter,
+                        CheckParameterValue check_function,
+                        CMockaValueData check_data,
+                        size_t count);
 #else
 #define expect_check_count(function, parameter, check_function, check_data, count) \
     _expect_check(#function, #parameter, __FILE__, __LINE__, check_function, \
