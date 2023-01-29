@@ -26,7 +26,7 @@
 static char *calc_uptime(void)
 {
     uint32_t up_minutes, up_hours, up_days, up_weeks, up_years;
-    ssize_t pos = 0;
+    int pos = 0;
     size_t comma = 0;
     double uptime_secs, idle_secs;
     char buf[1024] = {0};
