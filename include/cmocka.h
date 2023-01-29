@@ -2449,18 +2449,18 @@ void expect_assert_failure(function fn_call);
  * undefined behavior.
  */
 typedef union {
+    /** Holds signed integral types */
+    intmax_t int_val;
     /** Holds integral types */
     uintmax_t uint_val;
+    /** Holds real/floating-pointing types*/
+    double real_val; // TODO: Should we use `long double` instead
     /** Holds pointer data */
     const void *ptr;
     // The following aren't used by CMocka currently, but are added to avoid
     // breaking ABI compatibility in the future
     /** Holds function pointer data */
     void *(*func)(void);
-    /** Holds signed integral types */
-    intmax_t int_val;
-    /** Holds real/floating-pointing types*/
-    double real_val; // TODO: Should we use `long double` instead
 } CMockaValueData;
 
 /* Function prototype for setup, test and teardown functions. */
