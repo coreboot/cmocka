@@ -33,6 +33,12 @@ target_compile_options(cmocka
                        PRIVATE
                            ${DEFAULT_C_COMPILE_FLAGS}
                            -DHAVE_CONFIG_H)
+
+target_compile_definitions(cmocka
+                           PRIVATE
+                               _GNU_SOURCE
+                               _XOPEN_SOURCE=700)
+
 if (CMOCKA_PLATFORM_INCLUDE)
     target_compile_options(cmocka
                            PRIVATE
@@ -80,6 +86,12 @@ if (UNIT_TESTING)
                            PRIVATE
                                ${DEFAULT_C_COMPILE_FLAGS}
                                -DHAVE_CONFIG_H)
+
+    target_compile_definitions(cmocka-static
+                               PRIVATE
+                                   _GNU_SOURCE
+                                   _XOPEN_SOURCE=700)
+
     if (CMOCKA_PLATFORM_INCLUDE)
         target_compile_options(cmocka-static
                                PRIVATE
