@@ -143,7 +143,7 @@ set_tests_properties(
     test_returns_fail
         PROPERTIES
         PASS_REGULAR_EXPRESSION
-        "\\[  FAILED  \\] alloc_tests: 3 test"
+        "\\[  FAILED  \\] will_return_mock_tests: 6 test"
 )
 
 # test_exception_handler

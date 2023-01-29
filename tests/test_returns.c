@@ -35,6 +35,12 @@ double mock_function_float(void)
     return mock_float();
 }
 
+const char *mock_function_ptr(void);
+const char *mock_function_ptr(void)
+{
+    return mock_ptr_type(const char *);
+}
+
 void mock_function_call_times(size_t times, int expectedValue)
 {
     size_t i;
@@ -100,6 +106,14 @@ static void test_will_return_float(void **state)
     assert_float_equal(value, mock_function_float(), 0.0);
 }
 
+static void test_will_return_ptr(void **state)
+{
+    const char *value = "What a Wurst!";
+
+    will_return_ptr_type(mock_function_ptr, value, const char *);
+    assert_string_equal(value, mock_function_ptr());
+}
+
 int main(int argc, char **argv) {
     const struct CMUnitTest alloc_tests[] = {
         cmocka_unit_test(test_will_return_maybe_for_no_calls),
@@ -108,6 +122,7 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_int),
         cmocka_unit_test(test_will_return_uint),
         cmocka_unit_test(test_will_return_float),
+        cmocka_unit_test(test_will_return_ptr),
     };
 
     (void)argc;

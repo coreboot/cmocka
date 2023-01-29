@@ -17,6 +17,19 @@ int mock_function(void)
   return (int) mock();
 }
 
+uintmax_t mock_function_uint(void);
+uintmax_t mock_function_uint(void)
+{
+    return mock_uint();
+}
+
+void *mock_function_ptr(void);
+void *mock_function_ptr(void)
+{
+    return mock_ptr_type(void *);
+}
+
+
 void mock_function_call_times(size_t times, int expectedValue)
 {
     size_t i;
@@ -64,15 +77,36 @@ static int teardown(void **state) {
     return 0;
 }
 
-int main(int argc, char **argv) {
-    const struct CMUnitTest alloc_tests[] = {
-        cmocka_unit_test_teardown(test_will_return_fails_for_no_calls, teardown)
-        ,cmocka_unit_test_teardown(test_will_return_count_fails_for_unreturned_items, teardown)
-        ,cmocka_unit_test_teardown(test_will_return_always_fails_for_no_calls, teardown)
+static void test_will_return_int_type_mismatch(void **state)
+{
+    intmax_t value = rand();
+
+    (void) state;
+
+    will_return_int(mock_function_uint, value);
+    mock_function_uint();
+}
+
+static void test_will_return_ptr_type_mismatch(void **state)
+{
+    const char *value = "What a Wurst!";
+
+    (void) state;
+
+    will_return_ptr_type(mock_function_uint, value, const char *);
+    mock_function_ptr();
+}
+
+int main(void)
+{
+    const struct CMUnitTest will_return_mock_tests[] = {
+        cmocka_unit_test_teardown(test_will_return_fails_for_no_calls, teardown),
+        cmocka_unit_test_teardown(test_will_return_count_fails_for_unreturned_items, teardown),
+        cmocka_unit_test_teardown(test_will_return_always_fails_for_no_calls, teardown),
+        cmocka_unit_test_teardown(test_will_return_fails_for_no_calls, teardown),
+        cmocka_unit_test(test_will_return_int_type_mismatch),
+        cmocka_unit_test(test_will_return_ptr_type_mismatch),
     };
 
-    (void)argc;
-    (void)argv;
-
-    return cmocka_run_group_tests(alloc_tests, NULL, NULL);
+    return cmocka_run_group_tests(will_return_mock_tests, NULL, NULL);
 }
