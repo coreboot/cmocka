@@ -82,7 +82,7 @@ behaviour and state. The object can call some functions or act on different
 input (abort a test if it is wrong). The test driver injects what it expects
 the mock object to return. CMocka provides an API to easily mock code.
 
-<a href="https://lwn.net/Articles/558106/">Learn more ...</a>
+Check out the examples <a href="https://git.cryptomilk.org/projects/cmocka.git/tree/example/mock">here</a>.
 
 @section main-embedded Embedded platforms
 
