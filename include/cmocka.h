@@ -146,25 +146,25 @@ int __stdcall IsDebuggerPresent();
  *
  * <ul>
  * <li><strong>will_return(function, value)</strong> - The will_return() macro
- * pushes a value onto a stack of mock values. This macro is intended to be
+ * pushes a value onto a queue of mock values. This macro is intended to be
  * used by the unit test itself, while programming the behaviour of the mocked
  * object.</li>
  *
- * <li><strong>mock()</strong> - the mock macro pops a value from a stack of
+ * <li><strong>mock()</strong> - the mock macro pops a value from a queue of
  * test values. The user of the mock() macro is the mocked object that uses it
  * to learn how it should behave.</li>
  * </ul>
  *
  * Because the will_return() and mock() are intended to be used in pairs, the
  * cmocka library would fail the test if there are more values pushed onto the
- * stack using will_return() than consumed with mock() and vice-versa.
+ * queue using will_return() than consumed with mock() and vice-versa.
  *
  * The following unit test stub illustrates how would a unit test instruct the
  * mock object to return a particular value:
  *
  * @code
- * will_return_ptr(chef_cook, "hotdog");
- * will_return(chef_cook, 0);
+ * will_return_ptr_type(chef_cook, "hotdog", const char *);
+ * will_return_int(chef_cook, 0);
  * @endcode
  *
  * Now the mock object can check if the parameter it received is the parameter
@@ -174,7 +174,7 @@ int __stdcall IsDebuggerPresent();
  * int chef_cook(const char *order, char **dish_out)
  * {
  *     *dish_out = mock_ptr_type(char *); // "hotdog"
- *     int return_code = mock(); // 0
+ *     int return_code = mock_int(); // 0
  *     return return_code;
  * }
  * @endcode
@@ -202,10 +202,11 @@ uintmax_t mock(void);
 
 #ifdef DOXYGEN
 /**
- * @brief Retrieve a typed return value of the current function.
+ * @brief Retrieve a value of the current function and cast it to given type.
  *
  * The value would be casted to type internally to avoid having the
- * caller to do the cast manually.
+ * caller to do the cast manually. Type saftey checks are disabled with that
+ * functoin.
  *
  * @param[in]  #type  The expected type of the return value
  *
@@ -218,8 +219,6 @@ uintmax_t mock(void);
  * @endcode
  *
  * @see will_return()
- * @see mock()
- * @see mock_ptr_type()
  */
 #type mock_type(#type);
 #else
@@ -230,22 +229,15 @@ uintmax_t mock(void);
 /**
  * @brief Retrieve an integer return value of the current function.
  *
- * The value would be casted to type internally to avoid having the
- * caller to do the cast manually.
- *
- * @param[in]  #type  The expected type of the return value
- *
  * @return The value which was stored to return by this function.
  *
  * @code
- * int param;
+ * intmax_t param;
  *
  * param = mock_int();
  * @endcode
  *
- * @see will_return()
- * @see mock()
- * @see mock_ptr_type()
+ * @see will_return_int()
  */
 intmax_t mock_int();
 #else
@@ -259,6 +251,12 @@ intmax_t mock_int();
  * @brief Retrieve an unsinged integer return value of the current function.
  *
  * @return The value which was stored to return by this function.
+ *
+ * @code
+ * uintmax_t param;
+ *
+ * param = mock_uint();
+ * @endcode
  *
  * @see will_return_uint()
  */
@@ -300,7 +298,6 @@ double mock_float(void);
  * @endcode
  *
  * @see will_return_ptr_type()
- * @see mock_ptr_type()
  */
 type mock_ptr_type(#type);
 #else
@@ -334,8 +331,14 @@ type mock_ptr_type(#type);
  * @see mock()
  * @see mock_int()
  * @see mock_uint()
- * @see mock_double()
+ * @see mock_float()
+ * @see will_return_int()
+ * @see will_return_uint()
+ * @see will_return_float()
+ * @see will_return_ptr_type()
  * @see will_return_count()
+ * @see will_return_always()
+ * @see will_return_ptr_always()
  */
 void will_return(#function, uintmax_t value);
 #else
@@ -371,7 +374,6 @@ void will_return(#function, uintmax_t value);
  * @endcode
  *
  * @see mock_int()
- * @see will_return_count()
  */
 void will_return_int(#function, intmax_t value);
 #else
@@ -444,7 +446,6 @@ void will_return_uint(#function, uintmax_t value);
  * @endcode
  *
  * @see mock_float()
- * @see will_return_count()
  */
 void will_return_float(#function, intmax_t value);
 #else
