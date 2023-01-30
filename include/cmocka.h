@@ -152,6 +152,28 @@ int __stdcall IsDebuggerPresent();
 #define CMOCKA_NORETURN
 #endif
 
+/**
+ * @def CMOCKA_NO_ACCESS_ATTRIBUTE
+ *
+ * Function attribute that tells the compiler that we never access the value
+ * of a/b, just the pointer address.
+ *
+ * Without this, newer compilers like GCC-12 will print
+ * `-Wmaybe-uninitialized` warnings.
+ *
+ * @see
+ * https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Common-Function-Attributes.html#Common-Function-Attributes
+ */
+#ifdef __has_attribute
+#if __has_attribute(access)
+#define CMOCKA_NO_ACCESS_ATTRIBUTE \
+    __attribute__((access(none, 1), access(none, 2)))
+#endif
+#endif
+#ifndef CMOCKA_NO_ACCESS_ATTRIBUTE
+#define CMOCKA_NO_ACCESS_ATTRIBUTE
+#endif
+
 #define WILL_RETURN_ALWAYS -1
 #define WILL_RETURN_ONCE -2
 
@@ -2923,10 +2945,12 @@ void _assert_uint_not_equal(const uintmax_t a,
                             const uintmax_t b,
                             const char * const file,
                             const int line);
+CMOCKA_NO_ACCESS_ATTRIBUTE
 void _assert_ptr_equal(const void *a,
                        const void *b,
                        const char *const file,
                        const int line);
+CMOCKA_NO_ACCESS_ATTRIBUTE
 void _assert_ptr_not_equal(const void *a,
                            const void *b,
                            const char *const file,

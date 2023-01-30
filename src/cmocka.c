@@ -1365,6 +1365,7 @@ static bool int_values_not_equal_display_error(const intmax_t left,
 
 /* Returns 1 if the specified pointers are equal.  If the pointers are not equal
  * an error is displayed and 0 is returned. */
+CMOCKA_NO_ACCESS_ATTRIBUTE
 static bool ptr_values_equal_display_error(const void *left, const void *right)
 {
     const bool equal = left == right;
@@ -1376,6 +1377,7 @@ static bool ptr_values_equal_display_error(const void *left, const void *right)
 
 /* Returns 1 if the specified pointers are equal.  If the pointers are not equal
  * an error is displayed and 0 is returned. */
+CMOCKA_NO_ACCESS_ATTRIBUTE
 static bool ptr_values_not_equal_display_error(const void *left,
                                                const void *right)
 {
