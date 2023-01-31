@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <cmocka.h>
 #include <cmocka_private.h>
+#include <stdio.h>
+#include <string.h>
+
 
 static void mock_test_a(int value)
 {
@@ -68,7 +71,8 @@ static void mock_test_ptr(const void *value)
 static void test_expect_string(void **state)
 {
     (void)state; /* unused */
-    const char string[] = "hello world";
+    char string[64];
+    snprintf(string, sizeof(string), "hello world");
     assert_ptr_not_equal(string,
                          "hello world"); // should be different memory addresses
 
@@ -78,17 +82,18 @@ static void test_expect_string(void **state)
     expect_not_string(mock_test_ptr, value, string);
     mock_test_ptr("hello world with extra bytes");
 
-    expect_memory(mock_test_ptr, value, string, sizeof(string));
+    expect_memory(mock_test_ptr, value, string, strlen(string));
     mock_test_ptr("hello world");
 
-    expect_not_memory(mock_test_ptr, value, string, sizeof(string));
+    expect_not_memory(mock_test_ptr, value, string, strlen(string));
     mock_test_ptr("different data");
 }
 
 static void test_expect_string_count_always(void **state)
 {
     (void)state; /* unused */
-    const char string[] = "hello world";
+    char string[64];
+    snprintf(string, sizeof(string), "hello world");
     assert_ptr_not_equal(string,
                          "hello world"); // should be different memory addresses
 
@@ -100,7 +105,8 @@ static void test_expect_string_count_always(void **state)
 static void test_expect_string_count_maybe_1(void **state)
 {
     (void)state; /* unused */
-    const char string[] = "hello world";
+    char string[64];
+    snprintf(string, sizeof(string), "hello world");
     assert_ptr_not_equal(string,
                          "hello world"); // should be different memory addresses
 
