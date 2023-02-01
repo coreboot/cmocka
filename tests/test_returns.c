@@ -84,6 +84,8 @@ static void test_will_return_int(void **state)
 {
     intmax_t value;
 
+    (void)state; /* unused */
+
     value = rand();
     will_return_int(mock_function_int, value);
     assert_int_equal(value, mock_function_int());
@@ -92,6 +94,8 @@ static void test_will_return_int(void **state)
 static void test_will_return_uint(void **state)
 {
     uintmax_t value;
+
+    (void)state; /* unused */
 
     value = rand();
     will_return_uint(mock_function_uint, value);
@@ -102,6 +106,8 @@ static void test_will_return_float(void **state)
 {
     double value = 1.0;
 
+    (void)state; /* unused */
+
     will_return_float(mock_function_float, value);
     assert_float_equal(value, mock_function_float(), 0.0);
 }
@@ -109,6 +115,8 @@ static void test_will_return_float(void **state)
 static void test_will_return_ptr(void **state)
 {
     const char *value = "What a Wurst!";
+
+    (void)state; /* unused */
 
     will_return_ptr_type(mock_function_ptr, value, const char *);
     assert_string_equal(value, mock_function_ptr());
