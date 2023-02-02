@@ -1,3 +1,25 @@
+/*
+ * Modelling file for Coverity Scan
+ *
+ * This is a modeling file for Coverity Scan. Modeling helps to avoid false
+ * positives.
+ *
+ * - A model file can't import any header files.
+ * - Therefore only some built-in primitives like int, char and void are
+ *   available but not NULL etc.
+ * - Modeling doesn't need full structs and typedefs. Rudimentary structs
+ *   and similar types are sufficient.
+ * - An uninitialized local pointer is not an error. It signifies that the
+ *   variable could be either NULL or have some data.
+ *
+ * Coverity Scan doesn't pick up modifications automatically. The model file
+ * must be uploaded by an admin.
+ */
+
+typedef long long intmax_t;
+typedef unsigned long long uintmax_t;
+typedef unsigned long long size_t;
+
 void _assert_true(const uintmax_t result,
                   const char* const expression,
                   const char * const file, const int line)
