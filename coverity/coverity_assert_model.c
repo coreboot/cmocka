@@ -18,6 +18,7 @@
  * See also https://scan.coverity.com/models
  */
 
+typedef int int32_t;
 typedef long long intmax_t;
 typedef unsigned long long uintmax_t;
 /* size_t is already defined by Coverity */
@@ -70,13 +71,56 @@ void _assert_uint_not_equal(const uintmax_t a,
 }
 
 void _assert_return_code(const intmax_t result,
-                         size_t rlen,
-                         const uintmax_t error,
+                         const int32_t error,
                          const char * const expression,
                          const char * const file,
                          const int line)
 {
-    if (result != 0) {
+    if (result < 0) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_float_equal(const float a,
+                         const float b,
+                         const float epsilon,
+                         const char * const file,
+                         const int line)
+{
+    if (a != b) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_float_not_equal(const float a,
+                             const float b,
+                             const float epsilon,
+                             const char * const file,
+                             const int line)
+{
+    if (a == b) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_double_equal(const double a,
+                          const double b,
+                          const double epsilon,
+                          const char * const file,
+                          const int line)
+{
+    if (a != b) {
+        __coverity_panic__();
+    }
+}
+
+void _assert_double_not_equal(const double a,
+                              const double b,
+                              const double epsilon,
+                              const char * const file,
+                              const int line)
+{
+    if (a != b) {
         __coverity_panic__();
     }
 }
