@@ -20,7 +20,7 @@
 
 typedef long long intmax_t;
 typedef unsigned long long uintmax_t;
-typedef unsigned long long size_t;
+/* size_t is already defined by Coverity */
 
 void _assert_true(const uintmax_t result,
                   const char* const expression,
