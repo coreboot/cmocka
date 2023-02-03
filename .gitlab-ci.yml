@@ -74,6 +74,7 @@ fedora/build:
   stage: build
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
   script:
+    - pushd coverity && make && popd
     - mkdir -p obj && cd obj && cmake
       -DCMAKE_BUILD_TYPE=Release
       -DCMAKE_INSTALL_PREFIX=/tmp/cmocka
