@@ -16,7 +16,11 @@ set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 
 ### source generator
 set(CPACK_SOURCE_GENERATOR "TXZ")
-set(CPACK_SOURCE_IGNORE_FILES "~$;[.]swp$;/[.]svn/;/[.]git/;.gitignore;/obj*;tags;cscope.*;.ycm_extra_conf.pyc")
+set(CPACK_SOURCE_IGNORE_FILES "~$;[.]swp$;/[.]git;/[.]gitignore")
+string(APPEND CPACK_SOURCE_IGNORE_FILES ";/build*;/obj*")
+string(APPEND CPACK_SOURCE_IGNORE_FILES ";/tags;/cscope\.*")
+string(APPEND CPACK_SOURCE_IGNORE_FILES ";/[.]ycm_extra_conf.pyc;")
+string(APPEND CPACK_SOURCE_IGNORE_FILES ";/[.]clangd;/[.]cache;/compile_commands.json")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
 
 if (WIN32)
