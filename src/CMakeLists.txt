@@ -60,13 +60,13 @@ set_target_properties(cmocka PROPERTIES
 add_library(cmocka::cmocka ALIAS cmocka)
 
 install(TARGETS cmocka
-        EXPORT cmocka-config
+        EXPORT cmocka-targets
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
         COMPONENT ${PROJECT_NAME})
 
-install(EXPORT cmocka-config
+install(EXPORT cmocka-targets
         NAMESPACE cmocka::
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cmocka)
 

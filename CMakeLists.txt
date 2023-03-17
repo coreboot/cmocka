@@ -77,11 +77,19 @@ install(
     pkgconfig
 )
 
+configure_package_config_file(cmocka-config.cmake.in
+    "${CMAKE_CURRENT_BINARY_DIR}/cmocka-config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/cmocka"
+    NO_SET_AND_CHECK_MACRO
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
 write_basic_package_version_file(${PROJECT_NAME}-config-version.cmake
                                  COMPATIBILITY
                                      AnyNewerVersion)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/cmocka-config.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config-version.cmake"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
         COMPONENT devel)
 
