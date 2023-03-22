@@ -441,8 +441,6 @@ ubuntu/x86_64:
     paths:
       - obj/
   before_script:
-    - choco install --no-progress -y cmake
-    - $env:Path += ';C:\Program Files\CMake\bin'
     - If (!(test-path .vcpkg\archives)) { mkdir -p .vcpkg\archives }
     - mkdir -p obj; if ($?) {cd obj}; if (! $?) {exit 1}
     - cmake
