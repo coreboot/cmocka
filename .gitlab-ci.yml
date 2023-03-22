@@ -196,6 +196,30 @@ fedora/csbuild:
     paths:
       - obj-csbuild/
 
+fedora/coverage:
+  stage: analysis
+  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$FEDORA_BUILD
+  script:
+    - mkdir -p obj && cd obj && cmake
+      -DCMAKE_BUILD_TYPE=Profiling
+      -DCMAKE_INSTALL_PREFIX=/tmp/cmocka
+      -DPICKY_DEVELOPER=ON
+      -DUNIT_TESTING=ON
+      .. &&
+      make -j$(nproc) &&
+      make ExperimentalTest &&
+      make ExperimentalCoverage
+  coverage: '/Percentage Coverage: \d+.\d+%/'
+  tags:
+    - shared
+  except:
+    - tags
+  artifacts:
+    expire_in: 1 week
+    when: on_failure
+    paths:
+      - obj/
+
 freebsd/x86_64:
   stage: test
   image:
