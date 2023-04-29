@@ -2998,6 +2998,16 @@ enum cm_message_output {
     CM_OUTPUT_XML = 8,
 };
 
+#ifdef DOXYGEN
+/**
+ * @deprecated Use cmocka_print_error()
+ */
+void cm_print_error(const char* const format, ...);
+#else
+#define cm_print_error(format, ...) \
+    cmocka_print_error(format, ##__VA_ARGS__)
+#endif
+
 /**
  * @brief Print error message using the cmocka output format.
  *
