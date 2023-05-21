@@ -12,13 +12,6 @@ set(cmocka_SRCS
     cmocka.c
 )
 
-if (WIN32)
-    set(cmocka_SRCS
-        ${cmocka_SRCS}
-        cmocka.def
-    )
-endif (WIN32)
-
 add_library(cmocka ${cmocka_SRCS})
 
 target_include_directories(cmocka
@@ -59,6 +52,8 @@ set_target_properties(cmocka PROPERTIES
                       C_STANDARD_REQUIRED   ON
                       # cmocka uses POSIX-2008 C extensions
                       C_EXTENSIONS          ON
+                      # automatically export all global objects into DLL on Windows
+                      WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 add_library(cmocka::cmocka ALIAS cmocka)
