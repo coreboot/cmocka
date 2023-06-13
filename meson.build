@@ -24,6 +24,11 @@ foreach func: ['calloc', 'exit', 'fprintf', 'free', 'longjmp', 'siglongjmp',
   conf.set('HAVE_@0@'.format(func.to_upper()), cc.has_function(func))
 endforeach
 
+install_lib = true
+if meson.is_subproject()
+  install_lib = false
+endif
+
 code = '__thread int tls;'
 conf.set('HAVE_GCC_THREAD_LOCAL_STORAGE', cc.compiles(code, name : '__thread'))
 
@@ -37,7 +42,7 @@ cmocka_includes = [include_directories('.'), include_directories('include')]
 libcmocka = library('cmocka', 'src/cmocka.c',
                     c_args : ['-DHAVE_CONFIG_H'],
                     include_directories : cmocka_includes,
-                    install : meson.is_subproject(),
+                    install : install_lib,
                     override_options : ['c_std=gnu99'],
                     dependencies : [cc.find_library('rt', required : false)])
 
