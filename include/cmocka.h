@@ -20,6 +20,14 @@
 #ifdef _WIN32
 # ifdef _MSC_VER
 
+#  ifndef CMOCKA_STATIC
+#   ifdef CMOCKA_EXPORTS
+#define CMOCKA_DLLEXTERN __declspec(dllexport)
+#   else
+#define CMOCKA_DLLEXTERN __declspec(dllimport)
+#   endif /* CMOCKA_EXPORTS */
+#  endif /* ndef CMOCKA_STATIC */
+
 #define __func__ __FUNCTION__
 
 # ifndef inline
@@ -37,6 +45,18 @@ int __stdcall IsDebuggerPresent();
 #  endif  /* _MSC_VER < 1500 */
 # endif /* _MSC_VER */
 #endif  /* _WIN32 */
+
+/**
+ * @def CMOCKA_DLLEXTERN
+ * This attribute is needed when dynamically linking to a data object in a DLL.
+ * It's optional (but increases performance) for dynamically linking to
+ * functions in a DLL.
+ * @see
+ * https://github.com/MicrosoftDocs/cpp-docs/blob/bd5a4fbd8ea3dd47b5c7a228c266cdddcaca0e00/docs/cpp/dllexport-dllimport.md
+ */
+#ifndef CMOCKA_DLLEXTERN
+#define CMOCKA_DLLEXTERN // only needed on MSVC compiler when using a DLL
+#endif /* ndef CMOCKA_DLLEXTERN */
 
 /**
  * @defgroup cmocka The CMocka API
@@ -2780,9 +2800,9 @@ typedef struct CheckParameterEvent {
 } CheckParameterEvent;
 
 /* Used by expect_assert_failure() and mock_assert(). */
-extern int global_expecting_assert;
-extern jmp_buf global_expect_assert_env;
-extern const char * global_last_failed_assert;
+CMOCKA_DLLEXTERN extern int global_expecting_assert;
+CMOCKA_DLLEXTERN extern jmp_buf global_expect_assert_env;
+CMOCKA_DLLEXTERN extern const char * global_last_failed_assert;
 
 /* Retrieves a value for the given function, as set by "will_return". */
 CMockaValueData _mock(const char *const function,

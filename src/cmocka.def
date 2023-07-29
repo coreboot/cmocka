@@ -52,9 +52,9 @@ EXPORTS
     cmocka_set_message_output
     cmocka_set_test_filter
     cmocka_set_skip_filter
-    global_expect_assert_env
-    global_expecting_assert
-    global_last_failed_assert
+    global_expect_assert_env DATA
+    global_expecting_assert DATA
+    global_last_failed_assert DATA
     mock_assert
     print_error
     print_message

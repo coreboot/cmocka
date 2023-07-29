@@ -37,7 +37,11 @@ target_compile_options(cmocka
 target_compile_definitions(cmocka
                            PRIVATE
                                _GNU_SOURCE
-                               _XOPEN_SOURCE=700)
+                               _XOPEN_SOURCE=700
+                           PUBLIC
+                               # hides a warning on Windows when using static lib
+                               "$<$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>:CMOCKA_STATIC>"
+                           )
 
 if (CMOCKA_PLATFORM_INCLUDE)
     target_compile_options(cmocka
@@ -90,7 +94,10 @@ if (UNIT_TESTING)
     target_compile_definitions(cmocka-static
                                PRIVATE
                                    _GNU_SOURCE
-                                   _XOPEN_SOURCE=700)
+                                   _XOPEN_SOURCE=700
+                               PUBLIC
+                                   CMOCKA_STATIC # hides a warning on Windows
+                              )
 
     if (CMOCKA_PLATFORM_INCLUDE)
         target_compile_options(cmocka-static
