@@ -71,12 +71,6 @@
 #  endif /* HAVE__VSNPRINTF_S */
 # endif /* _MSC_VER */
 
-/*
- * Backwards compatibility with headers shipped with Visual Studio 2005 and
- * earlier.
- */
-WINBASEAPI BOOL WINAPI IsDebuggerPresent(VOID);
-
 #ifndef PRIdS
 # define PRIdS "Id"
 #endif
