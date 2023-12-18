@@ -2040,7 +2040,17 @@ void _assert_true(const uintmax_t result,
                   const char * const expression,
                   const char * const file, const int line) {
     if (!result) {
-        cmocka_print_error("%s\n", expression);
+        cmocka_print_error("%s is not true\n", expression);
+        _fail(file, line);
+    }
+}
+
+void _assert_false(const uintmax_t result,
+                   const char * const expression,
+                   const char * const file, const int line)
+{
+    if (result) {
+        cmocka_print_error("%s is not false\n", expression);
         _fail(file, line);
     }
 }

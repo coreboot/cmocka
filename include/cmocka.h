@@ -1482,8 +1482,8 @@ void assert_true(scalar expression);
  */
 void assert_false(scalar expression);
 #else
-#define assert_false(c) _assert_true(!(cast_to_uintmax_type(c)), #c, \
-                                     __FILE__, __LINE__)
+#define assert_false(c) _assert_false(cast_to_uintmax_type(c), #c, \
+                                      __FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
@@ -2912,6 +2912,9 @@ void _will_return(const char *const function_name,
 void _assert_true(const uintmax_t result,
                   const char* const expression,
                   const char * const file, const int line);
+void _assert_false(const uintmax_t result,
+                   const char * const expression,
+                   const char * const file, const int line);
 void _assert_return_code(const intmax_t result,
                          const int32_t error,
                          const char * const expression,
