@@ -28,6 +28,8 @@ set(CMOCKA_TESTS
     test_double_macros
     test_assert_true
     test_assert_true_fail
+    test_assert_false
+    test_assert_false_fail
     test_assert_macros
     test_assert_macros_fail
     test_assert_ptr
@@ -92,6 +94,22 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "x != 10 is not true"
+)
+
+# test_assert_false
+set_tests_properties(
+    test_assert_false
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  PASSED  \\] 1 test\\(s\\)."
+)
+
+# test_assert_false_fail
+set_tests_properties(
+    test_assert_false_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "x == 10 is not false"
 )
 
 # test_assert_macros_fail
