@@ -26,6 +26,8 @@ set(CMOCKA_TESTS
     test_groups
     test_float_macros
     test_double_macros
+    test_assert_true
+    test_assert_true_fail
     test_assert_macros
     test_assert_macros_fail
     test_assert_ptr
@@ -74,6 +76,22 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  SKIPPED \\] test_check_skip"
+)
+
+# test_assert_true
+set_tests_properties(
+    test_assert_true
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  PASSED  \\] 1 test\\(s\\)."
+)
+
+# test_assert_true_fail
+set_tests_properties(
+    test_assert_true_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "x != 10 is not true"
 )
 
 # test_assert_macros_fail
