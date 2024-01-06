@@ -2262,10 +2262,14 @@ void _assert_not_in_set(const uintmax_t value,
                         const uintmax_t values[],
                         const size_t number_of_values, const char* const file,
                         const int line) {
-    CheckIntegerSet check_integer_set;
-    check_integer_set.set = values;
-    check_integer_set.size_of_set = number_of_values;
-    if (!value_in_set_display_error(value, &check_integer_set, 1)) {
+    struct check_unsigned_integer_set check_uint_set = {
+        .set = values,
+        .size_of_set = number_of_values,
+    };
+    bool ok;
+
+    ok = uint_value_in_set_display_error(value, &check_uint_set, true);
+    if (!ok) {
         _fail(file, line);
     }
 }
