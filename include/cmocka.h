@@ -843,9 +843,19 @@ void expect_check_count(function,
                         CMockaValueData check_data,
                         size_t count);
 #else
-#define expect_check_count(function, parameter, check_function, check_data, count) \
-    _expect_check(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, check_function, \
-                  check_data, NULL, count)
+#define expect_check_count(function,          \
+                           parameter,         \
+                           check_function,    \
+                           check_data,        \
+                           count)             \
+    _expect_check(cmocka_tostring(function),  \
+                  cmocka_tostring(parameter), \
+                  __FILE__,                   \
+                  __LINE__,                   \
+                  check_function,             \
+                  check_data,                 \
+                  NULL,                       \
+                  count)
 #endif
 
 #ifdef DOXYGEN
