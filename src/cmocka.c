@@ -1734,14 +1734,14 @@ static void expect_set(
         check_data, &check_integer_set->event, count);
 }
 
-static void expect_int_in_set(const char *const function,
-                              const char *const parameter,
-                              const char *const file,
-                              const size_t line,
-                              const intmax_t values[],
-                              const size_t number_of_values,
-                              const CheckParameterValue check_function,
-                              const size_t count)
+static void __expect_int_in_set(const char *const function,
+                                const char *const parameter,
+                                const char *const file,
+                                const size_t line,
+                                const intmax_t values[],
+                                const size_t number_of_values,
+                                const CheckParameterValue check_function,
+                                const size_t count)
 {
     struct check_integer_set *const check_integer_set =
         calloc(number_of_values,
@@ -1786,14 +1786,14 @@ void _expect_int_in_set(const char *const function,
                         const size_t number_of_values,
                         const size_t count)
 {
-    expect_int_in_set(function,
-                      parameter,
-                      file,
-                      line,
-                      values,
-                      number_of_values,
-                      check_int_in_set,
-                      count);
+    __expect_int_in_set(function,
+                        parameter,
+                        file,
+                        line,
+                        values,
+                        number_of_values,
+                        check_int_in_set,
+                        count);
 }
 
 /* Add an event to check whether a value isn't in a set. */
