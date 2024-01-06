@@ -1150,6 +1150,7 @@ void _expect_check(
     CheckParameterEvent * const check =
         event ? event : (CheckParameterEvent*)malloc(sizeof(*check));
     const char* symbols[] = {function, parameter};
+    assert_non_null(check);
     check->parameter_name = parameter;
     check->check_value = check_function;
     check->check_value_data = check_data;
