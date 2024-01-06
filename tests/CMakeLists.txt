@@ -18,6 +18,7 @@ endif()
 set(CMOCKA_TESTS
     test_alloc
     test_expect_check
+    test_expect_u_int_in_set
     test_expect_check_fail
     test_group_setup_assert
     test_group_setup_fail
