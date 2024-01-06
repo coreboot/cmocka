@@ -1701,6 +1701,15 @@ static int check_int_in_set(const CMockaValueData value,
         0);
 }
 
+static int check_uint_in_set(const CMockaValueData value,
+                             const CMockaValueData check_value_data)
+{
+    return uint_value_in_set_display_error(
+        value.uint_val,
+        cast_cmocka_value_to_pointer(struct check_unsigned_integer_set *,
+                                     check_value_data),
+        0);
+}
 
 /* CheckParameterValue callback to check whether a value isn't within a set. */
 static int check_not_in_set(const CMockaValueData value,
@@ -1768,6 +1777,40 @@ static void __expect_int_in_set(const char *const function,
                   count);
 }
 
+static void __expect_uint_in_set(const char *const function,
+                                 const char *const parameter,
+                                 const char *const file,
+                                 const size_t line,
+                                 const uintmax_t values[],
+                                 const size_t number_of_values,
+                                 const CheckParameterValue check_function,
+                                 const size_t count)
+{
+    struct check_unsigned_integer_set *const check_uint_set =
+        calloc(number_of_values,
+               sizeof(struct check_integer_set) + sizeof(values[0]));
+    uintmax_t *const set = (uintmax_t *)(check_uint_set + 1);
+    declare_initialize_value_pointer_pointer(check_data, check_uint_set);
+
+    assert_non_null(check_uint_set);
+    assert_non_null(values);
+    assert_true(number_of_values);
+
+    memcpy(set, values, number_of_values * sizeof(values[0]));
+
+    check_uint_set->set = set;
+    check_uint_set->size_of_set = number_of_values;
+
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_function,
+                  check_data,
+                  &check_uint_set->event,
+                  count);
+}
+
 /* Add an event to check whether a value is in a set. */
 void _expect_in_set(
         const char* const function, const char* const parameter,
@@ -1794,6 +1837,24 @@ void _expect_int_in_set(const char *const function,
                         number_of_values,
                         check_int_in_set,
                         count);
+}
+
+void _expect_uint_in_set(const char *const function,
+                         const char *const parameter,
+                         const char *const file,
+                         const size_t line,
+                         const uintmax_t values[],
+                         const size_t number_of_values,
+                         const size_t count)
+{
+    __expect_uint_in_set(function,
+                         parameter,
+                         file,
+                         line,
+                         values,
+                         number_of_values,
+                         check_uint_in_set,
+                         count);
 }
 
 /* Add an event to check whether a value isn't in a set. */
