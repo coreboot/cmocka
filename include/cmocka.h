@@ -2868,6 +2868,14 @@ void _expect_in_set(
     const char* const function, const char* const parameter,
     const char* const file, const int line, const uintmax_t values[],
     const size_t number_of_values, const int count);
+void _expect_int_in_set(const char *const function,
+                        const char *const parameter,
+                        const char *const file,
+                        const size_t line,
+                        const intmax_t values[],
+                        const size_t number_of_values,
+                        const size_t count);
+
 void _expect_not_in_set(
     const char* const function, const char* const parameter,
     const char* const file, const int line, const uintmax_t values[],
