@@ -959,6 +959,37 @@ void expect_int_in_set_count(#function, #parameter, intmax_t value_array[], size
 
 #ifdef DOXYGEN
 /**
+ * @brief Add an event to check if the parameter value is part of the provided
+ *        unsigned integer array.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value_array[] The array to check for the value.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_int_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
+#else
+#define expect_uint_in_set_count(function, parameter, value_array, count) \
+    _expect_uint_in_set(cmocka_tostring(function),                        \
+                        cmocka_tostring(parameter),                       \
+                        __FILE__,                                         \
+                        __LINE__,                                         \
+                        value_array,                                      \
+                        sizeof(value_array) / sizeof((value_array)[0]),   \
+                        count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Add an event to check if the parameter value is not part of the
  *        provided array.
  *
