@@ -801,8 +801,14 @@ void expect_check(function,
                   CMockaValueData check_data);
 #else
 #define expect_check(function, parameter, check_function, check_data) \
-    _expect_check(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, check_function, \
-                  check_data, NULL, 1)
+    _expect_check(cmocka_tostring(function),                          \
+                  cmocka_tostring(parameter),                         \
+                  __FILE__,                                           \
+                  __LINE__,                                           \
+                  check_function,                                     \
+                  check_data,                                         \
+                  NULL,                                               \
+                  1)
 #endif
 
 
