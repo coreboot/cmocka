@@ -942,9 +942,14 @@ void expect_in_set(#function, #parameter, intmax_t value_array[]);
  */
 void expect_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
 #else
-#define expect_in_set_count(function, parameter, value_array, count) \
-    _expect_in_set(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, value_array, \
-                   sizeof(value_array) / sizeof((value_array)[0]), count)
+#define expect_in_set_count(function, parameter, value_array, count)    \
+    _expect_uint_in_set(cmocka_tostring(function),                      \
+                        cmocka_tostring(parameter),                     \
+                        __FILE__,                                       \
+                        __LINE__,                                       \
+                        value_array,                                    \
+                        sizeof(value_array) / sizeof((value_array)[0]), \
+                        count)
 #endif
 
 #ifdef DOXYGEN
@@ -2968,10 +2973,6 @@ void _expect_check(
     const CMockaValueData check_data, CheckParameterEvent * const event,
     const int count);
 
-void _expect_in_set(
-    const char* const function, const char* const parameter,
-    const char* const file, const int line, const uintmax_t values[],
-    const size_t number_of_values, const int count);
 void _expect_int_in_set(const char *const function,
                         const char *const parameter,
                         const char *const file,

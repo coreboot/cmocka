@@ -1685,13 +1685,6 @@ static int memory_not_equal_display_error(
 
 
 /* CheckParameterValue callback to check whether a value is within a set. */
-static int check_in_set(const CMockaValueData value,
-                        const CMockaValueData check_value_data) {
-    return value_in_set_display_error(value.uint_val,
-        cast_cmocka_value_to_pointer(CheckIntegerSet*,
-                                              check_value_data), 0);
-}
-
 static int check_int_in_set(const CMockaValueData value,
                             const CMockaValueData check_value_data) {
     return int_value_in_set_display_error(
@@ -1812,15 +1805,6 @@ static void __expect_uint_in_set(const char *const function,
 }
 
 /* Add an event to check whether a value is in a set. */
-void _expect_in_set(
-        const char* const function, const char* const parameter,
-        const char* const file, const int line,
-        const uintmax_t values[], const size_t number_of_values,
-        const int count) {
-    expect_set(function, parameter, file, line, values, number_of_values,
-               check_in_set, count);
-}
-
 void _expect_int_in_set(const char *const function,
                         const char *const parameter,
                         const char *const file,
