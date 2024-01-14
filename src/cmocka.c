@@ -1421,7 +1421,7 @@ static bool double_compare(const double left,
     double relDiff;
 
     double diff = left - right;
-    diff = (diff >= 0.f) ? diff : -diff;
+    diff = (diff >= 0.0) ? diff : -diff;
 
     /*
      * Check if the numbers are really close -- needed
@@ -1431,11 +1431,11 @@ static bool double_compare(const double left,
         return true;
     }
 
-    absLeft = (left >= 0.f) ? left : -left;
-    absRight = (right >= 0.f) ? right : -right;
+    absLeft = (left >= 0.0) ? left : -left;
+    absRight = (right >= 0.0) ? right : -right;
 
     largest = (absRight > absLeft) ? absRight : absLeft;
-    relDiff = largest * FLT_EPSILON;
+    relDiff = largest * DBL_EPSILON;
 
     if (diff > relDiff) {
         return false;
