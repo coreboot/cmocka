@@ -1435,6 +1435,9 @@ static float cm_log10f(float x) {
     return res;
 }
 
+#define cm_epsilon_to_precision(e) -cm_log10(e)
+#define cm_epsilon_to_precision_f(e) -cm_log10f(e)
+
 /* Returns true if the specified float values are equal, else returns false. */
 static bool float_compare(const float left,
                          const float right,
@@ -1472,7 +1475,8 @@ static bool float_values_equal_display_error(const float left,
                                             const float epsilon) {
     const bool equal = float_compare(left, right, epsilon);
     if (!equal) {
-        cmocka_print_error("%f != %f\n", left, right);
+        const int precision = cm_epsilon_to_precision_f(epsilon);
+        cmocka_print_error("%.*f != %.*f\n", precision, left, precision, right);
     }
     return equal;
 }
@@ -1484,7 +1488,8 @@ static bool float_values_not_equal_display_error(const float left,
                                                 const float epsilon) {
     const int not_equal = !float_compare(left, right, epsilon);
     if (!not_equal) {
-        cmocka_print_error("%f == %f\n", left, right);
+        const int precision = cm_epsilon_to_precision_f(epsilon);
+        cmocka_print_error("%.*f == %.*f\n", precision, left, precision, right);
     }
     return not_equal;
 }
@@ -1532,7 +1537,8 @@ static bool double_values_equal_display_error(const double left,
     const bool equal = double_compare(left, right, epsilon);
 
     if (!equal) {
-        cmocka_print_error("%f != %f\n", left, right);
+        const int precision = cm_epsilon_to_precision(epsilon);
+        cmocka_print_error("%.*f != %.*f\n", precision, left, precision, right);
     }
 
     return equal;
@@ -1548,7 +1554,8 @@ static bool double_values_not_equal_display_error(const double left,
     const bool not_equal = !double_compare(left, right, epsilon);
 
     if (!not_equal) {
-        cmocka_print_error("%f == %f\n", left, right);
+        const int precision = cm_epsilon_to_precision(epsilon);
+        cmocka_print_error("%.*f == %.*f\n", precision, left, precision, right);
     }
 
     return not_equal;
