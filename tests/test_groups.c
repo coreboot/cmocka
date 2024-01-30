@@ -64,7 +64,7 @@ int main(void) {
 
     int result = 0;
     result += cmocka_run_group_tests(test_group1, NULL, NULL);
-    result += cmocka_run_group_tests(test_group2, NULL, NULL);
+    result += cmocka_run_group_tests_name("test_group2 num=<'\"2&2'\">", test_group2, NULL, NULL);
 
     return result;
 }

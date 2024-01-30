@@ -282,7 +282,7 @@ set(test_groups_tap_out
     "# ok - test_group1"
     "1\\.\\.1"
     "ok 1 - int_test_success"
-    "# ok - test_group2")
+    "# ok - test_group2 num=<'\"2&2'\">")
 set(test_skip_tap_out
     "ok 1 # SKIP")
 set(test_setup_fail_tap_out
@@ -315,7 +315,7 @@ set(test_groups_xml_out
     "<testcase name=\"null_test_success\" time=\"[0-9.]+\" >"
     "</testcase>"
     "</testsuite>"
-    ".*<testsuite name=\"test_group2\" time=\"[0-9.]+\" tests=\"1\" failures=\"0\" errors=\"0\" skipped=\"0\" >"
+    ".*<testsuite name=\"test_group2 num=&lt[;]&apos[;]&quot[;]2&amp[;]2&apos[;]&quot[;]&gt[;]\" time=\"[0-9.]+\" tests=\"1\" failures=\"0\" errors=\"0\" skipped=\"0\" >"
     "<testcase name=\"int_test_success\" time=\"[0-9.]+\" >"
     "</testcase>"
     "</testsuite>"
