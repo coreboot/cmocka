@@ -46,6 +46,7 @@ set(CMOCKA_TESTS
     test_stop
     test_stop_fail
     test_strmatch
+    test_strreplace
     test_setup_fail
     test_ordering
     test_ordering_fail

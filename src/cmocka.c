@@ -468,32 +468,41 @@ static int c_strreplace(char *src,
 {
     char *p = NULL;
 
-    p = strstr(src, pattern);
-    if (p == NULL) {
+    // Terminate if there is no valid data
+    if (src == NULL || src_len == 0 || pattern == NULL || repl == NULL) {
+        errno = EINVAL;
         return -1;
     }
 
+    p = strstr(src, pattern);
+    /* There is nothing to replace */
+    if (p == NULL) {
+        return 0;
+    }
+
+    const size_t pattern_len = strlen(pattern);
+    const size_t repl_len = strlen(repl);
     do {
-        size_t of = p - src;
+        size_t offset = p - src;
         size_t l  = strlen(src);
-        size_t pl = strlen(pattern);
-        size_t rl = strlen(repl);
 
         /* overflow check */
-        if (src_len <= l + MAX(pl, rl) + 1) {
+        if (src_len <= l + MAX(pattern_len, repl_len) + 1) {
             return -1;
         }
 
-        if (rl != pl) {
-            memmove(src + of + rl, src + of + pl, l - of - pl + 1);
+        if (repl_len != pattern_len) {
+            memmove(src + offset + repl_len,
+                    src + offset + pattern_len,
+                    l - offset - pattern_len + 1);
         }
 
-        memcpy(src + of, repl, rl);
+        memcpy(src + offset, repl, repl_len);
 
         if (str_replaced != NULL) {
             *str_replaced = 1;
         }
-        p = strstr(src, pattern);
+        p = strstr(src + offset + repl_len, pattern);
     } while (p != NULL);
 
     return 0;
