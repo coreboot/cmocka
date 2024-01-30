@@ -2436,6 +2436,16 @@ enum cm_printf_type {
 static int xml_printed;
 static int file_append;
 
+static void cmprepare_xml_attribute_string(char *buf, size_t buf_len, const char *src)
+{
+    snprintf(buf, buf_len, "%s", src);
+    c_strreplace(buf, buf_len, "&", "&amp;", NULL);
+    c_strreplace(buf, buf_len, "\"", "&quot;", NULL);
+    c_strreplace(buf, buf_len, "\'", "&apos;", NULL);
+    c_strreplace(buf, buf_len, "<", "&lt;", NULL);
+    c_strreplace(buf, buf_len, ">", "&gt;", NULL);
+}
+
 static void cmprintf_group_finish_xml(const char *group_name,
                                       size_t total_executed,
                                       size_t total_failed,
@@ -2494,10 +2504,15 @@ static void cmprintf_group_finish_xml(const char *group_name,
         }
     }
 
+    char group_name_escaped[1024];
+    cmprepare_xml_attribute_string(group_name_escaped,
+                         sizeof(group_name_escaped),
+                         group_name);
+
     fprintf(fp, "<testsuites>\n");
     fprintf(fp, "  <testsuite name=\"%s\" time=\"%.3f\" "
                 "tests=\"%u\" failures=\"%u\" errors=\"%u\" skipped=\"%u\" >\n",
-                group_name,
+                group_name_escaped,
                 total_runtime, /* seconds */
                 (unsigned)total_executed,
                 (unsigned)total_failed,
@@ -2507,8 +2522,14 @@ static void cmprintf_group_finish_xml(const char *group_name,
     for (i = 0; i < total_executed; i++) {
         struct CMUnitTestState *cmtest = &cm_tests[i];
 
+        /* Escape double quotes and remove spaces in test name */
+        char test_name_escaped[1024];
+        cmprepare_xml_attribute_string(test_name_escaped,
+                             sizeof(test_name_escaped),
+                             cmtest->test->name);
+
         fprintf(fp, "    <testcase name=\"%s\" time=\"%.3f\" >\n",
-                cmtest->test->name, cmtest->runtime);
+                test_name_escaped, cmtest->runtime);
 
         switch (cmtest->status) {
         case CM_TEST_ERROR:
