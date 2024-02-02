@@ -29,6 +29,12 @@ uintmax_t mock_function_uint(void)
     return mock_uint();
 }
 
+uint64_t mock_function_uint64(void);
+uint64_t mock_function_uint64(void)
+{
+    return (uint64_t)mock_uint();
+}
+
 double mock_function_float(void);
 double mock_function_float(void)
 {
@@ -102,6 +108,18 @@ static void test_will_return_uint(void **state)
     assert_uint_equal(value, mock_function_uint());
 }
 
+static void test_will_return_uint64(void **state)
+{
+    uint64_t value = 86405000000UL;
+    uint64_t ret;
+
+    (void)state; /* unused */
+
+    will_return_uint(mock_function_uint64, value);
+    ret = mock_function_uint64();
+    assert_uint_equal(ret, 86405000000UL);
+}
+
 static void test_will_return_float(void **state)
 {
     double value = 1.0;
@@ -129,6 +147,7 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_maybe_for_more_than_one_call),
         cmocka_unit_test(test_will_return_int),
         cmocka_unit_test(test_will_return_uint),
+        cmocka_unit_test(test_will_return_uint64),
         cmocka_unit_test(test_will_return_float),
         cmocka_unit_test(test_will_return_ptr),
     };
