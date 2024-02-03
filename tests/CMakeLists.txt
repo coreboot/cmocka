@@ -33,6 +33,8 @@ set(CMOCKA_TESTS
     test_assert_false_fail
     test_assert_macros
     test_assert_macros_fail
+    test_assert_memory
+    test_assert_memory_fail
     test_assert_ptr
     test_assert_ptr_fail
     test_assert_u_int
@@ -120,6 +122,13 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] tests: 1 test"
+)
+
+set_tests_properties(
+    test_assert_memory_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] memory_tests: 1 test"
 )
 
 set_tests_properties(
