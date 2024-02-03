@@ -47,6 +47,7 @@
 #include <float.h>
 #include <errno.h>
 #include <limits.h>
+#include <ctype.h>
 
 /*
  * This allows to add a platform specific header file. Some embedded platforms
@@ -97,6 +98,10 @@
 #define CMOCKA_CLOCK_GETTIME(clock_id, ts) clock_gettime((clock_id), (ts))
 #else
 #define CMOCKA_CLOCK_GETTIME(clock_id, ts)
+#endif
+
+#ifndef MIN
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
 #ifndef MAX
@@ -1645,36 +1650,131 @@ static bool all_zero(const uint8_t *buf, size_t len)
     return buf[0] == '\0' && memcmp(buf, buf + 1, len - 1) == 0;
 }
 
+static void cmocka_print_ascii(const uint8_t *buf, size_t len)
+{
+    size_t i;
+
+    for (i = 0; i < len; i++) {
+        /* Print any printable ASCII character including space. */
+        cmocka_print_error("%c", isprint(buf[i]) ? buf[i] : '.');
+    }
+}
+
+static void print_data_block16(const char *prefix,
+                               size_t idx,
+                               const uint8_t *buf,
+                               size_t len)
+{
+    size_t i;
+
+    assert_true(len <= 16);
+
+    cmocka_print_error("%s[%08zx]", prefix, idx);
+    for (i = 0; i < 16; i++) {
+        if (i == 8) {
+            cmocka_print_error("  ");
+        }
+        if (i < len) {
+            cmocka_print_error(" %02hhx", buf[i]);
+        } else {
+            cmocka_print_error("   ");
+        }
+    }
+    cmocka_print_error("   ");
+
+    if (len == 0) {
+        cmocka_print_error("EMPTY   BLOCK\n");
+        return;
+    }
+
+    for (i = 0; i < len; i++) {
+        if (i == 8) {
+            cmocka_print_error(" ");
+        }
+        cmocka_print_ascii(&buf[i], 1);
+    }
+
+    cmocka_print_error("\n");
+}
+
+static void print_data_diff(const uint8_t *buf1,
+                           const size_t buf_len1,
+                           const uint8_t *buf2,
+                           const size_t buf_len2,
+                           bool omit_zero_bytes)
+{
+    const size_t len = MAX(buf_len1, buf_len2);
+    size_t i;
+    bool skipped = false;
+
+    for (i = 0; i < len; i += 16) {
+        const size_t remaining_len = len - i;
+        size_t remaining_len1 = 0;
+        size_t remaining_len2 = 0;
+        size_t this_len1 = 0;
+        size_t this_len2 = 0;
+        const uint8_t *this_buf1 = NULL;
+        const uint8_t *this_buf2 = NULL;
+
+        if (i < buf_len1) {
+            remaining_len1 = buf_len1 - i;
+            this_len1 = MIN(remaining_len1, 16);
+            this_buf1 = &buf1[i];
+        }
+
+        if (i < buf_len2) {
+            remaining_len2 = buf_len2 - i;
+            this_len2 = MIN(remaining_len2, 16);
+            this_buf2 = &buf2[i];
+        }
+
+        if (omit_zero_bytes &&
+            i > 0 &&
+            remaining_len > 16 &&
+            this_len1 == 16 &&
+            all_zero(this_buf1, 16) &&
+            this_len2 == 16 &&
+            all_zero(this_buf2, 16)) {
+            if (!skipped) {
+                cmocka_print_error("SKIPPING ZERO BUFFER BYTES\n");
+                skipped = true;
+            }
+
+            continue;
+        }
+        skipped = false;
+
+        if (this_len1 == this_len2) {
+            int cmp = memcmp(this_buf1, this_buf2, this_len1);
+            if (cmp == 0) {
+                print_data_block16("  ", i, this_buf1, this_len1);
+                continue;
+            }
+        }
+
+        print_data_block16("- ", i, this_buf1, this_len1);
+        print_data_block16("+ ", i, this_buf2, this_len2);
+    }
+}
+
 /*
  * Determine whether the specified areas of memory are equal.  If they're
- * equal 1 is returned otherwise an error is displayed and 0 is returned.
+ * equal true is returned otherwise an error is displayed and false is returned.
  */
 static bool memory_equal_display_error(const uint8_t *const a,
                                        const uint8_t *const b,
                                        const size_t size)
 {
-    size_t differences = 0;
-    size_t i;
-    for (i = 0; i < size; i++) {
-        const unsigned char l = a[i];
-        const unsigned char r = b[i];
-        if (l != r) {
-            if (differences < 16) {
-                cmocka_print_error("difference at offset %" PRIdS " 0x%02hhx 0x%02hhx\n",
-                               i, l, r);
-            }
-            differences ++;
-        }
+    int cmp = memcmp(a, b, size);
+    if (cmp == 0) {
+        return true;
     }
-    if (differences > 0) {
-        if (differences >= 16) {
-            cmocka_print_error("...\n");
-        }
-        cmocka_print_error("%"PRIdS " bytes of %p and %p differ\n",
-                       differences, (void *)a, (void *)b);
-        return 0;
-    }
-    return 1;
+
+    cmocka_print_error("Memory is not equal:\n\n");
+    print_data_diff(a, size, b, size, true);
+    cmocka_print_error("\n");
+
+    return false;
 }
 
 /*
