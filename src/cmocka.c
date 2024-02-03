@@ -1646,11 +1646,13 @@ static bool all_zero(const uint8_t *buf, size_t len)
 }
 
 /*
- * Determine whether the specified areas of memory are equal.  If they're equal
- * 1 is returned otherwise an error is displayed and 0 is returned.
+ * Determine whether the specified areas of memory are equal.  If they're
+ * equal 1 is returned otherwise an error is displayed and 0 is returned.
  */
-static int memory_equal_display_error(const char* const a, const char* const b,
-                                      const size_t size) {
+static bool memory_equal_display_error(const uint8_t *const a,
+                                       const uint8_t *const b,
+                                       const size_t size)
+{
     size_t differences = 0;
     size_t i;
     for (i = 0; i < size; i++) {
@@ -1674,7 +1676,6 @@ static int memory_equal_display_error(const char* const a, const char* const b,
     }
     return 1;
 }
-
 
 /*
  * Determine whether the specified areas of memory are not equal.  If they're
@@ -2021,8 +2022,8 @@ static int check_memory(const CMockaValueData value,
         CheckMemoryData*, check_value_data);
     assert_non_null(check);
     return memory_equal_display_error(
-        cast_cmocka_value_to_pointer(const char*, value),
-        (const char*)check->memory, check->size);
+        cast_cmocka_value_to_pointer(const uint8_t *, value),
+        (const uint8_t *)check->memory, check->size);
 }
 
 
@@ -2318,7 +2319,7 @@ void _assert_string_not_equal(const char * const a, const char * const b,
 void _assert_memory_equal(const void * const a, const void * const b,
                           const size_t size, const char* const file,
                           const int line) {
-    if (!memory_equal_display_error((const char*)a, (const char*)b, size)) {
+    if (!memory_equal_display_error((const uint8_t*)a, (const uint8_t*)b, size)) {
         _fail(file, line);
     }
 }
