@@ -1636,6 +1636,14 @@ static int string_not_equal_display_error(
     return 0;
 }
 
+static bool all_zero(const uint8_t *buf, size_t len)
+{
+    if (buf == NULL || len == 0) {
+        return true;
+    }
+
+    return buf[0] == '\0' && memcmp(buf, buf + 1, len - 1) == 0;
+}
 
 /*
  * Determine whether the specified areas of memory are equal.  If they're equal
