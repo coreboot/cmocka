@@ -17,6 +17,7 @@
 #include "config.h"
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <stdint.h>
@@ -27,93 +28,93 @@
 
 static void test_strreplace_null(void **state)
 {
-    int rc;
+    bool ok = false;
     char data[64] = "DATA";
-    int out = 0;
+    bool out = false;
 
     (void)state;
 
-    rc = c_strreplace(NULL, sizeof(data), "A", "B", &out);
-    assert_int_equal(rc, -1);
-    assert_int_equal(out, 0);
+    ok = c_strreplace(NULL, sizeof(data), "A", "B", &out);
+    assert_false(ok);
+    assert_false(out);
     assert_int_equal(errno, EINVAL);
 
-    rc = c_strreplace(data, 0, "A", "B", &out);
-    assert_int_equal(rc, -1);
-    assert_int_equal(out, 0);
+    ok = c_strreplace(data, 0, "A", "B", &out);
+    assert_false(ok);
+    assert_false(out);
     assert_int_equal(errno, EINVAL);
 
-    rc = c_strreplace(data, sizeof(data), NULL, "B", &out);
-    assert_int_equal(rc, -1);
-    assert_int_equal(out, 0);
+    ok = c_strreplace(data, sizeof(data), NULL, "B", &out);
+    assert_false(ok);
+    assert_false(out);
     assert_int_equal(errno, EINVAL);
 
-    rc = c_strreplace(data, sizeof(data), "A", NULL, &out);
-    assert_int_equal(rc, -1);
-    assert_int_equal(out, 0);
+    ok = c_strreplace(data, sizeof(data), "A", NULL, &out);
+    assert_false(ok);
+    assert_false(out);
     assert_int_equal(errno, EINVAL);
 }
 
 static void test_strreplace_no_pattern(void **state)
 {
-    int rc;
+    bool ok = false;
     char data[64] = "DATA";
-    int out = 0;
+    bool out = false;
 
     (void) state;
 
-    rc = c_strreplace(data, sizeof(data), "X", "Y", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 0);
+    ok = c_strreplace(data, sizeof(data), "X", "Y", &out);
+    assert_true(ok);
+    assert_false(out);
 }
 
 static void test_strreplace_patterns(void **state)
 {
-    int rc;
+    bool ok = false;
     const char base_data[] = "THIS IS THE DATA";
     char data[64] = "THIS IS THE DATA";
-    int out = 0;
+    bool out = false;
 
     (void) state;
 
     // Simple character substitution
-    rc = c_strreplace(data, sizeof(data), "T", "D", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 1);
+    ok = c_strreplace(data, sizeof(data), "T", "D", &out);
+    assert_true(ok);
+    assert_true(out);
     assert_string_equal(data, "DHIS IS DHE DADA");
 
     // Reset data
     memcpy(data, base_data, sizeof(base_data));
 
     // Superset pattern
-    out = 0;
-    rc = c_strreplace(data, sizeof(data), " IS", " ISN'T", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 1);
+    out = false;
+    ok = c_strreplace(data, sizeof(data), " IS", " ISN'T", &out);
+    assert_true(ok);
+    assert_true(out);
     assert_string_equal(data, "THIS ISN'T THE DATA");
 
     // Subset pattern
     memcpy(data, base_data, sizeof(base_data));
-    out = 0;
-    rc = c_strreplace(data, sizeof(data), "THIS", "TIS", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 1);
+    out = false;
+    ok = c_strreplace(data, sizeof(data), "THIS", "TIS", &out);
+    assert_true(ok);
+    assert_true(out);
     assert_string_equal(data, "TIS IS THE DATA");
 
     // Partial replacement
     memcpy(data, base_data, sizeof(base_data));
-    out = 0;
-    rc = c_strreplace(data, sizeof(data), "THIS", "THOSE", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 1);
+    out = false;
+    ok = c_strreplace(data, sizeof(data), "THIS", "THOSE", &out);
+    assert_true(ok);
+    assert_true(out);
     assert_string_equal(data, "THOSE IS THE DATA");
 
     // Outer extension
     memcpy(data, base_data, sizeof(base_data));
-    out = 0;
-    rc = c_strreplace(data, sizeof(data), "THE", "_THE_", &out);
-    assert_int_equal(rc, 0);
-    assert_int_equal(out, 1);
+    out = false;
+    ok = c_strreplace(data, sizeof(data), "THE", "_THE_", &out);
+    assert_true(ok);
+    assert_true(out);
     assert_string_equal(data, "THIS IS _THE_ DATA");
 }
 

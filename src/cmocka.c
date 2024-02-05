@@ -38,6 +38,7 @@
 #include <stdint.h>
 #include <setjmp.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -162,7 +163,7 @@ typedef struct TestState {
 } TestState;
 
 /* Determines whether two values are the same. */
-typedef int (*EqualityFunction)(const void *left, const void *right);
+typedef bool (*EqualityFunction)(const void *left, const void *right);
 
 /* Value of a symbol and the place it was declared. */
 typedef struct SymbolValue {
@@ -235,11 +236,11 @@ static ListNode* list_remove(
 static void list_remove_free(
     ListNode * const node, const CleanupListValue cleanup_value,
     void * const cleanup_value_data);
-static int list_empty(const ListNode * const head);
-static int list_find(
+static bool list_empty(const ListNode * const head);
+static bool list_find(
     ListNode * const head, const void *value,
     const EqualityFunction equal_func, ListNode **output);
-static int list_first(ListNode * const head, ListNode **output);
+static bool list_first(ListNode * const head, ListNode **output);
 static ListNode* list_free(
     ListNode * const head, const CleanupListValue cleanup_value,
     void * const cleanup_value_data);
@@ -449,7 +450,7 @@ static void initialize_source_location(SourceLocation * const location) {
 
 
 /* Determine whether a source location is currently set. */
-static int source_location_is_set(const SourceLocation * const location) {
+static bool source_location_is_set(const SourceLocation * const location) {
     assert_non_null(location);
     return location->file && location->line;
 }
@@ -465,24 +466,24 @@ static void set_source_location(
 }
 
 
-static int c_strreplace(char *src,
+static bool c_strreplace(char *src,
                         size_t src_len,
                         const char *pattern,
                         const char *repl,
-                        int *str_replaced)
+                        bool *str_replaced)
 {
     char *p = NULL;
 
     // Terminate if there is no valid data
     if (src == NULL || src_len == 0 || pattern == NULL || repl == NULL) {
         errno = EINVAL;
-        return -1;
+        return false;
     }
 
     p = strstr(src, pattern);
     /* There is nothing to replace */
     if (p == NULL) {
-        return 0;
+        return true;
     }
 
     const size_t pattern_len = strlen(pattern);
@@ -493,7 +494,7 @@ static int c_strreplace(char *src,
 
         /* overflow check */
         if (src_len <= l + MAX(pattern_len, repl_len) + 1) {
-            return -1;
+            return false;
         }
 
         if (repl_len != pattern_len) {
@@ -505,20 +506,20 @@ static int c_strreplace(char *src,
         memcpy(src + offset, repl, repl_len);
 
         if (str_replaced != NULL) {
-            *str_replaced = 1;
+            *str_replaced = true;
         }
         p = strstr(src + offset + repl_len, pattern);
     } while (p != NULL);
 
-    return 0;
+    return true;
 }
 
-static int c_strmatch(const char *str, const char *pattern)
+static bool c_strmatch(const char *str, const char *pattern)
 {
     int ok;
 
     if (str == NULL || pattern == NULL) {
-        return 0;
+        return false;
     }
 
     for (;;) {
@@ -526,10 +527,10 @@ static int c_strmatch(const char *str, const char *pattern)
         if (*pattern == '\0') {
             /* If string is at the end, we're good */
             if (*str == '\0') {
-                return 1;
+                return true;
             }
 
-            return 0;
+            return false;
         }
 
         if (*pattern == '*') {
@@ -538,29 +539,29 @@ static int c_strmatch(const char *str, const char *pattern)
 
             /* If we are at the end, everything is fine */
             if (*pattern == '\0') {
-                return 1;
+                return true;
             }
 
             /* Try to match each position */
             for (; *str != '\0'; str++) {
                 ok = c_strmatch(str, pattern);
                 if (ok) {
-                    return 1;
+                    return true;
                 }
             }
 
             /* No match */
-            return 0;
+            return false;
         }
 
         /* If we are at the end, leave */
         if (*str == '\0') {
-            return 0;
+            return false;
         }
 
         /* Check if we have a single wildcard or matching char */
         if (*pattern != '?' && *str != *pattern) {
-            return 0;
+            return false;
         }
 
         /* Move string and pattern */
@@ -568,7 +569,7 @@ static int c_strmatch(const char *str, const char *pattern)
         pattern++;
     }
 
-    return 0;
+    return false;
 }
 
 /* Create function results and expected parameter lists. */
@@ -583,13 +584,13 @@ void initialize_testing(const char *test_name) {
 }
 
 static int has_leftover_values(const char *test_name) {
-    int leftover_values = 0;
+    bool leftover_values = false;
     (void)test_name;
     remove_always_return_values(&global_function_result_map_head, 1);
     if (check_for_leftover_values(
             &global_function_result_map_head,
             "Has remaining non-returned values", 1)) {
-        leftover_values = 1;
+        leftover_values = true;
     }
 
     remove_always_return_values(&global_function_parameter_map_head, 2);
@@ -597,19 +598,19 @@ static int has_leftover_values(const char *test_name) {
             &global_function_parameter_map_head,
             "Parameter still has values that haven't been checked",
             2)) {
-        leftover_values = 1;
+        leftover_values = true;
     }
 
     remove_always_return_values_from_list(&global_call_ordering_head);
     if (check_for_leftover_values_list(&global_call_ordering_head,
         "Function was expected to be called but was not")) {
-        leftover_values = 1;
+        leftover_values = true;
     }
-    return (leftover_values);
+    return leftover_values;
 }
 
 static void fail_if_leftover_values(const char *test_name) {
-    if (has_leftover_values(test_name) != 0) {
+    if (has_leftover_values(test_name)) {
         exit_test(true);
     }
 }
@@ -709,7 +710,7 @@ static ListNode* list_free(
 
 
 /* Determine whether a list is empty. */
-static int list_empty(const ListNode * const head) {
+static bool list_empty(const ListNode * const head) {
     assert_non_null(head);
     return head->next == head;
 }
@@ -719,29 +720,29 @@ static int list_empty(const ListNode * const head) {
  * Find a value in the list using the equal_func to compare each node with the
  * value.
  */
-static int list_find(ListNode * const head, const void *value,
+static bool list_find(ListNode * const head, const void *value,
                      const EqualityFunction equal_func, ListNode **output) {
     ListNode *current;
     assert_non_null(head);
     for (current = head->next; current != head; current = current->next) {
         if (equal_func(current->value, value)) {
             *output = current;
-            return 1;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 /* Returns the first node of a list */
-static int list_first(ListNode * const head, ListNode **output) {
+static bool list_first(ListNode * const head, ListNode **output) {
     ListNode *target_node = NULL;
     assert_non_null(head);
     if (list_empty(head)) {
-        return 0;
+        return false;
     }
     target_node = head->next;
     *output = target_node;
-    return 1;
+    return true;
 }
 
 
@@ -778,7 +779,7 @@ static void free_symbol_map_value(const void *value,
  * Determine whether a symbol name referenced by a symbol_map_value matches the
  * specified function name.
  */
-static int symbol_names_match(const void *map_value, const void *symbol) {
+static bool symbol_names_match(const void *map_value, const void *symbol) {
     return !strcmp(((SymbolMapValue*)map_value)->symbol_name,
                    (const char*)symbol);
 }
@@ -1199,8 +1200,8 @@ void _expect_function_call(
     list_add_value(&global_call_ordering_head, ordering, count);
 }
 
-/* Returns 1 if the specified float values are equal, else returns 0. */
-static int float_compare(const float left,
+/* Returns true if the specified float values are equal, else returns false. */
+static bool float_compare(const float left,
                          const float right,
                          const float epsilon) {
     float absLeft;
@@ -1212,9 +1213,9 @@ static int float_compare(const float left,
     diff = (diff >= 0.f) ? diff : -diff;
 
     // Check if the numbers are really close -- needed
-        // when comparing numbers near zero.
-        if (diff <= epsilon) {
-            return 1;
+    // when comparing numbers near zero.
+    if (diff <= epsilon) {
+            return true;
     }
 
     absLeft = (left >= 0.f) ? left : -left;
@@ -1224,37 +1225,37 @@ static int float_compare(const float left,
     relDiff = largest * FLT_EPSILON;
 
     if (diff > relDiff) {
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
-/* Returns 1 if the specified float values are equal. If the values are not equal
- * an error is displayed and 0 is returned. */
-static int float_values_equal_display_error(const float left,
+/* Returns true if the specified float values are equal. If the values are not
+ * equal an error is displayed and false is returned. */
+static bool float_values_equal_display_error(const float left,
                                             const float right,
                                             const float epsilon) {
-    const int equal = float_compare(left, right, epsilon);
+    const bool equal = float_compare(left, right, epsilon);
     if (!equal) {
         cmocka_print_error("%f != %f\n", left, right);
     }
     return equal;
 }
 
-/* Returns 1 if the specified float values are different. If the values are equal
- * an error is displayed and 0 is returned. */
-static int float_values_not_equal_display_error(const float left,
+/* Returns true if the specified float values are different. If the values are
+ * equal an error is displayed and false is returned. */
+static bool float_values_not_equal_display_error(const float left,
                                                 const float right,
                                                 const float epsilon) {
-    const int not_equal = (float_compare(left, right, epsilon) == 0);
+    const int not_equal = !float_compare(left, right, epsilon);
     if (!not_equal) {
         cmocka_print_error("%f == %f\n", left, right);
     }
     return not_equal;
 }
 
-/* Returns 1 if the specified double values are equal, else returns 0. */
-static int double_compare(const double left,
+/* Returns true if the specified double values are equal, else returns false. */
+static bool double_compare(const double left,
                           const double right,
                           const double epsilon) {
     double absLeft;
@@ -1270,7 +1271,7 @@ static int double_compare(const double left,
      * when comparing numbers near zero.
      */
     if (diff <= epsilon) {
-        return 1;
+        return true;
     }
 
     absLeft = (left >= 0.f) ? left : -left;
@@ -1280,20 +1281,20 @@ static int double_compare(const double left,
     relDiff = largest * FLT_EPSILON;
 
     if (diff > relDiff) {
-        return 0;
+        return false;
     }
 
-    return 1;
+    return true;
 }
 
 /*
- * Returns 1 if the specified double values are equal. If the values are not
- * equal an error is displayed and 0 is returned.
+ * Returns true if the specified double values are equal. If the values are not
+ * equal an error is displayed and false is returned.
  */
-static int double_values_equal_display_error(const double left,
+static bool double_values_equal_display_error(const double left,
                                              const double right,
                                              const double epsilon) {
-    const int equal = double_compare(left, right, epsilon);
+    const bool equal = double_compare(left, right, epsilon);
 
     if (!equal) {
         cmocka_print_error("%f != %f\n", left, right);
@@ -1303,13 +1304,13 @@ static int double_values_equal_display_error(const double left,
 }
 
 /*
- * Returns 1 if the specified double values are different. If the values are
- * equal an error is displayed and 0 is returned.
+ * Returns true if the specified double values are different. If the values are
+ * equal an error is displayed and false is returned.
  */
-static int double_values_not_equal_display_error(const double left,
+static bool double_values_not_equal_display_error(const double left,
                                                  const double right,
                                                  const double epsilon) {
-    const int not_equal = (double_compare(left, right, epsilon) == 0);
+    const bool not_equal = !double_compare(left, right, epsilon);
 
     if (!not_equal) {
         cmocka_print_error("%f == %f\n", left, right);
@@ -1318,8 +1319,8 @@ static int double_values_not_equal_display_error(const double left,
     return not_equal;
 }
 
-/* Returns 1 if the specified values are equal.  If the values are not equal
- * an error is displayed and 0 is returned. */
+/* Returns true if the specified values are equal.  If the values are not equal
+ * an error is displayed and false is returned. */
 static bool uint_values_equal_display_error(const uintmax_t left,
                                             const uintmax_t right)
 {
@@ -1335,8 +1336,8 @@ static bool uint_values_equal_display_error(const uintmax_t left,
 }
 
 
-/* Returns 1 if the specified values are equal.  If the values are not equal
- * an error is displayed and 0 is returned. */
+/* Returns true if the specified values are equal.  If the values are not equal
+ * an error is displayed and false is returned. */
 static bool int_values_equal_display_error(const intmax_t left,
                                            const intmax_t right)
 {
@@ -1349,8 +1350,8 @@ static bool int_values_equal_display_error(const intmax_t left,
 
 
 /*
- * Returns 1 if the specified values are not equal.  If the values are equal
- * an error is displayed and 0 is returned. */
+ * Returns true if the specified values are not equal.  If the values are equal
+ * an error is displayed and false is returned. */
 static bool uint_values_not_equal_display_error(const uintmax_t left,
                                                 const uintmax_t right) {
     const bool not_equal = left != right;
@@ -1366,8 +1367,8 @@ static bool uint_values_not_equal_display_error(const uintmax_t left,
 
 
 /*
- * Returns 1 if the specified values are not equal.  If the values are equal
- * an error is displayed and 0 is returned. */
+ * Returns true if the specified values are not equal.  If the values are equal
+ * an error is displayed and false is returned. */
 static bool int_values_not_equal_display_error(const intmax_t left,
                                                const intmax_t right)
 {
@@ -1378,8 +1379,8 @@ static bool int_values_not_equal_display_error(const intmax_t left,
     return not_equal;
 }
 
-/* Returns 1 if the specified pointers are equal.  If the pointers are not equal
- * an error is displayed and 0 is returned. */
+/* Returns true if the specified pointers are equal.  If the pointers are not equal
+ * an error is displayed and false is returned. */
 CMOCKA_NO_ACCESS_ATTRIBUTE
 static bool ptr_values_equal_display_error(const void *left, const void *right)
 {
@@ -1390,8 +1391,8 @@ static bool ptr_values_equal_display_error(const void *left, const void *right)
     return equal;
 }
 
-/* Returns 1 if the specified pointers are equal.  If the pointers are not equal
- * an error is displayed and 0 is returned. */
+/* Returns true if the specified pointers are equal.  If the pointers are not equal
+ * an error is displayed and false is returned. */
 CMOCKA_NO_ACCESS_ATTRIBUTE
 static bool ptr_values_not_equal_display_error(const void *left,
                                                const void *right)
@@ -1405,15 +1406,15 @@ static bool ptr_values_not_equal_display_error(const void *left,
 
 /*
  * Determine whether value is contained within check_integer_set.
- * If invert is 0 and the value is in the set 1 is returned, otherwise 0 is
- * returned and an error is displayed.  If invert is 1 and the value is not
- * in the set 1 is returned, otherwise 0 is returned and an error is
- * displayed.
+ * If invert is false and the value is in the set true is returned,
+ * otherwise false is returned and an error is displayed.
+ * If invert is true and the value is not in the set true is returned,
+ * otherwise false is returned and an error is displayed.
  */
-static int value_in_set_display_error(
+static bool value_in_set_display_error(
         const uintmax_t value,
-        const CheckIntegerSet * const check_integer_set, const int invert) {
-    int succeeded = invert;
+        const CheckIntegerSet * const check_integer_set, const bool invert) {
+    bool succeeded = invert;
     assert_non_null(check_integer_set);
     {
         const uintmax_t * const set = check_integer_set->set;
@@ -1421,14 +1422,14 @@ static int value_in_set_display_error(
         size_t i;
         for (i = 0; i < size_of_set; i++) {
             if (set[i] == value) {
-                /* If invert = 0 and item is found, succeeded = 1. */
-                /* If invert = 1 and item is found, succeeded = 0. */
+                /* If invert = false and item is found, succeeded = true. */
+                /* If invert = true and item is found, succeeded = false. */
                 succeeded = !succeeded;
                 break;
             }
         }
         if (succeeded) {
-            return 1;
+            return true;
         }
         cmocka_print_error("%ju is %sin the set (",
                        value, invert ? "" : "not ");
@@ -1437,7 +1438,7 @@ static int value_in_set_display_error(
         }
         cmocka_print_error(")\n");
     }
-    return 0;
+    return false;
 }
 
 static bool int_value_in_set_display_error(
@@ -1456,8 +1457,8 @@ static bool int_value_in_set_display_error(
 
         for (i = 0; i < size_of_set; i++) {
             if (set[i] == value) {
-                /* If invert = 0 and item is found, succeeded = 1. */
-                /* If invert = 1 and item is found, succeeded = 0. */
+                /* If invert = false and item is found, succeeded = true. */
+                /* If invert = true and item is found, succeeded = false. */
                 succeeded = !succeeded;
                 break;
             }
@@ -1497,8 +1498,8 @@ static bool uint_value_in_set_display_error(
 
         for (i = 0; i < size_of_set; i++) {
             if (set[i] == value) {
-                /* If invert = 0 and item is found, succeeded = 1. */
-                /* If invert = 1 and item is found, succeeded = 0. */
+                /* If invert = false and item is found, succeeded = true. */
+                /* If invert = true and item is found, succeeded = false. */
                 succeeded = !succeeded;
                 break;
             }
@@ -1595,50 +1596,50 @@ static bool uint_not_in_range_display_error(const uintmax_t value,
 
 /*
  * Determine whether a value is within the specified range.  If the value
- * is not within the range 1 is returned.  If the value is within the
- * specified range an error is displayed and zero is returned.
+ * is not within the range true is returned.  If the value is within the
+ * specified range an error is displayed and false is returned.
  */
-static int integer_not_in_range_display_error(
+static bool integer_not_in_range_display_error(
         const uintmax_t value, const uintmax_t range_min,
         const uintmax_t range_max) {
     if (value < range_min || value > range_max) {
-        return 1;
+        return true;
     }
     cmocka_print_error("%ju is within the range %ju-%ju\n",
                        value,
                        range_min,
                        range_max);
-    return 0;
+    return false;
 }
 
 
 /*
  * Determine whether the specified strings are equal.  If the strings are equal
- * 1 is returned.  If they're not equal an error is displayed and 0 is
+ * true is returned.  If they're not equal an error is displayed and false is
  * returned.
  */
-static int string_equal_display_error(
+static bool string_equal_display_error(
         const char * const left, const char * const right) {
     if (strcmp(left, right) == 0) {
-        return 1;
+        return true;
     }
     cmocka_print_error("\"%s\" != \"%s\"\n", left, right);
-    return 0;
+    return false;
 }
 
 
 /*
  * Determine whether the specified strings are equal.  If the strings are not
- * equal 1 is returned.  If they're not equal an error is displayed and 0 is
- * returned
+ * equal true is returned.  If they're not equal an error is displayed and
+ * false is returned.
  */
-static int string_not_equal_display_error(
+static bool string_not_equal_display_error(
         const char * const left, const char * const right) {
     if (strcmp(left, right) != 0) {
-        return 1;
+        return true;
     }
     cmocka_print_error("\"%s\" == \"%s\"\n", left, right);
-    return 0;
+    return false;
 }
 
 static bool all_zero(const uint8_t *buf, size_t len)
@@ -1779,7 +1780,7 @@ static bool memory_equal_display_error(const uint8_t *const a,
 
 /*
  * Determine whether the specified areas of memory are not equal.  If they're
- * not equal 1 is returned otherwise an error is displayed and 0 is
+ * not equal true is returned otherwise an error is displayed and false is
  * returned.
  */
 static int memory_not_equal_display_error(
@@ -1796,9 +1797,9 @@ static int memory_not_equal_display_error(
     if (same == size) {
         cmocka_print_error("%"PRIdS "bytes of %p and %p the same\n",
                        same, (void *)a, (void *)b);
-        return 0;
+        return false;
     }
-    return 1;
+    return true;
 }
 
 
@@ -1809,7 +1810,7 @@ static int check_int_in_set(const CMockaValueData value,
         value.int_val,
         cast_cmocka_value_to_pointer(struct check_integer_set *,
                                      check_value_data),
-        0);
+        false);
 }
 
 static int check_uint_in_set(const CMockaValueData value,
@@ -1819,7 +1820,7 @@ static int check_uint_in_set(const CMockaValueData value,
         value.uint_val,
         cast_cmocka_value_to_pointer(struct check_unsigned_integer_set *,
                                      check_value_data),
-        0);
+        false);
 }
 
 /* CheckParameterValue callback to check whether a value isn't within a set. */
@@ -1827,7 +1828,7 @@ static int check_not_in_set(const CMockaValueData value,
                             const CMockaValueData check_value_data) {
     return value_in_set_display_error(value.uint_val,
         cast_cmocka_value_to_pointer(CheckIntegerSet*,
-                                              check_value_data), 1);
+                                              check_value_data), true);
 }
 
 
@@ -2182,7 +2183,7 @@ void _expect_not_memory(
 }
 
 
-/* CheckParameterValue callback that always returns 1. */
+/* CheckParameterValue callback that always returns true. */
 static int check_any(const CMockaValueData value,
                      const CMockaValueData check_value_data) {
     (void)value;
@@ -3092,19 +3093,16 @@ static void cmprintf_group_finish_xml(const char *group_name,
 {
     FILE *fp = stdout;
     int file_opened = 0;
-    int multiple_files = 0;
     char *env;
     size_t i;
 
     env = getenv("CMOCKA_XML_FILE");
     if (env != NULL) {
         char buf[1024];
-        int rc;
 
         snprintf(buf, sizeof(buf), "%s", env);
 
-        rc = c_strreplace(buf, sizeof(buf), "%g", group_name, &multiple_files);
-        if (rc < 0) {
+        if (!c_strreplace(buf, sizeof(buf), "%g", group_name, NULL)) {
             snprintf(buf, sizeof(buf), "%s", env);
         }
 

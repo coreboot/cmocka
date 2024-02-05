@@ -65,6 +65,7 @@ int __stdcall IsDebuggerPresent();
  * this header file.
  * @code
  * #include <stdarg.h>
+ * #include <stdbool.h>
  * #include <stddef.h>
  * #include <stdint.h>
  * #include <setjmp.h>

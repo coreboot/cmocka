@@ -1,6 +1,7 @@
 #include "config.h"
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <stdint.h>
@@ -16,7 +17,7 @@ int custom_checker(CMockaValueData param, CMockaValueData check);
 int custom_checker(CMockaValueData param, CMockaValueData check)
 {
     assert_int_equal(param.uint_val, check.uint_val);
-    return 1;
+    return true;
 }
 
 static void test_no_expects_fail(void **state)

@@ -15,6 +15,7 @@
  */
 
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <setjmp.h>
 #include <stdint.h>
