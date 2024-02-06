@@ -1,9 +1,15 @@
 # https://clang.llvm.org/docs/ClangFormatStyleOptions.html
-BasedOnStyle: LLVM
-IndentWidth: 4
-UseTab: Never
+#
+AlignAfterOpenBracket: Align
+AlignEscapedNewlines: Left
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: false
-BreakBeforeBraces: Custom
+AlwaysBreakAfterReturnType: None
+BasedOnStyle: LLVM
+BinPackArguments: false
+BinPackParameters: false
 BraceWrapping:
     AfterEnum: false
     AfterFunction: true
@@ -12,14 +18,16 @@ BraceWrapping:
     AfterExternBlock: true
     BeforeElse: false
     BeforeWhile: false
-IndentCaseLabels: false
+    AfterControlStatement: MultiLine
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
 ColumnLimit: 80
-AlignAfterOpenBracket: Align
-AllowAllParametersOfDeclarationOnNextLine: false
-BinPackArguments: false
-BinPackParameters: false
-AllowAllArgumentsOnNextLine: false
-AllowShortFunctionsOnASingleLine: Empty
-AlwaysBreakAfterReturnType: None
-AlignEscapedNewlines: Left
-ForEachMacros: ['ssh_callbacks_iterate']
+ContinuationIndentWidth: 4
+IndentCaseLabels: false
+IndentGotoLabels: false
+IndentWidth: 4
+PenaltyBreakAssignment: 200
+PenaltyBreakBeforeFirstCallParameter: 100
+PenaltyReturnTypeOnItsOwnLine: 1000
+SortIncludes: false
+UseTab: Never
