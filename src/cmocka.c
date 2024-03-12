@@ -2382,16 +2382,6 @@ void _assert_uint_not_equal(const uintmax_t a,
     }
 }
 
-void _assert_ptr_equal(const void *a,
-                       const void *b,
-                       const char *const file,
-                       const int line)
-{
-    if (!ptr_values_equal_display_error(a, b)) {
-        _fail(file, line);
-    }
-}
-
 void _assert_ptr_equal_msg(const void *a,
                            const void *b,
                            const char *const file,
@@ -2399,21 +2389,12 @@ void _assert_ptr_equal_msg(const void *a,
                            const char *const msg)
 {
     if (!ptr_values_equal_display_error(a, b)) {
-        _additional_msg(msg);
+        if (msg != NULL) {
+            _additional_msg(msg);
+        }
         _fail(file, line);
     }
 }
-
-void _assert_ptr_not_equal(const void *a,
-                           const void *b,
-                           const char *const file,
-                           const int line)
-{
-    if (!ptr_values_not_equal_display_error(a, b)) {
-        _fail(file, line);
-    }
-}
-
 
 void _assert_ptr_not_equal_msg(const void *a,
                                const void *b,
@@ -2422,7 +2403,9 @@ void _assert_ptr_not_equal_msg(const void *a,
                                const char *const msg)
 {
     if (!ptr_values_not_equal_display_error(a, b)) {
-        _additional_msg(msg);
+        if (msg != NULL) {
+            _additional_msg(msg);
+        }
         _fail(file, line);
     }
 }
@@ -2759,7 +2742,7 @@ void _test_free(void* const ptr, const char* file, const int line) {
         return;
     }
 
-    _assert_ptr_not_equal(ptr, NULL, file, line);
+    _assert_ptr_not_equal_msg(ptr, NULL, file, line, NULL);
     block_info.ptr = block - (MALLOC_GUARD_SIZE +
                               sizeof(struct MallocBlockInfoData));
     /* Check the guard blocks. */

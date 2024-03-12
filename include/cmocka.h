@@ -1714,7 +1714,7 @@ void assert_null_msg(void *pointer, const char *const message);
  */
 void assert_ptr_equal(void *a, void *b);
 #else
-#define assert_ptr_equal(a, b) _assert_ptr_equal((a), (b), __FILE__, __LINE__)
+#define assert_ptr_equal(a, b) assert_ptr_equal_msg((a), (b), NULL)
 #endif
 
 #ifdef DOXYGEN
@@ -1750,7 +1750,7 @@ void assert_ptr_equal_msg(void *a, void *b, const char *const msg);
 void assert_ptr_not_equal(void *a, void *b);
 #else
 #define assert_ptr_not_equal(a, b) \
-    _assert_ptr_not_equal((a), (b), __FILE__, __LINE__)
+    assert_ptr_not_equal_msg((a), (b), NULL)
 #endif
 
 #ifdef DOXYGEN
@@ -3160,21 +3160,11 @@ void _assert_uint_not_equal(const uintmax_t a,
                             const char * const file,
                             const int line);
 CMOCKA_NO_ACCESS_ATTRIBUTE
-void _assert_ptr_equal(const void *a,
-                       const void *b,
-                       const char *const file,
-                       const int line);
-CMOCKA_NO_ACCESS_ATTRIBUTE
 void _assert_ptr_equal_msg(const void *a,
                            const void *b,
                            const char *const file,
                            const int line,
                            const char *const msg);
-CMOCKA_NO_ACCESS_ATTRIBUTE
-void _assert_ptr_not_equal(const void *a,
-                           const void *b,
-                           const char *const file,
-                           const int line);
 CMOCKA_NO_ACCESS_ATTRIBUTE
 void _assert_ptr_not_equal_msg(const void *a,
                                const void *b,
