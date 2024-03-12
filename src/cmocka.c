@@ -2392,12 +2392,37 @@ void _assert_ptr_equal(const void *a,
     }
 }
 
+void _assert_ptr_equal_msg(const void *a,
+                           const void *b,
+                           const char *const file,
+                           const int line,
+                           const char *const msg)
+{
+    if (!ptr_values_equal_display_error(a, b)) {
+        _additional_msg(msg);
+        _fail(file, line);
+    }
+}
+
 void _assert_ptr_not_equal(const void *a,
                            const void *b,
                            const char *const file,
                            const int line)
 {
     if (!ptr_values_not_equal_display_error(a, b)) {
+        _fail(file, line);
+    }
+}
+
+
+void _assert_ptr_not_equal_msg(const void *a,
+                               const void *b,
+                               const char *const file,
+                               const int line,
+                               const char *const msg)
+{
+    if (!ptr_values_not_equal_display_error(a, b)) {
+        _additional_msg(msg);
         _fail(file, line);
     }
 }

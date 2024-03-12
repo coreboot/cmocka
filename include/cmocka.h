@@ -1651,6 +1651,24 @@ void assert_non_null(void *pointer);
 
 #ifdef DOXYGEN
 /**
+ * @brief Assert that the given pointer is non-NULL.
+ *
+ * The function prints an error message extended by message to standard error
+ * and terminates the test by calling fail() if the pointer is NULL.
+ *
+ * @param[in]  pointer  The pointer to evaluate.
+ *
+ * @param[in]  message  The message to print when the pointer is NULL.
+ *
+ * @see assert_null_msg()
+ */
+void assert_non_null_msg(void *pointer, const char *const message);
+#else
+#define assert_non_null_msg(c, msg) assert_ptr_not_equal_msg((c), NULL, (msg))
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Assert that the given pointer is NULL.
  *
  * The function prints an error message to standard error and terminates the
@@ -1663,6 +1681,24 @@ void assert_non_null(void *pointer);
 void assert_null(void *pointer);
 #else
 #define assert_null(c) assert_ptr_equal((c), NULL)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the given pointer is NULL.
+ *
+ * The function prints an error message extended by message to standard error
+ * and terminates the test by calling fail() if the pointer is non-NULL.
+ *
+ * @param[in]  pointer  The pointer to evaluate.
+ *
+ * @param[in]  message  The message to print when the pointer is not NULL.
+ *
+ * @see assert_non_null_msg()
+ */
+void assert_null_msg(void *pointer, const char *const message);
+#else
+#define assert_null_msg(c, msg) assert_ptr_equal_msg((c), NULL, (msg))
 #endif
 
 #ifdef DOXYGEN
@@ -1683,6 +1719,25 @@ void assert_ptr_equal(void *a, void *b);
 
 #ifdef DOXYGEN
 /**
+ * @brief Assert that the two given pointers are equal.
+ *
+ * The function prints the failing comparision and the error message given by the user
+ * and then terminates the test by calling fail() if the pointers are not equal.
+ *
+ * @param[in]  a        The first pointer to compare.
+ *
+ * @param[in]  b        The pointer to compare against the first one.
+ *
+ * @param[in]  msg      The error message to print when a & b are not equal.
+ */
+void assert_ptr_equal_msg(void *a, void *b, const char *const msg);
+#else
+#define assert_ptr_equal_msg(a, b, msg) \
+    _assert_ptr_equal_msg((a), (b), __FILE__, __LINE__, (msg))
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Assert that the two given pointers are not equal.
  *
  * The function prints an error message and terminates the test by calling
@@ -1696,6 +1751,25 @@ void assert_ptr_not_equal(void *a, void *b);
 #else
 #define assert_ptr_not_equal(a, b) \
     _assert_ptr_not_equal((a), (b), __FILE__, __LINE__)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the two given pointers are not equal.
+ *
+ * The function prints the failing comparision and the error message given by the user
+ * and then terminates the test by calling fail() if the pointers are equal.
+ *
+ * @param[in]  a        The first pointer to compare.
+ *
+ * @param[in]  b        The pointer to compare against the first one.
+ *
+ * @param[in]  msg      The error message to print when a & b are equal.
+ */
+void assert_ptr_not_equal_msg(void *a, void *b, const char *const msg);
+#else
+#define assert_ptr_not_equal_msg(a, b, msg) \
+    _assert_ptr_not_equal_msg((a), (b), __FILE__, __LINE__, (msg))
 #endif
 
 #ifdef DOXYGEN
@@ -3091,10 +3165,22 @@ void _assert_ptr_equal(const void *a,
                        const char *const file,
                        const int line);
 CMOCKA_NO_ACCESS_ATTRIBUTE
+void _assert_ptr_equal_msg(const void *a,
+                           const void *b,
+                           const char *const file,
+                           const int line,
+                           const char *const msg);
+CMOCKA_NO_ACCESS_ATTRIBUTE
 void _assert_ptr_not_equal(const void *a,
                            const void *b,
                            const char *const file,
                            const int line);
+CMOCKA_NO_ACCESS_ATTRIBUTE
+void _assert_ptr_not_equal_msg(const void *a,
+                               const void *b,
+                               const char *const file,
+                               const int line,
+                               const char *const msg);
 void _assert_string_equal(const char * const a, const char * const b,
                           const char * const file, const int line);
 void _assert_string_not_equal(const char * const a, const char * const b,
