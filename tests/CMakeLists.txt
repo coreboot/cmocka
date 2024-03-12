@@ -38,6 +38,8 @@ set(CMOCKA_TESTS
     test_assert_memory_fail
     test_assert_ptr
     test_assert_ptr_fail
+    test_assert_ptr_msg
+    test_assert_ptr_msg_fail
     test_assert_u_int
     test_assert_u_int_fail
     test_assert_range
@@ -137,6 +139,13 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] ptr_tests: 4 test"
+)
+
+set_tests_properties(
+    test_assert_ptr_msg_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] ptr_msg_tests: 4 test"
 )
 
 set_tests_properties(
