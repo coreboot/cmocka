@@ -226,6 +226,7 @@ typedef struct CheckMemoryData {
     size_t size;
 } CheckMemoryData;
 
+void _additional_msg(const char * const msg);
 static ListNode* list_initialize(ListNode * const node);
 static ListNode* list_add(ListNode * const head, ListNode *new_node);
 static ListNode* list_add_value(ListNode * const head, const void *value,
@@ -2877,6 +2878,17 @@ static void fail_if_blocks_allocated(const ListNode * const check_point,
     }
 }
 
+void _additional_msg(const char * const msg) {
+    uint32_t output = cm_get_output();
+
+    if (output & CM_OUTPUT_STANDARD) {
+        cmocka_print_error("[          ] --- %s\n", msg);
+    }
+    if ((output & CM_OUTPUT_SUBUNIT) || (output & CM_OUTPUT_TAP) ||
+        (output & CM_OUTPUT_XML)) {
+        cmocka_print_error("%s\n", msg);
+    }
+}
 
 void _fail(const char * const file, const int line) {
     uint32_t output = cm_get_output();
