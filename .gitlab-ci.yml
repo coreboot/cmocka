@@ -21,8 +21,6 @@ centos7/x86_64:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -40,8 +38,6 @@ fedora/gcc/x86_64:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -60,8 +56,6 @@ fedora/clang/x86_64:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -81,8 +75,6 @@ fedora/build:
       -DPICKY_DEVELOPER=ON
       .. &&
       make -j$(nproc) && make install
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -97,8 +89,6 @@ fedora/meson:
   script:
     - meson build -Dunit_testing=true &&
       meson test -C build --print-errorlogs
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -116,8 +106,6 @@ fedora/address-sanitizer:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -135,8 +123,6 @@ fedora/memory-sanitizer:
       -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
       -DUNIT_TESTING=ON ..
       && make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -153,8 +139,6 @@ fedora/undefined-sanitizer:
       -DCMAKE_BUILD_TYPE=UndefinedSanitizer
       -DUNIT_TESTING=ON ..
       && make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -186,8 +170,6 @@ fedora/csbuild:
       --git-commit-range $CI_COMMIT_RANGE
       --color
       --print-current --print-fixed
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -210,8 +192,6 @@ fedora/coverage:
       make ExperimentalTest &&
       make ExperimentalCoverage
   coverage: '/Percentage Coverage: \d+.\d+%/'
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -254,8 +234,6 @@ fedora/mingw64:
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) &&
       ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -277,8 +255,6 @@ fedora/mingw32:
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) &&
       ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -296,8 +272,6 @@ tumbleweed/x86_64/gcc:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -316,8 +290,6 @@ tumbleweed/x86/gcc:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -336,8 +308,6 @@ tumbleweed/x86_64/gcc7:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -357,8 +327,6 @@ tumbleweed/x86/gcc7:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -377,8 +345,6 @@ tumbleweed/x86_64/clang:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -392,8 +358,6 @@ tumbleweed/docs:
   image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$TUMBLEWEED_BUILD
   script:
     - mkdir -p obj && cd obj && cmake .. && make docs
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -414,8 +378,6 @@ tumbleweed/static-analysis:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       scan-build --status-bugs -o scan make -j$(nproc)
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -433,8 +395,6 @@ ubuntu/x86_64:
       -DPICKY_DEVELOPER=ON
       -DUNIT_TESTING=ON .. &&
       make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
   except:
     - tags
   artifacts:
@@ -515,8 +475,6 @@ coverity:
       --form version="`git describe --tags`"
       --form description="CI build"
       https://scan.coverity.com/builds?project=$COVERITY_SCAN_PROJECT_NAME
-  tags:
-    - shared
   only:
     refs:
       - master
