@@ -338,8 +338,7 @@ ubuntu/x86_64:
   variables:
     ErrorActionPreference: STOP
   tags:
-    - windows
-    - shared-windows
+    - saas-windows-medium-amd64
   except:
     - tags
   artifacts:
