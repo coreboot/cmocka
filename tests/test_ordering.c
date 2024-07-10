@@ -34,6 +34,12 @@ static void test_does_succeed_for_expected(void **state)
     mock_test_a_called();
 }
 
+static void test_does_succeed_for_expected_zero_and_no_call(void **state)
+{
+    (void)state;
+    expect_function_calls(mock_test_a_called, 0);
+}
+
 static void test_does_succeed_for_multiple_calls(void **state)
 {
     (void)state;
@@ -102,6 +108,7 @@ static void test_ordering_ignores_out_of_order_properly(void **state)
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_does_succeed_for_expected)
+        ,cmocka_unit_test(test_does_succeed_for_expected_zero_and_no_call)
         ,cmocka_unit_test(test_does_succeed_for_multiple_calls)
         ,cmocka_unit_test(test_ordering_does_ignore_no_calls)
         ,cmocka_unit_test(test_ordering_does_ignore_calls)

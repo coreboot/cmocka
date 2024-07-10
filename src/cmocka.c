@@ -1191,7 +1191,11 @@ void _expect_function_call(
 
     assert_non_null(function_name);
     assert_non_null(file);
-    assert_true(count != 0);
+
+    // Treat expected zero count as no operation and fail via
+    // "No mock calls expected but called()."
+    if (count == 0)
+        return;
 
     ordering = (FuncOrderingValue *)malloc(sizeof(*ordering));
 
