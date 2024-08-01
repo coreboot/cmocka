@@ -57,6 +57,8 @@ set(CMOCKA_TESTS
     test_ordering_fail
     test_returns
     test_returns_fail
+    test_named_returns
+    test_named_returns_fail
     test_string
     test_wildcard
     test_skip_filter
@@ -202,7 +204,13 @@ set_tests_properties(
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] will_return_mock_tests: 6 test"
 )
-
+# test_named_returns_fail ensure proper failures
+set_tests_properties(
+    test_named_returns_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] will_return_mock_tests: 6 test"
+)
 # test_exception_handler
 if (TEST_EXCEPTION_HANDLER)
     set_tests_properties(test_exception_handler

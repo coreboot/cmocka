@@ -52,6 +52,14 @@ set_tests_properties(assert_module_test
                      PROPERTIES
                         WILL_FAIL 1)
 
+### Named return mock tests
+add_cmocka_test(named_returns_test
+                SOURCES named_returns.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+add_cmocka_test_environment(named_returns_test)
+
 if (NOT WIN32)
     add_subdirectory(mock)
 endif()
