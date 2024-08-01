@@ -302,6 +302,12 @@ static CMOCKA_THREAD ListNode global_function_result_map_head;
 /* Location of the last mock value returned was declared. */
 static CMOCKA_THREAD SourceLocation global_last_mock_value_location;
 
+/* Keeps a map of the named values that functions will have to use */
+/* to provide mocked interfaces. */
+static CMOCKA_THREAD ListNode global_named_result_map_head;
+/* Location of the last named mock value returned was declared. */
+static CMOCKA_THREAD SourceLocation global_last_named_mock_value_location;
+
 /* Keeps a map of the values that functions expect as parameters to their
  * mocked interfaces. */
 static CMOCKA_THREAD ListNode global_function_parameter_map_head;
@@ -578,6 +584,8 @@ void initialize_testing(const char *test_name) {
     (void)test_name;
     list_initialize(&global_function_result_map_head);
     initialize_source_location(&global_last_mock_value_location);
+    list_initialize(&global_named_result_map_head);
+    initialize_source_location(&global_last_named_mock_value_location);
     list_initialize(&global_function_parameter_map_head);
     initialize_source_location(&global_last_parameter_location);
     list_initialize(&global_call_ordering_head);
@@ -591,6 +599,13 @@ static int has_leftover_values(const char *test_name) {
     if (check_for_leftover_values(
             &global_function_result_map_head,
             "Has remaining non-returned values", 1)) {
+        leftover_values = true;
+    }
+
+    remove_always_return_values(&global_named_result_map_head, 2);
+    if (check_for_leftover_values(
+            &global_named_result_map_head,
+            "Has remaining non-returned named values", 1)) {
         leftover_values = true;
     }
 
@@ -625,6 +640,10 @@ static void teardown_testing(const char *test_name) {
               &symbol_map_value_data);
     initialize_source_location(&global_last_mock_value_location);
     uintmax_t symbol_map_value_data_1 = 1;
+    list_free(&global_named_result_map_head,
+              free_symbol_map_value,
+              &symbol_map_value_data_1);
+    initialize_source_location(&global_last_named_mock_value_location);
     list_free(&global_function_parameter_map_head,
               free_symbol_map_value,
               &symbol_map_value_data_1);
@@ -1063,6 +1082,64 @@ CMockaValueData _mock(const char *const function,
     return (CMockaValueData){.ptr = NULL};
 }
 
+/* Get the next named return value for the specified mock function. */
+CMockaValueData _mock_named(const char *const function,
+                      const char *name,
+                      const char *const file,
+                      const int line,
+                      const char *type)
+{
+    void *result;
+    const char * const symbol_names[] = {function, name};
+    const int rc = get_symbol_value(&global_named_result_map_head,
+                                    symbol_names, 2, &result);
+    if (rc) {
+        SymbolValue * const symbol = (SymbolValue*)result;
+        /* If a type will be passed, check for type safety. */
+        if (type != NULL) {
+            if (symbol->name == NULL || strcmp(type, symbol->name) != 0) {
+                cmocka_print_error(
+                    SOURCE_LOCATION_FORMAT
+                    ": error: Type mismatch: name[%s] expected[%s]in %s\n",
+                    file,
+                    line,
+                    symbol->name ? symbol->name : "NULL",
+                    type,
+                    function);
+                if (source_location_is_set(&global_last_named_mock_value_location)) {
+                    cmocka_print_error("NOTE: The value to be returned by mock "
+                                       "declared here: " SOURCE_LOCATION_FORMAT
+                                       "\n",
+                                       global_last_named_mock_value_location.file,
+                                       global_last_named_mock_value_location.line);
+                }
+                free(symbol);
+                exit_test(true);
+            }
+        }
+        const CMockaValueData value = symbol->value;
+        global_last_named_mock_value_location = symbol->location;
+        if (rc == 1) {
+            free(symbol);
+        }
+        return value;
+    } else {
+        cmocka_print_error(SOURCE_LOCATION_FORMAT ": error: Could not get value "
+                       "to mock function %s\n", file, line, function);
+        if (source_location_is_set(&global_last_named_mock_value_location)) {
+            cmocka_print_error(SOURCE_LOCATION_FORMAT
+                           ": note: Previously returned mock value was declared here\n",
+                           global_last_named_mock_value_location.file,
+                           global_last_named_mock_value_location.line);
+        } else {
+            cmocka_print_error("There were no previously returned mock values for "
+                           "this test.\n");
+        }
+        exit_test(true);
+    }
+    return (CMockaValueData){.ptr = NULL};
+}
+
 /* Ensure that function is being called in proper order */
 void _function_called(const char *const function,
                       const char *const file,
@@ -1148,6 +1225,29 @@ void _will_return(const char *const function_name,
 
     set_source_location(&return_value->location, file, line);
     add_symbol_value(&global_function_result_map_head, &function_name, 1,
+                     return_value, count);
+}
+
+/* Add a named return value for the specified mock function name. */
+void _will_return_named(const char *const function_name,
+                  const char *name,
+                  const char *const file,
+                  const int line,
+                  const char *type,
+                  const CMockaValueData value,
+                  const int count)
+{
+    SymbolValue *const return_value = calloc(1, sizeof(SymbolValue));
+    assert_non_null(return_value);
+    assert_non_null(name);
+    assert_true(count != 0);
+
+    return_value->name = type;
+    return_value->value = value;
+
+    set_source_location(&return_value->location, file, line);
+    const char * const symbol_names[] = { function_name, name };
+    add_symbol_value(&global_named_result_map_head, symbol_names, 2,
                      return_value, count);
 }
 
