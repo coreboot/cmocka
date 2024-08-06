@@ -543,6 +543,32 @@ type mock_parameter_ptr_type(#name, #type)
 
 #ifdef DOXYGEN
 /**
+ * @brief set errno for the current function.
+ *
+ * @code
+ * mock_errno();
+ * @endcode
+ *
+ * @see will_set_errno()
+ */
+void mock_errno()
+#else
+#define mock_errno()                      \
+    do {                                  \
+        intmax_t err = (_mock_parameter(  \
+                    __func__,             \
+                    "/errno",             \
+                    __FILE__,             \
+                    __LINE__,             \
+                    "errno")).int_val;    \
+        if (err != 0) {                   \
+            errno = err;                  \
+        }                                 \
+    } while (0)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a value to be returned by mock() later.
  *
  * @param[in]  #function  The function which should return the given value.
@@ -1417,7 +1443,154 @@ void will_set_parameter_ptr_maybe(#function, #name, void *value);
 #define will_set_parameter_ptr_maybe(function, name, value) \
     will_set_parameter_ptr_count(function, name, (value), WILL_RETURN_ONCE)
 #endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an integer value to set errno to by mock_errno() later.
+ *
+ * @param[in]  #function  The function in which errno
+ * should be set to the given value.
+ *
+ * @param[in]  value The value to set errno to by the call to mock_errno().
+ *
+ * @code
+ * void sets_errno(void)
+ * {
+ *      mock_errno();
+ * }
+ *
+ * static void test_sets_errno(void **state)
+ * {
+ *      will_set_errno(sets_errno, -3);
+ *
+ *      assert_int_equal(errno, -3);
+ * }
+ * @endcode
+ *
+ * @see mock_errno()
+ */
+void will_set_errno(#function, intmax_t value);
+#else
+#define will_set_errno(function, value)         \
+    _will_set_parameter(#function,              \
+            "/errno",                           \
+            __FILE__,                           \
+            __LINE__,                           \
+            "errno",                            \
+            assign_int_to_cmocka_value(value),  \
+            1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an integer value to always set errno to by mock_errno().
+ *
+ *
+ *
+ * @param[in]  #function  The function in which errno
+ * should be set to the given value.
+ *
+ * @param[in]  value The value to set errno to by the call to mock_errno().
+ *
+ * @param[in]  count  The count parameter gives the number of times the value
+ *                    should be validated by check_expected(). If count is set
+ *                    to @ref EXPECT_ALWAYS the value will always be returned,
+ *                    and cmocka expects check_expected() to be issued at least
+ *                    once. If count is set to @ref EXPECT_MAYBE, any number of
+ *                    calls to check_expected() is accepted, including zero.
+ *
+ * @code
+ * void sets_errno(void)
+ * {
+ *      mock_errno();
+ * }
+ * static void test_sets_errno(void **state)
+ * {
+ *      will_set_errno_count(sets_errno, -3, 2);
+ *      sets_errno();
+ *      assert_int_equal(errno, -3);
+ *      errno = 0;
+ *      sets_errno();
+ *      assert_int_equal(errno, -3);
+ * }
+ * @endcode
+ *
+ * @see mock_errno()
+ * @see will_set_errno()
+ * @see will_set_errno_always()
+ * @see will_set_errno_maybe()
+ */
+void will_set_errno_count(#function, intmax_t value, size_t cont);
+#else
+#define will_set_errno_count(function, value, count)    \
+    _will_set_parameter(#function,                      \
+            "/errno",                                   \
+            __FILE__,                                   \
+            __LINE__,                                   \
+            "errno",                                    \
+            assign_int_to_cmocka_value(value),          \
+            (count))
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an integer value to set errno to by mock_errno() later,
+ * for a specified number of times.
+ *
+ * This stores a value which will errno will always be set to by mock_errno()
+ * but is required to be set least once by a call to mock_errno().
+ *
+ * @param[in]  #function  The function in which errno
+ * should be set to the given value.
+ *
+ * @param[in]  value The value to set errno to by the call to mock_errno().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_count(function, name, value, -1);
+ * @endcode
+ *
+ * @see mock_errno()
+ * @see will_set_errno()
+ * @see will_set_errno_count()
+ * @see will_set_errno_maybe()
+ */
+void will_set_errno_always(#function, intmax_t value);
+#else
+#define will_set_errno_always(function, value)    \
+    will_set_errno_count(function, (value), WILL_RETURN_ALWAYS);
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an integer value to set errno to by mock_errno() later,
+ * for a specified number of times.
+ *
+ * This stores a value which will errno will always be set to by mock_errno()
+ * and won't fail if mock_errno() is never called.
+ *
+ * @param[in]  #function  The function in which errno
+ * should be set to the given value.
+ *
+ * @param[in]  value The value to set errno to by the call to mock_errno().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_count(function, name, value, -2);
+ * @endcode
+ *
+ * @see mock_errno()
+ * @see will_set_errno()
+ * @see will_set_errno_count()
+ * @see will_set_errno_always()
+ */
+void will_set_errno_maybe(#function, intmax_t value);
+#else
+#define will_set_errno_maybe(function, value)    \
+    will_set_errno_count(function, (value), WILL_RETURN_ONCE);
+#endif
 /** @} */
+
 /**
  * @defgroup cmocka_param Checking Parameters
  * @ingroup cmocka
