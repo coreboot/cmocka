@@ -59,6 +59,8 @@ set(CMOCKA_TESTS
     test_returns_fail
     test_set_parameter
     test_set_parameter_fail
+    test_set_errno
+    test_set_errno_fail
     test_string
     test_wildcard
     test_skip_filter
@@ -210,6 +212,13 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] will_set_parameter_mock_tests: 6 test"
+)
+# test_set_errno_fail ensure proper failures
+set_tests_properties(
+    test_set_errno_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] will_set_errno_tests: 3 test"
 )
 # test_exception_handler
 if (TEST_EXCEPTION_HANDLER)

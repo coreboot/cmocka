@@ -60,6 +60,14 @@ add_cmocka_test(set_parameters_test
                 LINK_LIBRARIES cmocka::cmocka)
 add_cmocka_test_environment(set_parameters_test)
 
+### Errno mock tests
+add_cmocka_test(set_errno_tests
+                SOURCES set_errno.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+add_cmocka_test_environment(set_errno_tests)
+
 if (NOT WIN32)
     add_subdirectory(mock)
 endif()
