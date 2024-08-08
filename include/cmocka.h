@@ -361,34 +361,34 @@ type mock_ptr_type(#type);
  *
  * @code
  * int param;
- * param = (int)mock_named(number);
+ * param = (int)mock_parameter(number);
  * @endcode
  *
  * @see mock()
- * @see mock_named_type()
- * @see mock_named_int()
- * @see mock_named_uint()
- * @see mock_named_float()
- * @see mock_named_ptr()
- * @see mock_named_ptr_type()
+ * @see mock_parameter_type()
+ * @see mock_parameter_int()
+ * @see mock_parameter_uint()
+ * @see mock_parameter_float()
+ * @see mock_parameter_ptr()
+ * @see mock_parameter_ptr_type()
  * @see will_return()
- * @see will_return_named()
- * @see will_return_named_int()
- * @see will_return_named_uint()
- * @see will_return_named_float()
- * @see will_return_named_count()
- * @see will_return_named_always()
- * @see will_return_named_maybe()
- * @see will_return_named_ptr()
- * @see will_return_named_ptr_type()
- * @see will_return_named_ptr_coint()
- * @see will_return_named_ptr_always()
- * @see will_return_named_ptr_maybe()
+ * @see will_set_parameter()
+ * @see will_set_parameter_int()
+ * @see will_set_parameter_uint()
+ * @see will_set_parameter_float()
+ * @see will_set_parameter_count()
+ * @see will_set_parameter_always()
+ * @see will_set_parameter_maybe()
+ * @see will_set_parameter_ptr()
+ * @see will_set_parameter_ptr_type()
+ * @see will_set_parameter_ptr_coint()
+ * @see will_set_parameter_ptr_always()
+ * @see will_set_parameter_ptr_maybe()
  */
-uintmax_t mock_named(#name);
+uintmax_t mock_parameter(#name);
 #else
-#define mock_named(name) \
-    (_mock_named(__func__, #name, __FILE__, __LINE__, NULL)).uint_val
+#define mock_parameter(name) \
+    (_mock_parameter(__func__, #name, __FILE__, __LINE__, NULL)).uint_val
 #endif
 
 #ifdef DOXYGEN
@@ -408,15 +408,15 @@ uintmax_t mock_named(#name);
  * @code
  * int param;
  *
- * param = mock_named_type(param, int);
+ * param = mock_parameter_type(param, int);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see will_set_parameter()
  */
-#type mock_named_type(#name, #type);
+#type mock_parameter_type(#name, #type);
 #else
-#define mock_named_type(name, type) ((type) mock_named(#name))
+#define mock_parameter_type(name, type) ((type) mock_parameter(#name))
 #endif
 
 #ifdef DOXYGEN
@@ -430,17 +430,17 @@ uintmax_t mock_named(#name);
  * @code
  * intmax_t param;
  *
- * param = mock_named_int(param);
+ * param = mock_parameter_int(param);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_int()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_int()
  */
-intmax_t mock_named_int(#name);
+intmax_t mock_parameter_int(#name);
 #else
-#define mock_named_int(name) \
-    (_mock_named(__func__, #name, __FILE__, __LINE__, "intmax_t")).int_val
+#define mock_parameter_int(name) \
+    (_mock_parameter(__func__, #name, __FILE__, __LINE__, "intmax_t")).int_val
 #endif
 
 #ifdef DOXYGEN
@@ -454,17 +454,17 @@ intmax_t mock_named_int(#name);
  * @code
  * uintmax_t param;
  *
- * param = mock_named_uint(param);
+ * param = mock_parameter_uint(param);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_uint()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_uint()
  */
-uintmax_t mock_named_uint(#name);
+uintmax_t mock_parameter_uint(#name);
 #else
-#define mock_named_uint(name) \
-    (_mock_named(__func__, #name, __FILE__, __LINE__, "uintmax_t")).uint_val
+#define mock_parameter_uint(name) \
+    (_mock_parameter(__func__, #name, __FILE__, __LINE__, "uintmax_t")).uint_val
 #endif
 
 #ifdef DOXYGEN
@@ -478,17 +478,17 @@ uintmax_t mock_named_uint(#name);
  * @code
  * double param;
  *
- * param = mock_named_float(param);
+ * param = mock_parameter_float(param);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_float()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_float()
  */
-double mock_named_float(#name);
+double mock_parameter_float(#name);
 #else
-#define mock_named_float(name) \
-    (_mock_named(__func__, #name, __FILE__, __LINE__, "double")).real_val
+#define mock_parameter_float(name) \
+    (_mock_parameter(__func__, #name, __FILE__, __LINE__, "double")).real_val
 #endif
 
 #ifdef DOXYGEN
@@ -501,17 +501,17 @@ double mock_named_float(#name);
  *
  * @code
  * int *result
- * result = (int*)mock_named_ptr(result);
+ * result = (int*)mock_parameter_ptr(result);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_ptr()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_ptr()
  */
-void *mock_named_ptr(#name)
+void *mock_parameter_ptr(#name)
 #else
-#define mock_named_ptr(name) \
-    ((_mock_named(__func__, #name, __FILE__, __LINE__, NULL)).ptr)
+#define mock_parameter_ptr(name) \
+    ((_mock_parameter(__func__, #name, __FILE__, __LINE__, NULL)).ptr)
 #endif
 
 #ifdef DOXYGEN
@@ -528,17 +528,17 @@ void *mock_named_ptr(#name)
  *
  * @code
  * int *result
- * result = mock_named_ptr_type(result, int*);
+ * result = mock_parameter_ptr_type(result, int*);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_ptr_type()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_ptr_type()
  */
-type mock_named_ptr_type(#name, #type)
+type mock_parameter_ptr_type(#name, #type)
 #else
-#define mock_named_ptr_type(name, type) \
-    ((type)(_mock_named(__func__, #name, __FILE__, __LINE__, #type)).ptr)
+#define mock_parameter_ptr_type(name, type) \
+    ((type)(_mock_parameter(__func__, #name, __FILE__, __LINE__, #type)).ptr)
 #endif
 
 #ifdef DOXYGEN
@@ -924,23 +924,23 @@ void will_return_ptr_maybe(#function, void *value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value to be returned by mock_named() later.
+ * @brief Store a named value to be returned by mock_parameter() later.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @code
  * void return_integer(int *result)
  * {
- *      *result = (int)mock_named(result);
+ *      *result = (int)mock_parameter(result);
  * }
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_named(return_integer, result, 42);
+ *      will_set_parameter(return_integer, result, 42);
  *
  *      int retVal = 0;
  *      my_function_calling_return_integer(&retVal);
@@ -948,29 +948,29 @@ void will_return_ptr_maybe(#function, void *value);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named()
- * @see mock_named_int()
- * @see mock_named_uint()
- * @see mock_named_float()
- * @see mock_named_ptr()
- * @see mock_named_ptr_type()
- * @see will_return_named_int()
- * @see will_return_named_uint()
- * @see will_return_named_float()
- * @see will_return_named_ptr()
- * @see will_return_named_ptr_type()
- * @see will_return_named_count()
- * @see will_return_named_always()
- * @see will_return_named_maybe()
- * @see will_return_named_ptr_count()
- * @see will_return_named_ptr_always()
- * @see will_return_named_ptr_maybe()
+ * @see mock_parameter()
+ * @see mock_parameter()
+ * @see mock_parameter_int()
+ * @see mock_parameter_uint()
+ * @see mock_parameter_float()
+ * @see mock_parameter_ptr()
+ * @see mock_parameter_ptr_type()
+ * @see will_set_parameter_int()
+ * @see will_set_parameter_uint()
+ * @see will_set_parameter_float()
+ * @see will_set_parameter_ptr()
+ * @see will_set_parameter_ptr_type()
+ * @see will_set_parameter_count()
+ * @see will_set_parameter_always()
+ * @see will_set_parameter_maybe()
+ * @see will_set_parameter_ptr_count()
+ * @see will_set_parameter_ptr_always()
+ * @see will_set_parameter_ptr_maybe()
  */
-void will_return_named(#function, #name, uintmax_t value);
+void will_set_parameter(#function, #name, uintmax_t value);
 #else
-#define will_return_named(function, name, value)  \
-    _will_return_named(cmocka_tostring(function), \
+#define will_set_parameter(function, name, value)  \
+    _will_set_parameter(cmocka_tostring(function), \
                  #name,                           \
                  __FILE__,                        \
                  __LINE__,                        \
@@ -981,40 +981,40 @@ void will_return_named(#function, #name, uintmax_t value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named integer value to be returned by mock_named() later.
+ * @brief Store a named integer value to be returned by mock_parameter() later.
  *
  * And adds some type checking information to be able to check
- * with call to mock_named_int().
+ * with call to mock_parameter_int().
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @code
  * void return_int32(int32_t *result)
  * {
- *      *result = (int32_t)mock_named_int(result);
+ *      *result = (int32_t)mock_parameter_int(result);
  * }
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_named_int(return_int32, result, -42);
+ *      will_set_parameter_int(return_int32, result, -42);
  *      int32_t result_param = 0;
  *      return_int32(&result_param);
  *      assert_int_equal(result_param, -42);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_int()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see mock_parameter_int()
+ * @see will_set_parameter()
  */
-void will_return_named_int(#function, #name, intmax_t value);
+void will_set_parameter_int(#function, #name, intmax_t value);
 #else
-#define will_return_named_int(function, name, value) \
-    _will_return_named(#function,                    \
+#define will_set_parameter_int(function, name, value) \
+    _will_set_parameter(#function,                    \
                  #name,                              \
                  __FILE__,                           \
                  __LINE__,                           \
@@ -1025,40 +1025,40 @@ void will_return_named_int(#function, #name, intmax_t value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named unsigned integer value to be returned by mock_named() later.
+ * @brief Store a named unsigned integer value to be returned by mock_parameter() later.
  *
  * And adds some type checking information to be able to check
- * with call to mock_named_uint().
+ * with call to mock_parameter_uint().
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @code
  * void return_uint32(uint32_t *result)
  * {
- *      *result =(uint32_t)mock_named_uint(result);
+ *      *result =(uint32_t)mock_parameter_uint(result);
  * }
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_named_uint(return_uint32, result 42);
+ *      will_set_parameter_uint(return_uint32, result 42);
  *      int32_t result_param = 0;
  *      return_uint32(&result_param);
  *      assert_uint_equal(result_param, 42);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_uint()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see mock_parameter_uint()
+ * @see will_set_parameter()
  */
 void will_return_uint(#function, #name, uintmax_t value);
 #else
-#define will_return_named_uint(function, name, value) \
-    _will_return_named(#function,                     \
+#define will_set_parameter_uint(function, name, value) \
+    _will_set_parameter(#function,                     \
                  #name,                               \
                  __FILE__,                            \
                  __LINE__,                            \
@@ -1069,40 +1069,40 @@ void will_return_uint(#function, #name, uintmax_t value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named double value to be returned by mock_named() later.
+ * @brief Store a named double value to be returned by mock_parameter() later.
  *
  * And adds some type checking information to be able to check
- * with call to mock_named_float().
+ * with call to mock_parameter_float().
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @code
  * void return_float(double *result)
  * {
- *      *result = mock_named_float(result);
+ *      *result = mock_parameter_float(result);
  * }
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_named_float(return_float, 34.7);
+ *      will_set_parameter_float(return_float, 34.7);
  *      double result_param = NAN;
  *      return_float(&result_param);
  *      assert_float_equal(result_param, 34.7, 0.0);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_float()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see mock_parameter_float()
+ * @see will_set_parameter()
  */
-void will_return_named_float(#function, #name, double value);
+void will_set_parameter_float(#function, #name, double value);
 #else
-#define will_return_named_float(function, name, value) \
-    _will_return_named(#function,                      \
+#define will_set_parameter_float(function, name, value) \
+    _will_set_parameter(#function,                      \
                  #name,                                \
                  __FILE__,                             \
                  __LINE__,                             \
@@ -1114,13 +1114,13 @@ void will_return_named_float(#function, #name, double value);
 #ifdef DOXYGEN
 /**
  * @brief Store a named value to be returned a specified number of times
- * by mock_named() later.
+ * by mock_parameter() later.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @param[in]  count The parameter indicates the number of times the value should
  *                   be returned by mock(). If count is set to -1, the value
@@ -1131,13 +1131,13 @@ void will_return_named_float(#function, #name, double value);
  * @code
  * void return_two_int(int *resultA, int *resultB)
  * {
- *      *resultA = mock_named_float(result);
- *      *resultB = mock_named_float(result);
+ *      *resultA = mock_parameter_float(result);
+ *      *resultB = mock_parameter_float(result);
  * }
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_named_count(return_two_int, result, 3, 2);
+ *      will_set_parameter_count(return_two_int, result, 3, 2);
  *      int result_paramA = 0;
  *      int result_paramB = 0;
  *      return_two_int(&result_paramA, &result_paramB);
@@ -1146,13 +1146,13 @@ void will_return_named_float(#function, #name, double value);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see will_set_parameter()
  */
-void will_return_named_count(#function, #name, uintmax_t value, int count);
+void will_set_parameter_count(#function, #name, uintmax_t value, int count);
 #else
-#define will_return_named_count(function, name, value, count) \
-    _will_return_named(cmocka_tostring(function),             \
+#define will_set_parameter_count(function, name, value, count) \
+    _will_set_parameter(cmocka_tostring(function),             \
                  #name,                                       \
                  __FILE__,                                    \
                  __LINE__,                                    \
@@ -1163,92 +1163,92 @@ void will_return_named_count(#function, #name, uintmax_t value, int count);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value that will be always be returned by mock_named().
+ * @brief Store a named value that will be always be returned by mock_parameter().
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * This is equivalent to:
  * @code
  * will_return_count(function, value, -1);
  * @endcode
  *
- * @see mock_named()
- * @see will_return_named()
- * @see will_return_named_count()
+ * @see mock_parameter()
+ * @see will_set_parameter()
+ * @see will_set_parameter_count()
  */
-void will_return_named_always(#function, #name, uintmax_t value);
+void will_set_parameter_always(#function, #name, uintmax_t value);
 #else
-#define will_return_named_always(function, name, value) \
-    will_return_named_count(function, name, (value), WILL_RETURN_ALWAYS)
+#define will_set_parameter_always(function, name, value) \
+    will_set_parameter_count(function, name, (value), WILL_RETURN_ALWAYS)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value that may be always returned by mock_named().
+ * @brief Store a named value that may be always returned by mock_parameter().
  *
- * This stores a value which will always be returned by mock_named() but is not
- * required to be returned by at least one call to mock_named(). Therefore,
- * in contrast to will_return_named_always() which causes a test failure if it
- * is not returned at least once, will_return_named_maybe() will never cause a test
+ * This stores a value which will always be returned by mock_parameter() but is not
+ * required to be returned by at least one call to mock_parameter(). Therefore,
+ * in contrast to will_set_parameter_always() which causes a test failure if it
+ * is not returned at least once, will_set_parameter_maybe() will never cause a test
  * to fail if its value is not returned.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * This is equivalent to:
  * @code
- * will_return_named_count(function, name, value, -2);
+ * will_set_parameter_count(function, name, value, -2);
  * @endcode
  *
- * @see mock_named()
+ * @see mock_parameter()
  * @see will_return()
  * @see will_return_count()
  */
-void will_return_named_maybe(#function, #name, uintmax_t value);
+void will_set_parameter_maybe(#function, #name, uintmax_t value);
 #else
-#define will_return_named_maybe(function, name, value) \
-    will_return_named_count(function, name, (value), WILL_RETURN_ONCE)
+#define will_set_parameter_maybe(function, name, value) \
+    will_set_parameter_count(function, name, (value), WILL_RETURN_ONCE)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value to be returned by mock_named() later.
+ * @brief Store a named pointer value to be returned by mock_parameter() later.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @code
  * void return_pointer(const char **result)
  * {
- *      *result = (const char *)mock_named_ptr(result);
+ *      *result = (const char *)mock_parameter_ptr(result);
  * }
  * static void test_pointer_return(void **state)
  * {
- *      will_return_named ptr(return_pointer, result, "hello world");
+ *      will_set_parameter ptr(return_pointer, result, "hello world");
  *      const char *returned = NULL;
  *      my_func_calling_return_pointer(&returned);
  *      assert_string_equal(returned, "hello world");
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_ptr()
- * @see will_return_named()
+ * @see mock_parameter()
+ * @see mock_parameter_ptr()
+ * @see will_set_parameter()
  */
-void will_return_named_ptr(#function, #name, void *value);
+void will_set_parameter_ptr(#function, #name, void *value);
 #else
-#define will_return_named_ptr(function, name, value) \
-    _will_return_named(#function,                    \
+#define will_set_parameter_ptr(function, name, value) \
+    _will_set_parameter(#function,                    \
                  #name,                              \
                  __FILE__,                           \
                  __LINE__,                           \
@@ -1259,7 +1259,7 @@ void will_return_named_ptr(#function, #name, void *value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value to be returned by mock_named() later.
+ * @brief Store a named pointer value to be returned by mock_parameter() later.
  *
  * This will also check that the type matches and if not will fail().
  *
@@ -1267,34 +1267,34 @@ void will_return_named_ptr(#function, #name, void *value);
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value The value to be returned by mock_named().
+ * @param[in]  value The value to be returned by mock_parameter().
  *
  * @param[in]  type The type of the pointer.
  *
  * @code
  * void return_pointer(const char **result)
  * {
- *      *result = mock_named_ptr_typed(result, const char*);
+ *      *result = mock_parameter_ptr_typed(result, const char*);
  * }
  * static void test_pointer_return(void **state)
  * {
- *      will_return_named_ptr_type(return_pointer, result, "hello world", const char*);
+ *      will_set_parameter_ptr_type(return_pointer, result, "hello world", const char*);
  *      const char *returned = NULL;
  *      my_func_calling_return_pointer(&returned);
  *      assert_string_equal(returned, "hello world");
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_ptr()
- * @see mock_named_ptr_type()
- * @see will_return_named()
- * @see will_return_named_ptr()
+ * @see mock_parameter()
+ * @see mock_parameter_ptr()
+ * @see mock_parameter_ptr_type()
+ * @see will_set_parameter()
+ * @see will_set_parameter_ptr()
  */
-void will_return_named_ptr_type(#function, #name, void *value, #type);
+void will_set_parameter_ptr_type(#function, #name, void *value, #type);
 #else
-#define will_return_named_ptr_type(function, name, value, type) \
-    _will_return_named(#function,                               \
+#define will_set_parameter_ptr_type(function, name, value, type) \
+    _will_set_parameter(#function,                               \
                  #name,                                         \
                  __FILE__,                                      \
                  __LINE__,                                      \
@@ -1306,29 +1306,29 @@ void will_return_named_ptr_type(#function, #name, void *value, #type);
 #ifdef DOXYGEN
 /**
  * @brief Store a named pointer value to be returned a specified number of times
- * by mock_named_ptr() later.
+ * by mock_parameter_ptr() later.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value  The value to be returned by mock_named_ptr().
+ * @param[in]  value  The value to be returned by mock_parameter_ptr().
  *
  * @param[in]  count The parameter indicates the number of times the value should
- *                   be returned by mock_named_ptr(). If count is set to -1, the value
+ *                   be returned by mock_parameter_ptr(). If count is set to -1, the value
  *                   will always be returned but must be returned at least once.
  *                   If count is set to -2, the value will always be returned
- *                   by mock_named_ptr(), but is not required to be returned.
+ *                   by mock_parameter_ptr(), but is not required to be returned.
  *
  * @code
  * void return_pointer(const char **resultA, const char **resultB)
  * {
- *      *resultA = (const char *)mock_named_ptr(result);
- *      *resultB = (const char *)mock_named_ptr(result);
+ *      *resultA = (const char *)mock_parameter_ptr(result);
+ *      *resultB = (const char *)mock_parameter_ptr(result);
  * }
  * static void test_pointer_return(void **state)
  * {
- *      will_return_named_ptr_count(return_pointer, result, "hello world", const char*, 2);
+ *      will_set_parameter_ptr_count(return_pointer, result, "hello world", const char*, 2);
  *      const char *returnedA = NULL;
  *      const char *returnedB = NULL;
  *      my_func_calling_return_pointer(&returnedA, &returnedB);
@@ -1337,15 +1337,15 @@ void will_return_named_ptr_type(#function, #name, void *value, #type);
  * }
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_ptr()
+ * @see mock_parameter()
+ * @see mock_parameter_ptr()
  * @see will_named_return()
  * @see will_named_return_ptr()
  */
-void will_return_named_ptr_count(#function, #name, void *value, #type, count);
+void will_set_parameter_ptr_count(#function, #name, void *value, #type, count);
 #else
-#define will_return_named_ptr_count(function, name, value, count) \
-    _will_return_named(#function,                                 \
+#define will_set_parameter_ptr_count(function, name, value, count) \
+    _will_set_parameter(#function,                                 \
                  #name,                                           \
                  __FILE__,                                        \
                  __LINE__,                                        \
@@ -1356,50 +1356,50 @@ void will_return_named_ptr_count(#function, #name, void *value, #type, count);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value that may be always returned by mock_named_ptr().
+ * @brief Store a named pointer value that may be always returned by mock_parameter_ptr().
  *
- * This stores a value which will always be returned by mock_named_ptr() is
- * not required to be returned by at least one call to mock_named_ptr().
+ * This stores a value which will always be returned by mock_parameter_ptr() is
+ * not required to be returned by at least one call to mock_parameter_ptr().
  * If it is not returned at least once the test will fail.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value  The value to be returned by mock_named_ptr().
+ * @param[in]  value  The value to be returned by mock_parameter_ptr().
  *
  * This is equivalent to:
  * @code
  * will_return_ptr_count(function, value, -1);
  * @endcode
  *
- * @see mock_named()
- * @see mock_named_ptr()
- * @see will_return_named()
- * @see will_return_named_ptr()
- * @see will_return_named_ptr_count()
+ * @see mock_parameter()
+ * @see mock_parameter_ptr()
+ * @see will_set_parameter()
+ * @see will_set_parameter_ptr()
+ * @see will_set_parameter_ptr_count()
  */
-void will_return_named_ptr_always(#function, #name, void *value);
+void will_set_parameter_ptr_always(#function, #name, void *value);
 #else
-#define will_return_named_ptr_always(function, name, value) \
-    will_return_named_ptr_count(function, name, (value), WILL_RETURN_ALWAYS)
+#define will_set_parameter_ptr_always(function, name, value) \
+    will_set_parameter_ptr_count(function, name, (value), WILL_RETURN_ALWAYS)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value that may be always returned by mock_named_ptr().
+ * @brief Store a named pointer value that may be always returned by mock_parameter_ptr().
  *
- * This stores a value which will always be returned by mock_named_ptr() but is
- * not required to be returned by at least one call to mock_named_ptr().
- * Therefore, in contrast to will_return_named_ptr_always() which causes a test
- * failure if it is not returned at least once, will_return_named_ptr() will
+ * This stores a value which will always be returned by mock_parameter_ptr() but is
+ * not required to be returned by at least one call to mock_parameter_ptr().
+ * Therefore, in contrast to will_set_parameter_ptr_always() which causes a test
+ * failure if it is not returned at least once, will_set_parameter_ptr() will
  * never cause a test to fail if its value is not returned.
  *
  * @param[in]  #function  The function in which the given value should be return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
- * @param[in]  value  The value to be returned by mock_named_ptr().
+ * @param[in]  value  The value to be returned by mock_parameter_ptr().
  *
  * This is equivalent to:
  * @code
@@ -1408,14 +1408,14 @@ void will_return_named_ptr_always(#function, #name, void *value);
  *
  * @see mock_name()
  * @see mock_name_ptr()
- * @see will_return_named()
- * @see will_return_named_ptr()
- * @see will_return_named_ptr_count()
+ * @see will_set_parameter()
+ * @see will_set_parameter_ptr()
+ * @see will_set_parameter_ptr_count()
  */
-void will_return_named_ptr_maybe(#function, #name, void *value);
+void will_set_parameter_ptr_maybe(#function, #name, void *value);
 #else
-#define will_return_named_ptr_maybe(function, name, value) \
-    will_return_named_ptr_count(function, name, (value), WILL_RETURN_ONCE)
+#define will_set_parameter_ptr_maybe(function, name, value) \
+    will_set_parameter_ptr_count(function, name, (value), WILL_RETURN_ONCE)
 #endif
 /** @} */
 /**
@@ -3716,7 +3716,7 @@ CMockaValueData _mock(const char *const function,
                       const int line,
                       const char *name);
 
-CMockaValueData _mock_named(const char *const function,
+CMockaValueData _mock_parameter(const char *const function,
                       const char *name,
                       const char *const file,
                       const int line,
@@ -3810,7 +3810,7 @@ void _will_return(const char *const function_name,
                   const char *name,
                   const CMockaValueData value,
                   const int count);
-void _will_return_named(const char *const function_name,
+void _will_set_parameter(const char *const function_name,
                   const char *name,
                   const char *const file,
                   const int line,

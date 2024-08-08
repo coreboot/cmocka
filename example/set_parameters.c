@@ -19,16 +19,16 @@ void test_internal_named_mocks(void **state);
 
 void named_return_parameter(int *number, double *real, const char **text)
 {
-    *real = mock_named_float(real);
-    *text = mock_named_ptr_type(text, const char *);
-    *number = mock_named_int(number);
+    *real = mock_parameter_float(real);
+    *text = mock_parameter_ptr_type(text, const char *);
+    *number = mock_parameter_int(number);
 }
 
 int internal_named_mocks(void)
 {
-    return mock_named_int(first_number)
-         + mock_named_int(second_number)
-         + mock_named_int(third_number);
+    return mock_parameter_int(first_number)
+         + mock_parameter_int(second_number)
+         + mock_parameter_int(third_number);
 }
 
 void test_named_return_parameter(void **state)
@@ -39,9 +39,9 @@ void test_named_return_parameter(void **state)
     double expected_real = 17.46;
     const char *expected_text = "10 zahme Ziegen ziehen 10 Zentner Zement zum Zoo.";
 
-    will_return_named_ptr_type(named_return_parameter, text, expected_text, const char *);
-    will_return_named_int(named_return_parameter, number, expected_number);
-    will_return_named_float(named_return_parameter, real, expected_real);
+    will_set_parameter_ptr_type(named_return_parameter, text, expected_text, const char *);
+    will_set_parameter_int(named_return_parameter, number, expected_number);
+    will_set_parameter_float(named_return_parameter, real, expected_real);
 
     int result_number = 0;
     double result_real = 0.0;
@@ -58,9 +58,9 @@ void test_internal_named_mocks(void **state)
 {
     (void) state; /* unused */
 
-    will_return_named_int(internal_named_mocks, second_number, 5);
-    will_return_named_int(internal_named_mocks, third_number, 3);
-    will_return_named_int(internal_named_mocks, first_number, 7);
+    will_set_parameter_int(internal_named_mocks, second_number, 5);
+    will_set_parameter_int(internal_named_mocks, third_number, 3);
+    will_set_parameter_int(internal_named_mocks, first_number, 7);
 
     assert_int_equal(internal_named_mocks(), 5 + 3 + 7);
 }

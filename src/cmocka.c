@@ -1083,7 +1083,7 @@ CMockaValueData _mock(const char *const function,
 }
 
 /* Get the next named return value for the specified mock function. */
-CMockaValueData _mock_named(const char *const function,
+CMockaValueData _mock_parameter(const char *const function,
                       const char *name,
                       const char *const file,
                       const int line,
@@ -1229,7 +1229,7 @@ void _will_return(const char *const function_name,
 }
 
 /* Add a named return value for the specified mock function name. */
-void _will_return_named(const char *const function_name,
+void _will_set_parameter(const char *const function_name,
                   const char *name,
                   const char *const file,
                   const int line,

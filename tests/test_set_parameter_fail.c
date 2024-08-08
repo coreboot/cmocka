@@ -13,7 +13,7 @@
 
 static void mock_function(int *result)
 {
-    *result = (int) mock_named(result);
+    *result = (int) mock_parameter(result);
 }
 
 static void mock_function_uint(uintmax_t *result)
@@ -23,7 +23,7 @@ static void mock_function_uint(uintmax_t *result)
 
 static void mock_function_ptr(void **result)
 {
-    *result = mock_named_ptr_type(result, void *);
+    *result = mock_parameter_ptr_type(result, void *);
 }
 
 
@@ -42,7 +42,7 @@ static void test_will_return_fails_for_no_calls(void **state)
 {
     (void) state;
 
-    will_return_named(mock_function, result, 32);
+    will_set_parameter(mock_function, result, 32);
 }
 
 static void test_will_return_count_fails_for_unreturned_items(void **state)
@@ -55,7 +55,7 @@ static void test_will_return_count_fails_for_unreturned_items(void **state)
     value = rand();
     numberOfCalls = (size_t) ((rand()) % 20 + 2);
 
-    will_return_named_count(mock_function, result, value, numberOfCalls);
+    will_set_parameter_count(mock_function, result, value, numberOfCalls);
     mock_function_call_times(numberOfCalls - 1u, value);
 }
 
@@ -67,7 +67,7 @@ static void test_will_return_always_fails_for_no_calls(void **state)
 
     value = rand();
 
-    will_return_named_always(mock_function, result, value);
+    will_set_parameter_always(mock_function, result, value);
 }
 
 static int teardown(void **state) {
@@ -82,7 +82,7 @@ static void test_will_return_int_type_mismatch(void **state)
 
     (void) state;
 
-    will_return_named_int(mock_function_uint, result, value);
+    will_set_parameter_int(mock_function_uint, result, value);
     uintmax_t result_param = UINT_MAX;
     mock_function_uint(&result_param);
 }
@@ -93,14 +93,14 @@ static void test_will_return_ptr_type_mismatch(void **state)
 
     (void) state;
 
-    will_return_named_ptr_type(mock_function_uint, result, value, const char *);
+    will_set_parameter_ptr_type(mock_function_uint, result, value, const char *);
     const char *result_param = NULL;
     mock_function_ptr((void*)&result_param);
 }
 
 int main(void)
 {
-    const struct CMUnitTest will_return_mock_tests[] = {
+    const struct CMUnitTest will_set_parameter_mock_tests[] = {
         cmocka_unit_test_teardown(test_will_return_fails_for_no_calls, teardown),
         cmocka_unit_test_teardown(test_will_return_count_fails_for_unreturned_items, teardown),
         cmocka_unit_test_teardown(test_will_return_always_fails_for_no_calls, teardown),
@@ -109,5 +109,5 @@ int main(void)
         cmocka_unit_test(test_will_return_ptr_type_mismatch),
     };
 
-    return cmocka_run_group_tests(will_return_mock_tests, NULL, NULL);
+    return cmocka_run_group_tests(will_set_parameter_mock_tests, NULL, NULL);
 }
