@@ -4115,10 +4115,27 @@ int _cmocka_run_group_tests(const char *group_name,
                             CMFixtureFunction group_teardown);
 
 /* Standard output and error print methods. */
+/** Prints a message to stdout (or calls the user-supplied message callback). */
 void print_message(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
+/** Prints a message to stderr (or calls the user-supplied message callback). */
 void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
-void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
-void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+
+/**
+ * @brief Set output callback functions for most output generated from CMocka.
+ *
+ * The supplied callback functions will be invoked by the standard output and
+ * error print methods. If no callbacks have been supplied, the default action
+ * is to print to stdout and stderr respectively.
+ *
+ * The one exception at present is XML output, which is always written directly
+ * to a file handle, even if that is stdout.
+ *
+ * @param[in] f_vprint_message The function to call for standard output.
+ * @param[in] f_vprint_error The function to call for error output.
+ */
+void cmocka_set_output_callbacks(
+    void (*f_vprint_message)(const char * const format, va_list args),
+    void (*f_vprint_error)(const char * const format, va_list args));
 
 enum cm_message_output {
     CM_OUTPUT_STANDARD = 1,
@@ -4190,6 +4207,7 @@ void cmocka_set_test_filter(const char *pattern);
  * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
  */
 void cmocka_set_skip_filter(const char *pattern);
+
 
 /** @} */
 

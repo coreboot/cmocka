@@ -122,6 +122,51 @@
 # define cm_longjmp(env, val)   longjmp(env, val)
 #endif
 
+/* Output functions */
+/**
+ * @brief Default message output function.
+ *
+ * This function prints messages to stdout.
+ *
+ * \param[in] format vprintf-compatible format string.
+ * \param[in] args vprintf-compatible arguments
+ */
+static void vprint_message_default_impl(const char* const format, va_list args)
+    CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+/**
+ * @brief Default error message output function.
+ *
+ * This function prints messages to stderr.
+ *
+ * \param[in] format vprintf-compatible format string.
+ * \param[in] args vprintf-compatible arguments
+ */
+static void vprint_error_default_impl(const char* const format, va_list args)
+    CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+
+/** Global function pointer pointing at a standard message output function.
+ * This is used throughout (most) of the code; the notable exception is the XML
+ * output module.
+*/
+void (*vprint_message)(const char * const format, va_list args) =
+    vprint_message_default_impl;
+/** Global function pointer pointing at an error message output function.
+ * This is used throughout (most) of the code; the notable exception is the XML
+ * output module.
+*/
+void (*vprint_error)(const char * const format, va_list args) =
+    vprint_error_default_impl;
+
+void cmocka_set_output_callbacks(
+    void (*f_vprint_message)(const char * const format, va_list args),
+    void (*f_vprint_error)(const char * const format, va_list args))
+{
+    vprint_message = (f_vprint_message != NULL)? f_vprint_message :
+        vprint_message_default_impl;
+    vprint_error = (f_vprint_error != NULL)? f_vprint_error :
+        vprint_error_default_impl;
+}
+
 /*
  * Declare and initialize a CMockaValueData variable name
  * with value the conversion of ptr.
@@ -3088,7 +3133,7 @@ void cmocka_print_error(const char * const format, ...)
 }
 
 /* Standard output and error print methods. */
-void vprint_message(const char* const format, va_list args)
+void vprint_message_default_impl(const char* const format, va_list args)
 {
     vprintf(format, args);
     fflush(stdout);
@@ -3101,7 +3146,7 @@ void vprint_message(const char* const format, va_list args)
 }
 
 
-void vprint_error(const char* const format, va_list args)
+void vprint_error_default_impl(const char* const format, va_list args)
 {
     vfprintf(stderr, format, args);
     fflush(stderr);

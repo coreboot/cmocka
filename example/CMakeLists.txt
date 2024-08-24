@@ -68,6 +68,14 @@ add_cmocka_test(set_errno_tests
                 LINK_LIBRARIES cmocka::cmocka)
 add_cmocka_test_environment(set_errno_tests)
 
+### Output override test
+add_cmocka_test(output_override_test
+                SOURCES output_override_test.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+add_cmocka_test_environment(output_override_test)
+
 if (NOT WIN32)
     add_subdirectory(mock)
 endif()
