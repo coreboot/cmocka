@@ -75,6 +75,14 @@ add_cmocka_test(output_override_test
                 LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
                 LINK_LIBRARIES cmocka::cmocka)
 add_cmocka_test_environment(output_override_test)
+# Note that in this example we are demonstrating a failing test, so we expect
+# the test to fail
+set_tests_properties(
+    output_override_test
+    PROPERTIES
+        WILL_FAIL
+        1
+)
 
 if (NOT WIN32)
     add_subdirectory(mock)
