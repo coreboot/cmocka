@@ -1,0 +1,48 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "version": 1,
+  "metadata": {
+    "authors": [
+      {
+        "name": "@VCS_SBOM_AUTHORS@"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:cryptomilk/projects/cmocka@@VCS_TAG@",
+      "cpe": "cpe:2.3:a:cryptomilk:cmocka:@VCS_TAG@:*:*:*:*:*:*:*",
+      "name": "cmocka",
+      "version": "@VCS_VERSION@",
+      "description": "A unit testing framework for C with support for mock objects",
+      "authors": [
+        {
+          "name": "@VCS_AUTHORS@",
+          "url": "https://git.cryptomilk.org/projects/cmocka.git/tree/AUTHORS"
+        }
+      ],
+      "supplier": {
+        "name": "cmocka developers"
+      },
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://cmocka.org/"
+        },
+        {
+          "type": "vcs",
+          "url": "https://git.cryptomilk.org/projects/cmocka.git"
+        }
+      ]
+    }
+  ]
+}
