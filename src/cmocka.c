@@ -148,22 +148,22 @@ static void vprint_error_default_impl(const char* const format, va_list args)
  * This is used throughout (most) of the code; the notable exception is the XML
  * output module.
 */
-void (*vprint_message)(const char * const format, va_list args) =
+static void (*vprint_message_impl)(const char * const format, va_list args) =
     vprint_message_default_impl;
 /** Global function pointer pointing at an error message output function.
  * This is used throughout (most) of the code; the notable exception is the XML
  * output module.
 */
-void (*vprint_error)(const char * const format, va_list args) =
+static void (*vprint_error_impl)(const char * const format, va_list args) =
     vprint_error_default_impl;
 
 void cmocka_set_output_callbacks(
     void (*f_vprint_message)(const char * const format, va_list args),
     void (*f_vprint_error)(const char * const format, va_list args))
 {
-    vprint_message = (f_vprint_message != NULL)? f_vprint_message :
+    vprint_message_impl = (f_vprint_message != NULL)? f_vprint_message :
         vprint_message_default_impl;
-    vprint_error = (f_vprint_error != NULL)? f_vprint_error :
+    vprint_error_impl = (f_vprint_error != NULL)? f_vprint_error :
         vprint_error_default_impl;
 }
 
@@ -3127,7 +3127,7 @@ void cmocka_print_error(const char * const format, ...)
     if (cm_error_message_enabled) {
         vcmocka_print_error(format, args);
     } else {
-        vprint_error(format, args);
+        vprint_error_impl(format, args);
     }
     va_end(args);
 }
@@ -3162,16 +3162,25 @@ void vprint_error_default_impl(const char* const format, va_list args)
 void print_message(const char* const format, ...) {
     va_list args;
     va_start(args, format);
-    vprint_message(format, args);
+    vprint_message_impl(format, args);
     va_end(args);
 }
 
+void vprint_message(const char* const format, va_list args)
+{
+    vprint_message_impl(format, args);
+}
 
 void print_error(const char* const format, ...) {
     va_list args;
     va_start(args, format);
-    vprint_error(format, args);
+    vprint_error_impl(format, args);
     va_end(args);
+}
+
+void vprint_error(const char* const format, va_list args)
+{
+    vprint_error_impl(format, args);
 }
 
 /* New formatter */

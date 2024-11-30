@@ -4115,10 +4115,10 @@ int _cmocka_run_group_tests(const char *group_name,
                             CMFixtureFunction group_teardown);
 
 /* Standard output and error print methods. */
-/** Prints a message to stdout (or calls the user-supplied message callback). */
 void print_message(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
-/** Prints a message to stderr (or calls the user-supplied message callback). */
 void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
+void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
 
 /**
  * @brief Set output callback functions for most output generated from CMocka.
