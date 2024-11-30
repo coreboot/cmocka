@@ -75,13 +75,27 @@ add_cmocka_test(output_override_test
                 LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
                 LINK_LIBRARIES cmocka::cmocka)
 add_cmocka_test_environment(output_override_test)
+
+set(output_override_test_output
+"---- UNIT TEST OUTPUT ----\
+[==========] tests: Running 4 test(s).\
+[ RUN      ] true_test_succeeds\
+\.*\
+[==========] tests: 4 test(s) run.\
+[  PASSED  ] 3 test(s).\
+[  FAILED  ] tests: 1 test(s), listed below:\
+[  FAILED  ] false_test_fails\
+\
+ 1 FAILED TEST(S)\
+\
+---- UNIT TEST OUTPUT ----")
+
 # Note that in this example we are demonstrating a failing test, so we expect
 # the test to fail
-set_tests_properties(
-    output_override_test
-    PROPERTIES
-        WILL_FAIL
-        1
+set_tests_properties(output_override_test
+                     PROPERTIES
+                        WILL_FAIL 1
+                        PASS_REGULAR_EXPRESSION ${output_override_test_output}
 )
 
 if (NOT WIN32)
