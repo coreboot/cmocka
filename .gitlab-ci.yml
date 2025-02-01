@@ -2,7 +2,6 @@
 variables:
   BUILD_IMAGES_PROJECT: cmocka/gitlab-build-images
   FEDORA_BUILD: buildenv-fedora
-  CENTOS7_BUILD: buildenv-centos7
   TUMBLEWEED_BUILD: buildenv-tumbleweed
   MINGW_BUILD: buildenv-mingw
   UBUNTU_BUILD: buildenv-ubuntu
@@ -11,25 +10,6 @@ stages:
   - build
   - test
   - analysis
-
-centos7/x86_64:
-  stage: test
-  image: $CI_REGISTRY/$BUILD_IMAGES_PROJECT:$CENTOS7_BUILD
-  script:
-    - mkdir -p obj && cd obj && cmake3
-      -DCMAKE_BUILD_TYPE=RelWithDebInfo
-      -DPICKY_DEVELOPER=ON
-      -DUNIT_TESTING=ON .. &&
-      make -j$(nproc) && ctest --output-on-failure
-  tags:
-    - shared
-  except:
-    - tags
-  artifacts:
-    expire_in: 1 week
-    when: on_failure
-    paths:
-      - obj/
 
 fedora/x86_64:
   stage: test
