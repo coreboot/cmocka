@@ -210,6 +210,8 @@ fedora/mingw64:
   script:
     - export WINEPATH=/usr/x86_64-w64-mingw32/sys-root/mingw/bin
     - export WINEDEBUG=-all
+    - export XDG_RUNTIME_DIR="/run/user/$(id --user)"
+    - mkdir -p ${XDG_RUNTIME_DIR}
     - mkdir -p obj && cd obj && mingw64-cmake
       -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DPICKY_DEVELOPER=ON
@@ -230,6 +232,8 @@ fedora/mingw32:
   script:
     - export WINEPATH=/usr/i686-w64-mingw32/sys-root/mingw/bin
     - export WINEDEBUG=-all
+    - export XDG_RUNTIME_DIR="/run/user/$(id --user)"
+    - mkdir -p ${XDG_RUNTIME_DIR}
     - mkdir -p obj && cd obj && mingw32-cmake
       -DCMAKE_BUILD_TYPE=RelWithDebInfo
       -DPICKY_DEVELOPER=ON
