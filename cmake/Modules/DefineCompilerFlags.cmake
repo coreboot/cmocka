@@ -1,3 +1,7 @@
+# Copyright 2018-2025 Andreas Schneider <asn@cryptomilk.org>
+#
+# License: BSD-3-Clause
+#
 if (UNIX AND NOT WIN32)
     # Activate with: -DCMAKE_BUILD_TYPE=Profiling
     set(CMAKE_C_FLAGS_PROFILING "-O0 -g -fprofile-arcs -ftest-coverage"
@@ -46,4 +50,9 @@ if (UNIX AND NOT WIN32)
         CACHE STRING "Flags used by the linker during the creation of shared libraries during UNDEFINEDSANITIZER builds.")
     set(CMAKE_EXEC_LINKER_FLAGS_UNDEFINEDSANITIZER "-fsanitize=undefined"
         CACHE STRING "Flags used by the linker during UNDEFINEDSANITIZER builds.")
+elseif(MSVC)
+    set(CMAKE_C_FLAGS_ADDRESSSANITIZER "/O1 /fsanitize=address"
+        CACHE STRING "Flags used by the C compiler during ADDRESSSANITIZER builds.")
+    set(CMAKE_CXX_FLAGS_ADDRESSSANITIZER "/O1 /fsanitize=address"
+        CACHE STRING "Flags used by the CXX compiler during ADDRESSSANITIZER builds.")
 endif()
