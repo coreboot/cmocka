@@ -157,14 +157,21 @@ static void (*vprint_message_impl)(const char * const format, va_list args) =
 static void (*vprint_error_impl)(const char * const format, va_list args) =
     vprint_error_default_impl;
 
-void cmocka_set_output_callbacks(
-    void (*f_vprint_message)(const char * const format, va_list args),
-    void (*f_vprint_error)(const char * const format, va_list args))
+void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks)
 {
-    vprint_message_impl = (f_vprint_message != NULL)? f_vprint_message :
-        vprint_message_default_impl;
-    vprint_error_impl = (f_vprint_error != NULL)? f_vprint_error :
-        vprint_error_default_impl;
+    if (f_callbacks == NULL) {
+        /* To consider: should a NULL input indicate that all callbacks should
+         * be reset to default? */
+        goto end;
+    }
+
+    vprint_message_impl = (f_callbacks->vprint_message != NULL)?
+        f_callbacks->vprint_message : vprint_message_default_impl;
+    vprint_error_impl = (f_callbacks->vprint_error != NULL)?
+        f_callbacks->vprint_error : vprint_error_default_impl;
+
+end:
+    return;
 }
 
 /*

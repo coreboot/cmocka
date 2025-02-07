@@ -65,6 +65,10 @@ static void false_test_generated_output(void **state)
 int main(void)
 {
     int rc = 0;
+    struct CMCallbacks my_callbacks = {
+        .vprint_message = my_vprint,
+        .vprint_error = my_vprint_error,
+    };
 
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(true_test_succeeds),
@@ -74,7 +78,7 @@ int main(void)
     };
 
     /* Override the output functions before calling any CMocka APIs. */
-    cmocka_set_output_callbacks(my_vprint, my_vprint_error);
+    cmocka_set_callbacks(&my_callbacks);
 
     rc = cmocka_run_group_tests(tests, NULL, NULL);
 

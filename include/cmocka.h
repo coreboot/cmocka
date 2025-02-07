@@ -4120,22 +4120,43 @@ void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
 void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
 void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
 
-/**
- * @brief Set output callback functions for most output generated from CMocka.
- *
- * The supplied callback functions will be invoked by the standard output and
- * error print methods. If no callbacks have been supplied, the default action
- * is to print to stdout and stderr respectively.
- *
- * The one exception at present is XML output, which is always written directly
- * to a file handle, even if that is stdout.
- *
- * @param[in] f_vprint_message The function to call for standard output.
- * @param[in] f_vprint_error The function to call for error output.
+/** Callbacks which can be set via cmocka_set_callbacks().
+ * @sa cmocka_set_callbacks()
  */
-void cmocka_set_output_callbacks(
-    void (*f_vprint_message)(const char * const format, va_list args),
-    void (*f_vprint_error)(const char * const format, va_list args));
+struct CMCallbacks {
+    /** A callback for printing out standard messages.
+     * The supplied callback function will be invoked by the standard output
+     * print methods. If no callback has been supplied, the default action
+     * is to print to `stdout`.
+     *
+     * The one exception at present is XML output, which is always written directly
+     * to a file handle, even if that is set to `stdout`. */
+    void (*vprint_message)(const char * const format, va_list args);
+
+    /** A callback for printing out error messages.
+     * The supplied callback function will be invoked by the standard output
+     * print methods. If no callback has been supplied, the default action
+     * is to print to `stdout`.
+     *
+     * The one exception at present is XML output, which is always written directly
+     * to a file handle, even if that is set to `stdout`. */
+    void (*vprint_error)(const char * const format, va_list args);
+};
+
+/**
+ * @brief Set callback functions for CMocka.
+ *
+ * Input is a structure containing function pointers to one or more
+ * user-supplied callback functions. A NULL pointer for a particular callback
+ * will set that callback to the default implementation.
+ *
+ * See the CMCallbacks documentation for details of each callback.
+ *
+ * @param[in] f_callbacks A structure containing the user callbacks to use.
+ *
+ * @sa CMCallbacks
+ */
+void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
 
 enum cm_message_output {
     CM_OUTPUT_STANDARD = 1,
