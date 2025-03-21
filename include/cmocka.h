@@ -2625,8 +2625,17 @@ void assert_ptr_not_equal(void *a, void *b);
  */
 void assert_ptr_not_equal_msg(void *a, void *b, const char *const msg);
 #else
+#ifdef __has_builtin
+#if __has_builtin(__builtin_unreachable)
+#define assert_ptr_not_equal_msg(a, b, msg) \
+    do { const void *p1 = (a), *p2 = (b); \
+	 _assert_ptr_not_equal_msg((a), (b), __FILE__, __LINE__, (msg)); \
+	 if (p1 == p2) __builtin_unreachable(); } while(0)
+#endif
+#else
 #define assert_ptr_not_equal_msg(a, b, msg) \
     _assert_ptr_not_equal_msg((a), (b), __FILE__, __LINE__, (msg))
+#endif
 #endif
 
 #ifdef DOXYGEN
