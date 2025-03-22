@@ -1357,6 +1357,84 @@ void _expect_function_call(
     list_add_value(&global_call_ordering_head, ordering, count);
 }
 
+/*
+ * Calculates the base 10 logarithm of a given number without using the math.h
+ * library. This is proably not the fastest way, but we don't need it
+ * performant. This is only called on error cases.
+ */
+static double cm_log10(double x) {
+    if (x <= 0) {
+        return -1;
+    }
+
+    double res = 0;
+    int power = 0;
+
+    while (x >= 10) {
+        x /= 10;
+        power++;
+    }
+    while (x < 1) {
+        x *= 10;
+        power--;
+    }
+
+    /* log10(x) = log10(10^power * y) = power + log10(y). */
+    res = power;
+
+    double y = (x - 1) / (x + 1);
+    double term = y;
+    double termSquared = y * y;
+    int n = 1;
+
+    while (termSquared > 0.0000000001) {
+        res += term / (2 * n + 1);
+        term *= termSquared;
+        n++;
+    }
+
+    return res;
+}
+
+/*
+ * Calculates the base 10 logarithm of a given number without using the math.h
+ * library. This is proably not the fastest way, but we don't need it
+ * performant. This is only called on error cases.
+ */
+static float cm_log10f(float x) {
+    if (x <= 0) {
+        return -1;
+    }
+
+    float res = 0;
+    int power = 0;
+
+    while (x >= 10) {
+        x /= 10;
+        power++;
+    }
+    while (x < 1) {
+        x *= 10;
+        power--;
+    }
+
+    /* log10(x) = log10(10^power * y) = power + log10(y). */
+    res = power;
+
+    float y = (x - 1) / (x + 1);
+    float term = y;
+    float termSquared = y * y;
+    int n = 1;
+
+    while (termSquared > 0.0000000001) {
+        res += term / (2 * n + 1);
+        term *= termSquared;
+        n++;
+    }
+
+    return res;
+}
+
 /* Returns true if the specified float values are equal, else returns false. */
 static bool float_compare(const float left,
                          const float right,
