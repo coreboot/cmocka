@@ -29,6 +29,7 @@ set(CMOCKA_TESTS
     test_float_macros
     test_double_macros
     test_assert_double_float
+    test_assert_double_float_fail
     test_assert_true
     test_assert_true_fail
     test_assert_false
@@ -130,6 +131,14 @@ set_tests_properties(
         PROPERTIES
         PASS_REGULAR_EXPRESSION
         "\\[  FAILED  \\] tests: 1 test"
+)
+
+# test_assert_macros_fail
+set_tests_properties(
+    test_assert_double_float_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] float_tests_fail: 4 test"
 )
 
 set_tests_properties(
