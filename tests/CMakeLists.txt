@@ -28,6 +28,7 @@ set(CMOCKA_TESTS
     test_groups
     test_float_macros
     test_double_macros
+    test_assert_double_float
     test_assert_true
     test_assert_true_fail
     test_assert_false
