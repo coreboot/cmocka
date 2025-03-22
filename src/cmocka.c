@@ -1357,82 +1357,34 @@ void _expect_function_call(
     list_add_value(&global_call_ordering_head, ordering, count);
 }
 
-/*
- * Calculates the base 10 logarithm of a given number without using the math.h
- * library. This is proably not the fastest way, but we don't need it
- * performant. This is only called on error cases.
- */
-static double cm_log10(double x) {
-    if (x <= 0) {
-        return -1;
+static double ln(double x)
+{
+    double old_sum = 0.0;
+    double xmlxpl = (x - 1) / (x + 1);
+    double xmlxpl_2 = xmlxpl * xmlxpl;
+    double denom = 1.0;
+    double frac = xmlxpl;
+    double term = frac;
+    double sum = term;
+
+    while ( sum != old_sum )
+    {
+        old_sum = sum;
+        denom += 2.0;
+        frac *= xmlxpl_2;
+        sum += frac / denom;
     }
-
-    double res = 0;
-    int power = 0;
-
-    while (x >= 10) {
-        x /= 10;
-        power++;
-    }
-    while (x < 1) {
-        x *= 10;
-        power--;
-    }
-
-    /* log10(x) = log10(10^power * y) = power + log10(y). */
-    res = power;
-
-    double y = (x - 1) / (x + 1);
-    double term = y;
-    double termSquared = y * y;
-    int n = 1;
-
-    while (termSquared > 0.0000000001) {
-        res += term / (2 * n + 1);
-        term *= termSquared;
-        n++;
-    }
-
-    return res;
+    return 2.0 * sum;
 }
 
-/*
- * Calculates the base 10 logarithm of a given number without using the math.h
- * library. This is proably not the fastest way, but we don't need it
- * performant. This is only called on error cases.
- */
+#define LN10 2.3025850929940456840179914546844
+
+static double cm_log10(double x) {
+    return ln(x) / LN10;
+}
+
 static float cm_log10f(float x) {
-    if (x <= 0) {
-        return -1;
-    }
-
-    float res = 0;
-    int power = 0;
-
-    while (x >= 10) {
-        x /= 10;
-        power++;
-    }
-    while (x < 1) {
-        x *= 10;
-        power--;
-    }
-
-    /* log10(x) = log10(10^power * y) = power + log10(y). */
-    res = power;
-
-    float y = (x - 1) / (x + 1);
-    float term = y;
-    float termSquared = y * y;
-    int n = 1;
-
-    while (termSquared > 0.0000000001) {
-        res += term / (2 * n + 1);
-        term *= termSquared;
-        n++;
-    }
-
-    return res;
+    return ((float)ln(x)) / LN10;
 }
 
 #define cm_epsilon_to_precision(e) -cm_log10(e)
