@@ -1357,6 +1357,10 @@ void _expect_function_call(
     list_add_value(&global_call_ordering_head, ordering, count);
 }
 
+static bool double_compare(const double left,
+                          const double right,
+                          const double epsilon);
+
 static double ln(double x)
 {
     double old_sum = 0.0;
@@ -1367,8 +1371,7 @@ static double ln(double x)
     double term = frac;
     double sum = term;
 
-    while ( sum != old_sum )
-    {
+    while (!double_compare(sum, old_sum, 0.0000000001)) {
         old_sum = sum;
         denom += 2.0;
         frac *= xmlxpl_2;
