@@ -10,22 +10,26 @@
 
 static void test_assert_double_equal(void **state)
 {
+    (void)state; /* unused */
     assert_double_equal(0.5f, 1.f / 2.f, 0.000001f);
     assert_double_equal(-0.5f, -1.f / 2.f, 0.000001f);
 }
 
 static void test_assert_float_equal(void **state)
 {
+    (void)state; /* unused */
     assert_float_equal(0.5f, 1.f / 2.f, 0.000001f);
     assert_float_equal(-0.5f, -1.f / 2.f, 0.000001f);
 }
 
 static void test_assert_double_not_equal(void **state)
 {
+    (void)state; /* unused */
     assert_double_not_equal(0.5f, 1.f, 0.000001f);
 }
 static void test_assert_float_not_equal(void **state)
 {
+    (void)state; /* unused */
     assert_float_not_equal(0.5f, 1.f, 0.000001f);
 }
 
