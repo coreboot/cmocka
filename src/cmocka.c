@@ -270,6 +270,18 @@ struct check_unsigned_integer_set {
     size_t size_of_set;
 };
 
+typedef struct CheckFloat {
+    CheckParameterEvent event;
+    double value;
+    double epsilon;
+} CheckFloat;
+
+struct check_float {
+    CheckParameterEvent event;
+    double value;
+    double epsilon;
+};
+
 /* Used to check whether a parameter matches the area of memory referenced by
  * this structure.  */
 typedef struct CheckMemoryData {
@@ -2267,6 +2279,68 @@ void _expect_not_value(
     _expect_check(function, parameter, file, line, check_not_value,
                   (CMockaValueData){.uint_val = value},
                   NULL, count);
+}
+
+/* Create the callback data for check_float() or check_not_float() and
+ * register a check event. */
+static void expect_float_setup(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double value, const double epsilon,
+        const CheckParameterValue check_function, const int count) {
+    CheckFloat * const check_data =
+        (CheckFloat*)malloc(sizeof(*check_data));
+    assert_non_null(check_data);
+    declare_initialize_value_pointer_pointer(check_data_pointer, check_data);
+    check_data->value = value;
+    check_data->epsilon = epsilon;
+    _expect_check(function, parameter, file, line, check_function,
+                  check_data_pointer, &check_data->event, count);
+}
+
+
+/* CheckParameterValue callback to check whether a float is equal to an
+ * expected value. */
+static int check_float(const CMockaValueData value,
+                       const CMockaValueData check_value_data) {
+    CheckFloat * const check = cast_cmocka_value_to_pointer(
+        CheckFloat*, check_value_data);
+    assert_non_null(check);
+    return double_values_equal_display_error(
+        value.real_val,
+        check->value, check->epsilon);
+}
+
+
+/* Add an event to check a parameter equals an expected float. */
+void _expect_float(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double value, const double epsilon, const int count) {
+    expect_float_setup(function, parameter, file, line, value, epsilon,
+                       check_float, count);
+}
+
+
+/* CheckParameterValue callback to check whether a float is not equal to an
+ * expected value. */
+static int check_not_float(const CMockaValueData value,
+                           const CMockaValueData check_value_data) {
+    CheckFloat * const check = cast_cmocka_value_to_pointer(
+        CheckFloat*, check_value_data);
+    assert_non_null(check);
+    return double_values_not_equal_display_error(value.real_val,
+                                                 check->value, check->epsilon);
+}
+
+
+/* Add an event to check a parameter is not equal to an expected float. */
+void _expect_not_float(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double value, const double epsilon, const int count) {
+    expect_float_setup(function, parameter, file, line, value, epsilon,
+                       check_not_float, count);
 }
 
 
