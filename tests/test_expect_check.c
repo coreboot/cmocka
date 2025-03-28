@@ -123,6 +123,59 @@ static void test_expect_string_count_maybe_2(void **state)
     expect_string_count(mock_test_ptr, value, string, EXPECT_MAYBE);
 }
 
+static void mock_test_b(double value)
+{
+    check_expected_float(value);
+}
+
+static void test_expect_float(void **state)
+{
+    (void)state; /* unused */
+    double d = 1.61803398875;
+    double precision = 0.0000001;
+    expect_float(mock_test_b, value, d, precision);
+    mock_test_b(1.6180339);
+}
+
+static void test_expect_float_count(void **state)
+{
+    (void)state; /* unused */
+    double d = 1.61803398875;
+    double precision = 0.0000001;
+    expect_float_count(mock_test_b, value, d, precision, 3);
+    mock_test_b(1.6180339);
+    mock_test_b(1.6180339);
+    mock_test_b(1.6180339);
+}
+
+static void test_expect_float_count_always(void **state)
+{
+    (void)state; /* unused */
+    double d = 1.61803398875;
+    double precision = 0.0000001;
+    expect_float_count(mock_test_b, value, d, precision, EXPECT_ALWAYS);
+    mock_test_b(1.6180339);
+    mock_test_b(1.6180339);
+}
+
+static void test_expect_float_count_maybe_1(void **state)
+{
+    (void)state; /* unused */
+    double d = 1.61803398875;
+    double precision = 0.0000001;
+    expect_float_count(mock_test_b, value, d, precision, EXPECT_MAYBE);
+    mock_test_b(1.6180339);
+    mock_test_b(1.6180339);
+}
+
+static void test_expect_float_count_maybe_2(void **state)
+{
+    (void)state; /* unused */
+    double d = 1.61803398875;
+    double precision = 0.0000001;
+    expect_float_count(mock_test_b, value, d, precision, EXPECT_MAYBE);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_expect_check),
@@ -133,7 +186,12 @@ int main(void) {
         cmocka_unit_test(test_expect_string),
         cmocka_unit_test(test_expect_string_count_always),
         cmocka_unit_test(test_expect_string_count_maybe_1),
-        cmocka_unit_test(test_expect_string_count_maybe_2)};
+        cmocka_unit_test(test_expect_string_count_maybe_2),
+        cmocka_unit_test(test_expect_float),
+        cmocka_unit_test(test_expect_float_count),
+        cmocka_unit_test(test_expect_float_count_always),
+        cmocka_unit_test(test_expect_float_count_maybe_1),
+        cmocka_unit_test(test_expect_float_count_maybe_2)};
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
