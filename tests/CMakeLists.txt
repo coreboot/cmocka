@@ -181,7 +181,7 @@ set_tests_properties(
     test_assert_set_fail
         PROPERTIES
         PASS_REGULAR_EXPRESSION
-        "\\[  FAILED  \\] set_fail_tests: 5 test"
+        "\\[  FAILED  \\] set_fail_tests: 7 test"
 )
 
 # test_expect_check_fail

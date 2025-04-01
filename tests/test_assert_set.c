@@ -103,6 +103,26 @@ static void test_assert_uint_not_in_set_64(void **state)
     assert_uint_not_in_set(4, set, ARRAY_SIZE(set));
 }
 
+static void test_assert_float_in_set(void **state)
+{
+    double set[] = {3.14, 2.718, 42.0, 1.618};
+    (void)state; /* unused */
+
+    assert_float_in_set(3.14, set, ARRAY_SIZE(set), 0.01);
+    assert_float_in_set(2.7, set, ARRAY_SIZE(set), 0.1);
+    assert_float_in_set(2.718, set, ARRAY_SIZE(set), 0.001);
+    assert_float_in_set(42.0, set, ARRAY_SIZE(set), 0.01);
+}
+
+static void test_assert_float_not_in_set(void **state)
+{
+    double set[] = {3.14, 2.718, 42.0, 1.618};
+    (void)state; /* unused */
+
+    assert_float_not_in_set(3.145, set, ARRAY_SIZE(set), 0.001);
+    assert_float_not_in_set(0.83462, set, ARRAY_SIZE(set), 0.001);
+}
+
 int main(void) {
     const struct CMUnitTest set_tests[] = {
         cmocka_unit_test(test_assert_int_in_set_8),
@@ -114,6 +134,8 @@ int main(void) {
         cmocka_unit_test(test_assert_uint_in_set_32),
         cmocka_unit_test(test_assert_uint_in_set_64),
         cmocka_unit_test(test_assert_uint_not_in_set_64),
+        cmocka_unit_test(test_assert_float_in_set),
+        cmocka_unit_test(test_assert_float_not_in_set),
     };
 
     return cmocka_run_group_tests(set_tests, NULL, NULL);
