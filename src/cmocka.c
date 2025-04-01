@@ -285,15 +285,15 @@ struct check_float {
 typedef struct CheckFloatSet {
     CheckParameterEvent event;
     const double *set;
-    double epsilon;
     size_t size_of_set;
+    double epsilon;
 } CheckFloatSet;
 
 struct check_float_set {
     CheckParameterEvent event;
     const double *set;
-    double epsilon;
     size_t size_of_set;
+    double epsilon;
 };
 
 /* Used to check whether a parameter matches the area of memory referenced by
@@ -2994,6 +2994,46 @@ void _assert_uint_not_in_set(const uintmax_t value,
     bool ok;
 
     ok = uint_value_in_set_display_error(value, &check_uint_set, true);
+    if (!ok) {
+        _fail(file, line);
+    }
+}
+
+void _assert_float_in_set(const double value,
+                          const double values[],
+                          const size_t number_of_values,
+                          const double epsilon,
+                          const char *const file,
+                          const int line)
+{
+    struct check_float_set check_float_set = {
+        .set = values,
+        .size_of_set = number_of_values,
+        .epsilon = epsilon,
+    };
+    bool ok;
+
+    ok = float_value_in_set_display_error(value, &check_float_set, false);
+    if (!ok) {
+        _fail(file, line);
+    }
+}
+
+void _assert_float_not_in_set(const double value,
+                              const double values[],
+                              const size_t number_of_values,
+                              const double epsilon,
+                              const char *const file,
+                              const int line)
+{
+    struct check_float_set check_float_set = {
+        .set = values,
+        .size_of_set = number_of_values,
+        .epsilon = epsilon,
+    };
+    bool ok;
+
+    ok = float_value_in_set_display_error(value, &check_float_set, true);
     if (!ok) {
         _fail(file, line);
     }

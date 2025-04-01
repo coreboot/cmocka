@@ -3396,6 +3396,60 @@ void assert_uint_not_in_set(uintmax_t value, uintmax_t values[], size_t count);
     }
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the specified float value is within a set.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is not within a set.
+ *
+ * @param[in]  value  The value to look up
+ *
+ * @param[in]  values[]  The array to check for the value.
+ *
+ * @param[in]  count  The size of the values array.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ */
+void assert_float_in_set(double value, double values[], size_t count, double epsilon);
+#else
+#define assert_float_in_set(value, values, number_of_values, epsilon) \
+    if (number_of_values > 0) { \
+        double _cmocka_set[number_of_values]; \
+        for (size_t _i = 0; _i < number_of_values; _i++) { \
+            _cmocka_set[_i] = values[_i]; \
+        } \
+        _assert_float_in_set(value, _cmocka_set, number_of_values, epsilon, __FILE__, __LINE__); \
+    }
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the specified float value is not within a set.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is not within a set.
+ *
+ * @param[in]  value  The value to look up
+ *
+ * @param[in]  values[]  The array to check for the value.
+ *
+ * @param[in]  count  The size of the values array.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ */
+void assert_float_not_in_set(double value, double values[], size_t count, double epsilon);
+#else
+#define assert_float_not_in_set(value, values, number_of_values, epsilon) \
+    if (number_of_values > 0) { \
+        double _cmocka_set[number_of_values]; \
+        for (size_t _i = 0; _i < number_of_values; _i++) { \
+            _cmocka_set[_i] = values[_i]; \
+        } \
+        _assert_float_not_in_set(value, _cmocka_set, number_of_values, epsilon, __FILE__, __LINE__); \
+    }
+#endif
+
 /** @} */
 
 /**
@@ -4380,6 +4434,18 @@ void _assert_uint_not_in_set(const uintmax_t value,
                              const size_t number_of_values,
                              const char *const file,
                              const int line);
+void _assert_float_in_set(const double value,
+                          const double values[],
+                          const size_t number_of_values,
+                          const double epsilon,
+                          const char *const file,
+                          const int line);
+void _assert_float_not_in_set(const double value,
+                              const double values[],
+                              const size_t number_of_values,
+                              const double epsilon,
+                              const char *const file,
+                              const int line);
 
 void* _test_malloc(const size_t size, const char* file, const int line);
 void* _test_realloc(void *ptr, const size_t size, const char* file, const int line);
