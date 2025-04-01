@@ -282,6 +282,20 @@ struct check_float {
     double epsilon;
 };
 
+typedef struct CheckFloatSet {
+    CheckParameterEvent event;
+    const double *set;
+    double epsilon;
+    size_t size_of_set;
+} CheckFloatSet;
+
+struct check_float_set {
+    CheckParameterEvent event;
+    const double *set;
+    double epsilon;
+    size_t size_of_set;
+};
+
 /* Used to check whether a parameter matches the area of memory referenced by
  * this structure.  */
 typedef struct CheckMemoryData {
@@ -1731,6 +1745,47 @@ static bool uint_value_in_set_display_error(
     return false;
 }
 
+static bool float_value_in_set_display_error(
+    const double value,
+    const struct check_float_set *const check_float_set,
+    const bool invert)
+{
+    bool succeeded = invert;
+
+    assert_non_null(check_float_set);
+
+    {
+        const double *const set = check_float_set->set;
+        const double epsilon = check_float_set->epsilon;
+        const size_t size_of_set = check_float_set->size_of_set;
+        size_t i;
+
+        for (i = 0; i < size_of_set; i++) {
+            if (double_compare(set[i], value, epsilon)) {
+                /* If invert = false and item is found, succeeded = true. */
+                /* If invert = true and item is found, succeeded = false. */
+                succeeded = !succeeded;
+                break;
+            }
+        }
+        if (succeeded) {
+            return true;
+        }
+        cmocka_print_error("%F is %sin the set (",
+                           value,
+                           invert ? "" : "not ");
+
+        for (i = 0; i < size_of_set; i++) {
+            cmocka_print_error("%F%s",
+                               set[i],
+                               i != size_of_set - 1 ? ", " : "");
+        }
+        cmocka_print_error(")\n");
+    }
+
+    return false;
+}
+
 /*
  * Determine whether a value is within the specified range.
  */
@@ -2032,6 +2087,25 @@ static int check_uint_in_set(const CMockaValueData value,
         false);
 }
 
+static int check_float_in_set(const CMockaValueData value,
+                              const CMockaValueData check_value_data)
+{
+    return float_value_in_set_display_error(
+        value.real_val,
+        cast_cmocka_value_to_pointer(struct check_float_set *,
+                                     check_value_data),
+        false);
+}
+
+static int check_float_not_in_set(const CMockaValueData value,
+                                  const CMockaValueData check_value_data)
+{
+    return float_value_in_set_display_error(
+        value.real_val,
+        cast_cmocka_value_to_pointer(struct check_float_set *,
+                                     check_value_data), true);
+}
+
 /* CheckParameterValue callback to check whether a value isn't within a set. */
 static int check_not_in_set(const CMockaValueData value,
                             const CMockaValueData check_value_data) {
@@ -2095,6 +2169,42 @@ static void __expect_int_in_set(const char *const function,
                   check_function,
                   check_data,
                   &check_integer_set->event,
+                  count);
+}
+
+static void __expect_float_in_set(const char *const function,
+                                  const char *const parameter,
+                                  const char *const file,
+                                  const size_t line,
+                                  const double values[],
+                                  const size_t number_of_values,
+                                  const double epsilon,
+                                  const CheckParameterValue check_function,
+                                  const size_t count)
+{
+    struct check_float_set *const check_float_set =
+        calloc(number_of_values,
+               sizeof(struct check_float_set) + sizeof(values[0]));
+    double *const set = (double *)(check_float_set + 1);
+    declare_initialize_value_pointer_pointer(check_data, check_float_set);
+
+    assert_non_null(check_float_set);
+    assert_non_null(values);
+    assert_true(number_of_values);
+
+    memcpy(set, values, number_of_values * sizeof(values[0]));
+
+    check_float_set->epsilon = epsilon;
+    check_float_set->set = set;
+    check_float_set->size_of_set = number_of_values;
+
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_function,
+                  check_data,
+                  &check_float_set->event,
                   count);
 }
 
@@ -2167,6 +2277,46 @@ void _expect_uint_in_set(const char *const function,
                          number_of_values,
                          check_uint_in_set,
                          count);
+}
+
+void _expect_float_in_set(const char *const function,
+                          const char *const parameter,
+                          const char *const file,
+                          const size_t line,
+                          const double values[],
+                          const size_t number_of_values,
+                          const double epsilon,
+                          const size_t count)
+{
+    __expect_float_in_set(function,
+                          parameter,
+                          file,
+                          line,
+                          values,
+                          number_of_values,
+                          epsilon,
+                          check_float_in_set,
+                          count);
+}
+
+void _expect_float_not_in_set(const char *const function,
+                              const char *const parameter,
+                              const char *const file,
+                              const size_t line,
+                              const double values[],
+                              const size_t number_of_values,
+                              const double epsilon,
+                              const size_t count)
+{
+    __expect_float_in_set(function,
+                          parameter,
+                          file,
+                          line,
+                          values,
+                          number_of_values,
+                          epsilon,
+                          check_float_not_in_set,
+                          count);
 }
 
 /* Add an event to check whether a value isn't in a set. */

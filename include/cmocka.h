@@ -1924,6 +1924,120 @@ void expect_not_in_set_count(#function, #parameter, uintmax_t value_array[], siz
         sizeof(value_array) / sizeof((value_array)[0]), count)
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if the float parameter value is part of the
+ * provided array.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  value_array[] The array to check for the value.
+ *
+ * @see check_expected_float().
+ */
+void expect_float_in_set(#function, #parameter, double value_array[], double epsilon);
+#else
+#define expect_float_in_set(function, parameter, value_array, epsilon) \
+    expect_float_in_set_count(function, parameter, value_array, epsilon, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if the float parameter value is part of the
+ *        provided integer array.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value_array[] The array to check for the value.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected_float().
+ */
+void expect_float_in_set_count(#function, #parameter, double value_array[], double epsilon, size_t count);
+#else
+#define expect_float_in_set_count(function, parameter, value_array, epsilon, count) \
+    _expect_float_in_set(cmocka_tostring(function),                                 \
+                         cmocka_tostring(parameter),                                \
+                         __FILE__,                                                  \
+                         __LINE__,                                                  \
+                         value_array,                                               \
+                         sizeof(value_array) / sizeof((value_array)[0]),            \
+                         epsilon,                                                   \
+                         count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if the float parameter value is not part of the
+ * provided array.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  value_array[] The array to check for the value.
+ *
+ * @see check_expected_float().
+ */
+void expect_float_not_in_set(#function, #parameter, double value_array[], double epsilon);
+#else
+#define expect_float_not_in_set(function, parameter, value_array, epsilon) \
+    expect_float_not_in_set_count(function, parameter, value_array, epsilon, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if the float parameter value is not part of the
+ *        provided integer array.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value_array[] The array to check for the value.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected_float().
+ */
+void expect_float_not_in_set_count(#function, #parameter, double value_array[], double epsilon, size_t count);
+#else
+#define expect_float_not_in_set_count(function, parameter, value_array, epsilon, count) \
+    _expect_float_not_in_set(cmocka_tostring(function),                                 \
+                             cmocka_tostring(parameter),                                \
+                             __FILE__,                                                  \
+                             __LINE__,                                                  \
+                             value_array,                                               \
+                             sizeof(value_array) / sizeof((value_array)[0]),            \
+                             epsilon,                                                   \
+                             count)
+#endif
+
 
 #ifdef DOXYGEN
 /**
@@ -4075,10 +4189,24 @@ void _expect_uint_in_set(const char *const function,
                          const size_t number_of_values,
                          const size_t count);
 
+void _expect_float_in_set(const char *const function,
+                          const char *const parameter,
+                          const char *const file,
+                          const size_t line,
+                          const double values[],
+                          const size_t number_of_values,
+                          const double epsilon,
+                          const size_t count);
+
 void _expect_not_in_set(
     const char* const function, const char* const parameter,
     const char* const file, const int line, const uintmax_t values[],
     const size_t number_of_values, const int count);
+
+void _expect_float_not_in_set(
+    const char* const function, const char* const parameter,
+    const char* const file, const size_t line, const double values[],
+    const size_t number_of_values, const double epsilon, const size_t count);
 
 void _expect_in_range(
     const char* const function, const char* const parameter,
