@@ -21,6 +21,11 @@ static void mock_test_uint(uintmax_t value)
     check_expected(value);
 }
 
+static void mock_test_float(double value)
+{
+    check_expected_float(value);
+}
+
 static void test_expect_int_in_set_count(void **state)
 {
     intmax_t set[] = { -1, 0, 1 };
@@ -41,10 +46,21 @@ static void test_expect_uint_in_set_count(void **state)
     mock_test_uint(42);
 }
 
+static void test_expect_float_in_set_count(void **state)
+{
+    double set[] = {3.14, 2.718, 42.0, 1.618};
+    (void)state; /* unused */
+
+    expect_float_in_set_count(mock_test_float, value, set, 0.01, 1);
+
+    mock_test_float(2.71);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_expect_int_in_set_count),
-        cmocka_unit_test(test_expect_uint_in_set_count)};
+        cmocka_unit_test(test_expect_uint_in_set_count),
+        cmocka_unit_test(test_expect_float_in_set_count)};
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
