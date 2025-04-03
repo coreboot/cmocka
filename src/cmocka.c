@@ -1857,6 +1857,42 @@ static bool uint_not_in_range_display_error(const uintmax_t value,
     return false;
 }
 
+static bool float_in_range_display_error(const double value,
+                                         const double range_min,
+                                         const double range_max,
+                                         const double epsilon)
+{
+    if ((double_compare(value, range_min, epsilon) || value > range_min)
+        && (double_compare(value, range_max, epsilon) || value < range_max)) {
+        return true;
+    }
+
+    cmocka_print_error("%F is not within the range [%F, %F]\n",
+                       value,
+                       range_min,
+                       range_max);
+
+    return false;
+}
+
+static bool float_not_in_range_display_error(const double value,
+                                             const double range_min,
+                                             const double range_max,
+                                             const double epsilon)
+{
+    if ((!double_compare(value, range_min, epsilon) && value < range_min)
+        || (!double_compare(value, range_max, epsilon) && value > range_max)) {
+        return true;
+    }
+
+    cmocka_print_error("%F is within the range [%F, %F]\n",
+                       value,
+                       range_min,
+                       range_max);
+
+    return false;
+}
+
 
 /*
  * Determine whether a value is within the specified range.  If the value
@@ -2906,6 +2942,30 @@ void _assert_uint_not_in_range(const uintmax_t value,
                            const int line)
 {
     if (!uint_not_in_range_display_error(value, minimum, maximum)) {
+        _fail(file, line);
+    }
+}
+
+void _assert_float_in_range(const double value,
+                            const double minimum,
+                            const double maximum,
+                            const double epsilon,
+                            const char* const file,
+                            const int line)
+{
+    if (!float_in_range_display_error(value, minimum, maximum, epsilon)) {
+        _fail(file, line);
+    }
+}
+
+void _assert_float_not_in_range(const double value,
+                                const double minimum,
+                                const double maximum,
+                                const double epsilon,
+                                const char* const file,
+                                const int line)
+{
+    if (!float_not_in_range_display_error(value, minimum, maximum, epsilon)) {
         _fail(file, line);
     }
 }

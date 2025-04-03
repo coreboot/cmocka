@@ -3269,6 +3269,62 @@ void assert_not_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 
 #ifdef DOXYGEN
 /**
+ * @brief Assert that the specified float value is smaller than the minimum or
+ * greater than the maximum.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is in range.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is not in range.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  minimum  The minimum value allowed.
+ *
+ * @param[in]  maximum  The maximum value allowed.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ */
+void assert_float_not_in_range(double value, double minimum, double maximum, double epsilon);
+#else
+#define assert_float_not_in_range(value, minimum, maximum, epsilon)   \
+    _assert_float_not_in_range(cast_to_long_double_type(value),       \
+                               cast_to_long_double_type(minimum),     \
+                               cast_to_long_double_type(maximum),     \
+                               cast_to_long_double_type(epsilon),     \
+                               __FILE__,                              \
+                               __LINE__)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Assert that the specified float value is not smaller than
+ * the minimum and and not greater than the maximum.
+ *
+ * The function prints an error message to standard error and terminates the
+ * test by calling fail() if value is not in range.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  minimum  The minimum value allowed.
+ *
+ * @param[in]  maximum  The maximum value allowed.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ */
+void assert_float_in_range(double value, double minimum, double maximum, double epsilon);
+#else
+#define assert_float_in_range(value, minimum, maximum, epsilon) \
+    _assert_float_in_range(                                     \
+        cast_to_long_double_type(value),                        \
+        cast_to_long_double_type(minimum),                      \
+        cast_to_long_double_type(maximum),                      \
+        cast_to_long_double_type(epsilon), __FILE__, __LINE__)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @deprecated Use assert_int_in_set() or assert_uint_in_set()
  */
 void assert_in_set(uintmax_t value, uintmax_t values[], size_t count);
@@ -4411,6 +4467,18 @@ void _assert_uint_not_in_range(const uintmax_t value,
                            const uintmax_t maximum,
                            const char* const file,
                            const int line);
+void _assert_float_in_range(const double value,
+                            const double minimum,
+                            const double maximum,
+                            const double epsilon,
+                            const char* const file,
+                            const int line);
+void _assert_float_not_in_range(const double value,
+                                const double minimum,
+                                const double maximum,
+                                const double epsilon,
+                                const char* const file,
+                                const int line);
 void _assert_not_in_set(
     const uintmax_t value, const uintmax_t values[],
     const size_t number_of_values, const char* const file, const int line);
