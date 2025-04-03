@@ -174,7 +174,7 @@ set_tests_properties(
     test_assert_range_fail
         PROPERTIES
         PASS_REGULAR_EXPRESSION
-        "\\[  FAILED  \\] range_fail_tests: 6 test"
+        "\\[  FAILED  \\] range_fail_tests: 12 test"
 )
 
 set_tests_properties(
