@@ -251,6 +251,13 @@ typedef struct CheckIntegerRange {
     uintmax_t maximum;
 } CheckIntegerRange;
 
+typedef struct CheckFloatRange {
+    CheckParameterEvent event;
+    double minimum;
+    double maximum;
+    double epsilon;
+} CheckFloatRange;
+
 /* Structure used to check whether an integer value is in a set. */
 typedef struct CheckIntegerSet {
     CheckParameterEvent event;
@@ -2428,6 +2435,76 @@ void _expect_not_in_range(
         const int count) {
     expect_range(function, parameter, file, line, minimum, maximum,
                  check_not_in_range, count);
+}
+
+
+/* CheckParameterValue callback to check whether a float value is within a range. */
+static int check_float_in_range(const CMockaValueData value,
+                                const CMockaValueData check_value_data) {
+    CheckFloatRange * const check_float_range =
+        cast_cmocka_value_to_pointer(CheckFloatRange *,
+                                            check_value_data);
+    assert_non_null(check_float_range);
+
+    return float_in_range_display_error(value.real_val,
+                                        check_float_range->minimum,
+                                        check_float_range->maximum,
+                                        check_float_range->epsilon);
+}
+
+
+/* CheckParameterValue callback to check whether a float value is within a range. */
+static int check_float_not_in_range(const CMockaValueData value,
+                                    const CMockaValueData check_value_data) {
+    CheckFloatRange * const check_float_range =
+        cast_cmocka_value_to_pointer(CheckFloatRange *,
+                                            check_value_data);
+    assert_non_null(check_float_range);
+
+    return float_not_in_range_display_error(value.real_val,
+                                            check_float_range->minimum,
+                                            check_float_range->maximum,
+                                            check_float_range->epsilon);
+}
+
+
+/* Create the callback data for check_float_in_range() or
+ * check_float_not_in_range() and register a check event. */
+static void expect_range_float(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double minimum, const double maximum, const double epsilon,
+        const CheckParameterValue check_function, const int count) {
+    CheckFloatRange * const check_float_range =
+        (CheckFloatRange*)malloc(sizeof(*check_float_range));
+    declare_initialize_value_pointer_pointer(check_data, check_float_range);
+    check_float_range->minimum = minimum;
+    check_float_range->maximum = maximum;
+    check_float_range->epsilon = epsilon;
+    _expect_check(function, parameter, file, line, check_function,
+                  check_data, &check_float_range->event, count);
+}
+
+
+/* Add an event to determine whether a float parameter is within a range. */
+void _expect_float_in_range(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double minimum, const double maximum, const double epsilon,
+        const int count) {
+    expect_range_float(function, parameter, file, line, minimum, maximum,
+                       epsilon, check_float_in_range, count);
+}
+
+
+/* Add an event to determine whether a float parameter is not within a range. */
+void _expect_float_not_in_range(
+        const char* const function, const char* const parameter,
+        const char* const file, const int line,
+        const double minimum, const double maximum, const double epsilon,
+        const int count) {
+    expect_range_float(function, parameter, file, line, minimum, maximum,
+                       epsilon, check_float_not_in_range, count);
 }
 
 

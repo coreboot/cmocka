@@ -2144,6 +2144,129 @@ void expect_not_in_range_count(#function, #parameter, uintmax_t minimum, uintmax
 
 #ifdef DOXYGEN
 /**
+ * @brief Add an event to check a parameter is inside a numerical range.
+ * The check would succeed if minimum <= value <= maximum.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @see check_expected_float().
+ */
+void expect_float_in_range(#function, #parameter, double minimum, double maximum, double epsilon);
+#else
+#define expect_float_in_range(function, parameter, minimum, maximum, epsilon) \
+    expect_float_in_range_count(function, parameter, minimum, maximum, epsilon, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check a parameter is inside a
+ * numerical range. The check would succeed if minimum <= value <= maximum.
+ *
+ * The event is triggered by calling check_expected_float() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected_float(
+ */
+void expect_float_in_range_count(#function, #parameter, double minimum, double maximum, double epsilon, size_t count);
+#else
+#define expect_float_in_range_count(function, parameter, minimum, maximum, epsilon, count) \
+    _expect_float_in_range(cmocka_tostring(function),           \
+                           cmocka_tostring(parameter),          \
+                           __FILE__,                            \
+                           __LINE__,                            \
+                           cast_to_long_double_type(minimum),   \
+                           cast_to_long_double_type(maximum),   \
+                           cast_to_long_double_type(epsilon),   \
+                           count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check a parameter is outside a numerical range.
+ * The check would succeed if minimum > value > maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @see check_expected().
+ */
+void expect_float_not_in_range(#function, #parameter, double minimum, double maximum, double epsilon);
+#else
+#define expect_float_not_in_range(function, parameter, minimum, maximum, epsilon) \
+    expect_float_not_in_range_count(function, parameter, minimum, maximum, epsilon, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check a parameter is outside a
+ * numerical range. The check would succeed if minimum > value > maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for float comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_float_not_in_range_count(#function, #parameter, double minimum, double maximum, double epsilon, size_t count);
+#else
+#define expect_float_not_in_range_count(function, parameter, minimum, maximum, \
+                                  epsilon, count) \
+    _expect_float_not_in_range(cmocka_tostring(function),           \
+                               cmocka_tostring(parameter),          \
+                               __FILE__,                            \
+                               __LINE__,                            \
+                               cast_to_long_double_type(minimum),   \
+                               cast_to_long_double_type(maximum),   \
+                               cast_to_long_double_type(epsilon),   \
+                               count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Add an event to check if a parameter is the given integer based value.
  *
  * The event is triggered by calling check_expected() in the mocked function.
@@ -4328,6 +4451,16 @@ void _expect_not_in_range(
     const char* const file, const int line,
     const uintmax_t minimum,
     const uintmax_t maximum, const int count);
+void _expect_float_in_range(
+    const char* const function, const char* const parameter,
+    const char* const file, const int line,
+    const double minimum, const double maximum, const double epsilon,
+    const int count);
+void _expect_float_not_in_range(
+    const char* const function, const char* const parameter,
+    const char* const file, const int line,
+    const double minimum, const double maximum, const double epsilon,
+    const int count);
 
 void _expect_value(
     const char* const function, const char* const parameter,
