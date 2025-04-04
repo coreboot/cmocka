@@ -21,6 +21,7 @@ set(CMOCKA_TESTS
     test_expect_check
     test_expect_u_int_in_set
     test_expect_check_fail
+    test_expect_in_range
     test_group_setup_assert
     test_group_setup_fail
     test_fixtures
