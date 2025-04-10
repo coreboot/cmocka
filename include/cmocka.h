@@ -93,7 +93,7 @@ int __stdcall IsDebuggerPresent();
  * Perform a cast from an integer to CMockaValueData.
  *
  * For backwards compatibility reasons, this explicitly casts to `uintmax_t`.
- * For most compilers, this will supress warnings about passing float/intmax_t
+ * For most compilers, this will suppress warnings about passing float/intmax_t
  * to this macro.
  */
 #define cast_int_to_cmocka_value(value) \
@@ -255,7 +255,7 @@ uintmax_t mock(void);
  * @brief Retrieve a value of the current function and cast it to given type.
  *
  * The value would be casted to type internally to avoid having the
- * caller to do the cast manually. Type saftey checks are disabled with that
+ * caller to do the cast manually. Type safety checks are disabled with that
  * functoin.
  *
  * @param[in]  #type  The expected type of the return value
@@ -298,7 +298,7 @@ intmax_t mock_int();
 
 #ifdef DOXYGEN
 /**
- * @brief Retrieve an unsinged integer return value of the current function.
+ * @brief Retrieve an unsigned integer return value of the current function.
  *
  * @return The value which was stored to return by this function.
  *
@@ -318,7 +318,7 @@ uintmax_t mock_uint(void);
 
 #ifdef DOXYGEN
 /**
- * @brief Retrieve an unsinged integer return value of the current function.
+ * @brief Retrieve an unsigned integer return value of the current function.
  *
  * @return The value which was stored to return by this function.
  *
@@ -449,7 +449,7 @@ intmax_t mock_parameter_int(#name);
 
 #ifdef DOXYGEN
 /**
- * @brief Retrieve an unsinged integer return value of the current function.
+ * @brief Retrieve an unsigned integer return value of the current function.
  *
  * @param[in]  #name  The name under which to look for the value
  *
@@ -2955,7 +2955,7 @@ void assert_ptr_equal(void *a, void *b);
 /**
  * @brief Assert that the two given pointers are equal.
  *
- * The function prints the failing comparision and the error message given by the user
+ * The function prints the failing comparison and the error message given by the user
  * and then terminates the test by calling fail() if the pointers are not equal.
  *
  * @param[in]  a        The first pointer to compare.
@@ -2991,7 +2991,7 @@ void assert_ptr_not_equal(void *a, void *b);
 /**
  * @brief Assert that the two given pointers are not equal.
  *
- * The function prints the failing comparision and the error message given by the user
+ * The function prints the failing comparison and the error message given by the user
  * and then terminates the test by calling fail() if the pointers are equal.
  *
  * @param[in]  a        The first pointer to compare.
@@ -3036,7 +3036,7 @@ void assert_int_equal(intmax_t a, intmax_t b);
 
 #ifdef DOXYGEN
 /**
- * @brief Assert that the two given unsinged integers are equal.
+ * @brief Assert that the two given unsigned integers are equal.
  *
  * The function prints an error message to standard error and terminates the
  * test by calling fail() if the integers are not equal.
@@ -3076,7 +3076,7 @@ void assert_int_not_equal(intmax_t a, intmax_t b);
 
 #ifdef DOXYGEN
 /**
- * @brief Assert that the two given unsinged integers are not equal.
+ * @brief Assert that the two given unsigned integers are not equal.
  *
  * The function prints an error message to standard error and terminates the
  * test by calling fail() if the integers are not equal.
@@ -4150,7 +4150,7 @@ void *test_calloc(size_t nmemb, size_t size);
 #ifdef DOXYGEN
 /**
  * @brief Test function overriding realloc which detects buffer overruns
- *        and memoery leaks.
+ *        and memory leaks.
  *
  * @param[in]  ptr   The memory block which should be changed.
  *
@@ -4207,7 +4207,7 @@ void test_free(void *ptr);
 /**
  * @brief Function to replace assert(3) in tested code.
  *
- * In conjuction with check_assert() it's possible to determine whether an
+ * In conjunction with check_assert() it's possible to determine whether an
  * assert condition has failed without stopping a test.
  *
  * @param[in]  result  The expression to assert.
@@ -4713,7 +4713,7 @@ void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
 
 enum cm_message_output {
     CM_OUTPUT_STANDARD = 1,
-    CM_OUTPUT_STDOUT = 1, /* API compatiblity */
+    CM_OUTPUT_STDOUT = 1, /* API compatibility */
     CM_OUTPUT_SUBUNIT = 2,
     CM_OUTPUT_TAP = 4,
     CM_OUTPUT_XML = 8,
