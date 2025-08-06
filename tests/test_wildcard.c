@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
 #include <cmocka.h>
 
 static void test_ok1(void **state)

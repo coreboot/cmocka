@@ -74,8 +74,20 @@ int __stdcall IsDebuggerPresent();
  * This allows test applications to use custom definitions of C standard
  * library functions and types.
  *
+ * In order to simplify building software against CMocka those files are
+ * included by default. In case someone wants to use their own headers,
+ * they are free to `#define CMOCKA_NO_STANDARD_INCLUDES`.
+ *
  * @{
  */
+
+#ifndef CMOCKA_NO_STANDARD_INCLUDES
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <setjmp.h>
+#endif
 
 /* Perform an signed cast to intmax_t. */
 #define cast_to_intmax_type(value) \

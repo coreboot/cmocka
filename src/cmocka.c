@@ -35,15 +35,9 @@
 #include <strings.h>
 #endif
 
-#include <stdint.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include <time.h>
 #include <float.h>
 #include <errno.h>

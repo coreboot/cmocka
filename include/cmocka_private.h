@@ -21,7 +21,9 @@
 #include "config.h"
 #endif
 
+#ifndef CMOCKA_NO_STANDARD_INCLUDES
 #include <stdint.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>

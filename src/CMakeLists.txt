@@ -39,6 +39,7 @@ target_compile_definitions(cmocka
 if (CMOCKA_PLATFORM_INCLUDE)
     target_compile_options(cmocka
                            PRIVATE
+                               -DCMOCKA_NO_STANDARD_INCLUDES
                                -DCMOCKA_PLATFORM_INCLUDE)
 endif()
 

@@ -47,11 +47,6 @@ unit test is complete run_tests() performs various checks to determine whether
 the test succeeded.
 
 @code
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <setjmp.h>
 #include <cmocka.h>
 
 /* A test case that does nothing and succeeds. */
@@ -96,6 +91,33 @@ using:
 <pre>
     cmake -DCMOCKA_PLATFORM_INCLUDE=/home/compiler/my/include_directory ..
 </pre>
+
+@subsection sub-includes Standard includes
+
+CMocka requires the include of the following list of standard headers or
+their equivalent.
+
+@code
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <setjmp.h>
+@endcode
+
+The header file 'cmocka.h' includes those headers already and in case your
+platform does not provide those header files, you must
+`#define CMOCKA_NO_STANDARD_INCLUDES` in order to prevent the include of
+those files.
+
+An example of how your code which uses CMocka could look like is given below.
+
+@code
+#include "path/to/cmocka_platform.h"
+#define CMOCKA_NO_STANDARD_INCLUDES
+#include <cmocka.h>
+/* ... your test code goes here ... */
+@endcode
 
 @section main-threads Threading
 

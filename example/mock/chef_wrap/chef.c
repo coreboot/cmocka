@@ -15,15 +15,9 @@
  * limitations under the License.
  */
 
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
 #include <cmocka.h>
 #include <stdio.h>
 #include <errno.h>
-#include <stdbool.h>
 #include <string.h>
 
 #include "chef.h"

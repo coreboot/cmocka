@@ -1,10 +1,5 @@
 #include "config.h"
 
-#include <setjmp.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <cmocka.h>
 
 static void test_ptr_equal_fail(void **state)

@@ -1,11 +1,6 @@
 /* Use the unit test allocators */
 #define UNIT_TESTING 1
 
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
 #include <cmocka.h>
 
 static int group_setup(void **state)

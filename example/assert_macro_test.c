@@ -13,11 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <setjmp.h>
-#include <stdint.h>
 #include <cmocka.h>
 
 #include "assert_macro.h"
