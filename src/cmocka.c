@@ -4241,6 +4241,7 @@ static void cmprepare_xml_attribute_string(char *buf, size_t buf_len, const char
     c_strreplace(buf, buf_len, "\'", "&apos;", NULL);
     c_strreplace(buf, buf_len, "<", "&lt;", NULL);
     c_strreplace(buf, buf_len, ">", "&gt;", NULL);
+    c_strreplace(buf, buf_len, "/", "&sol;", NULL);
 }
 
 static void cmprintf_group_finish_xml(const char *group_name,
