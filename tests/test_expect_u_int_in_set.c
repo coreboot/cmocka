@@ -48,7 +48,7 @@ static void test_expect_float_in_set_count(void **state)
 
     expect_float_in_set_count(mock_test_float, value, set, 0.01, 1);
 
-    mock_test_float(2.71);
+    mock_test_float(2.71f);
 }
 
 int main(void) {

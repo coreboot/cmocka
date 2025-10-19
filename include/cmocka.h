@@ -154,17 +154,17 @@ int __stdcall IsDebuggerPresent();
     }
 
 /** Assign a floating point value to CMockaValueData. */
-#define assign_float_to_cmocka_value(value) \
+#define assign_float_to_cmocka_value(value)  \
     (CMockaValueData)                        \
     {                                        \
-        .float_val = (value)                  \
+        .float_val = ((float)(value))        \
     }
 
 /** Assign a double floating point value to CMockaValueData. */
 #define assign_double_to_cmocka_value(value) \
     (CMockaValueData)                        \
     {                                        \
-        .real_val = (value)                  \
+        .real_val = ((double)(value))        \
     }
 
 /* Nested macros are not expanded when they appear along with # or ## */

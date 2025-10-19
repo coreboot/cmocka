@@ -31,7 +31,7 @@ static void test_expect_float_in_range(void **state)
 
     expect_float_in_range(mock_test_float, value, -0.61234, 0.65432, 0.00001);
 
-    mock_test_float(0.01);
+    mock_test_float(0.01f);
 }
 
 static void test_expect_float_in_range_count(void **state)
@@ -40,10 +40,10 @@ static void test_expect_float_in_range_count(void **state)
 
     expect_float_in_range_count(mock_test_float, value, -0.61234, 0.65432, 0.00001, 4);
 
-    mock_test_float(0.01);
-    mock_test_float(-0.6123);
-    mock_test_float(0.6543);
-    mock_test_float(0.65432901);
+    mock_test_float(0.01f);
+    mock_test_float(-0.6123f);
+    mock_test_float(0.6543f);
+    mock_test_float(0.65432901f);
 }
 
 static void test_expect_float_not_in_range(void **state)
@@ -52,7 +52,7 @@ static void test_expect_float_not_in_range(void **state)
 
     expect_float_not_in_range(mock_test_float, value, -0.61234, 0.65432, 0.00001);
 
-    mock_test_float(0.655);
+    mock_test_float(0.655f);
 }
 
 static void test_expect_float_not_in_range_count(void **state)
@@ -61,10 +61,10 @@ static void test_expect_float_not_in_range_count(void **state)
 
     expect_float_not_in_range_count(mock_test_float, value, -0.61234, 0.65432, 0.00001, 4);
 
-    mock_test_float(10.0);
-    mock_test_float(-0.62);
-    mock_test_float(0.6545);
-    mock_test_float(0.659);
+    mock_test_float(10.0f);
+    mock_test_float(-0.62f);
+    mock_test_float(0.6545f);
+    mock_test_float(0.659f);
 }
 
 static void test_expect_int_in_range(void **state)

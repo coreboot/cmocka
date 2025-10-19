@@ -1510,11 +1510,11 @@ static double cm_log10(double x) {
 }
 
 static float cm_log10f(float x) {
-    return ((float)ln(x)) / LN10;
+    return ((float)ln(x)) / (float)LN10;
 }
 
-#define cm_epsilon_to_precision(e) -cm_log10(e)
-#define cm_epsilon_to_precision_f(e) -cm_log10f(e)
+#define cm_epsilon_to_precision(e) ((int)(-(cm_log10(e))))
+#define cm_epsilon_to_precision_f(e) ((int)(-(cm_log10f(e))))
 
 /* Returns true if the specified float values are equal, else returns false. */
 static bool float_compare(const float left,

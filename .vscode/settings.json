@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "__bit_reference": "c",
+        "__node_handle": "c",
+        "bitset": "c",
+        "deque": "c",
+        "limits": "c",
+        "locale": "c",
+        "optional": "c",
+        "ratio": "c",
+        "vector": "c",
+        "unordered_map": "c",
+        "config.h": "c"
+    }
+}

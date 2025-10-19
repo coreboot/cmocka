@@ -47,6 +47,8 @@ if (UNIX)
     add_c_compiler_flag("-Werror=implicit-int" SUPPORTED_COMPILER_FLAGS)
     add_c_compiler_flag("-Wint-conversion" SUPPORTED_COMPILER_FLAGS)
     add_c_compiler_flag("-Werror=int-conversion" SUPPORTED_COMPILER_FLAGS)
+    add_c_compiler_flag("-Wfloat-conversion" SUPPORTED_COMPILER_FLAGS)
+    add_c_compiler_flag("-Werror=float-conversion" SUPPORTED_COMPILER_FLAGS)
 
     check_c_compiler_flag("-Wformat" REQUIRED_FLAGS_WFORMAT)
     if (REQUIRED_FLAGS_WFORMAT)
