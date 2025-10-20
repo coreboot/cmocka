@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-/* Use the unit test allocators */
-#define UNIT_TESTING 1
+#include "config.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -23,6 +22,7 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <cmocka.h>
+#include <cmocka_private.h>
 
 /* A test case that does check if double is equal. */
 static void double_test_success(void **state)
@@ -31,6 +31,24 @@ static void double_test_success(void **state)
 
     assert_double_equal(0.5, 1. / 2., 0.000001);
     assert_double_not_equal(0.5, 0.499, 0.000001);
+
+    /* Check that finite numbers do not test equal to INFINITY or NAN */
+    assert_double_not_equal(123., INFINITY, 0.0);
+    assert_double_not_equal(123., -INFINITY, 0.0);
+    assert_double_not_equal(123., NAN, 0.0);
+    assert_double_not_equal(123., -NAN, 0.0);
+
+    /* Check that INFINITY and NAN test equal to themselves */
+    assert_double_equal(INFINITY, INFINITY, 0.0);
+    assert_double_equal(-INFINITY, -INFINITY, 0.0);
+    assert_double_equal(NAN, NAN, 0.0);
+    assert_double_equal(-NAN, -NAN, 0.0);
+
+    /* Check that NAN sign doesn't matter in equality test  */
+    assert_double_equal(NAN, -NAN, 0.0);
+
+    /* Check that INFINITY sign does matter in equality test */
+    assert_double_not_equal(INFINITY, -INFINITY, 0.0);
 }
 
 int main(void) {

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-/* Use the unit test allocators */
-#define UNIT_TESTING 1
+#include "config.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
@@ -23,6 +22,7 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <cmocka.h>
+#include <cmocka_private.h>
 
 /* A test case that does check if float is equal. */
 static void float_test_success(void **state)
@@ -31,6 +31,24 @@ static void float_test_success(void **state)
 
     assert_float_equal(0.5f, 1.f / 2.f, 0.000001f);
     assert_float_not_equal(0.5, 0.499f, 0.000001f);
+
+    /* Check that finite numbers do not test equal to INFINITY or NAN */
+    assert_float_not_equal(123.f, INFINITY, 0.0f);
+    assert_float_not_equal(123.f, -INFINITY, 0.0f);
+    assert_float_not_equal(123.f, NAN, 0.0f);
+    assert_float_not_equal(123.f, -NAN, 0.0f);
+
+    /* Check that INFINITY and NAN test equal to themselves */
+    assert_float_equal(INFINITY, INFINITY, 0.0f);
+    assert_float_equal(-INFINITY, -INFINITY, 0.0f);
+    assert_float_equal(NAN, NAN, 0.0f);
+    assert_float_equal(-NAN, -NAN, 0.0f);
+
+    /* Check that NAN sign doesn't matter in equality test  */
+    assert_float_equal(NAN, -NAN, 0.0f);
+
+    /* Check that INFINITY sign does matter in equality test */
+    assert_float_not_equal(INFINITY, -INFINITY, 0.0f);
 }
 
 int main(void) {

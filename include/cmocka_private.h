@@ -157,4 +157,44 @@
  */
 #define discard_const_p(type, ptr) ((type *)discard_const(ptr))
 
+/* Cmocka does not rely on math.h, so NAN and INFINITY are handled below */
+
+#ifndef INFINITY
+# if defined(__GNUC__) || defined(__clang__)
+#  define INFINITY __builtin_inff()
+# else
+#  define INFINITY ((float)(1e+300 * 1e+300)) /* Goes to infinity when squared */
+# endif
+#endif
+
+#ifndef NAN
+# if defined(__GNUC__) || defined(__clang__)
+#  define NAN __builtin_nanf("")
+# else
+#  define NAN ((float)(INFINITY * 0.0f)) /* MSVC technique to create float NAN */
+# endif
+#endif
+
+#if !defined(isnan)
+static inline int cmocka_isnan(double x) {
+    union { double d; uint64_t i; } u;
+    u.d = x;
+    /* NaN: exponent all 1s, mantissa non-zero */
+    return ((u.i & 0x7FF0000000000000ULL) == 0x7FF0000000000000ULL) &&
+           ((u.i & 0x000FFFFFFFFFFFFFULL) != 0);
+}
+# define isnan(x) cmocka_isnan(x)
+#endif
+
+#if !defined(isinf)
+static inline int cmocka_isinf(double x) {
+    union { double d; uint64_t i; } u;
+    u.d = x;
+    /* Infinity: exponent all 1s, mantissa all 0s */
+    return ((u.i & 0x7FF0000000000000ULL) == 0x7FF0000000000000ULL) &&
+           ((u.i & 0x000FFFFFFFFFFFFFULL) == 0);
+}
+# define isinf(x) cmocka_isinf(x)
+#endif
+
 #endif /* CMOCKA_PRIVATE_H_ */

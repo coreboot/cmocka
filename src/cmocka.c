@@ -1417,6 +1417,14 @@ static bool double_compare(const double left,
 
 static double ln(double x)
 {
+    if (x <= 0.0 || isnan(x) || isinf(x)) {
+        return NAN;
+    }
+
+    if (x == 1.0) {
+        return 0.0;
+    }
+
     double old_sum = 0.0;
     double xmlxpl = (x - 1) / (x + 1);
     double xmlxpl_2 = xmlxpl * xmlxpl;
@@ -1455,14 +1463,26 @@ static bool float_compare(const float left,
     float absRight;
     float largest;
     float relDiff;
+    float diff;
 
-    float diff = left - right;
+    if (isinf(left) && isinf(right) && (((left) < 0) == ((right) < 0))) {
+        return 1;
+    }
+    if (isnan(left) && isnan(right)) {
+        return 1;
+    }
+
+    diff = left - right;
     diff = (diff >= 0.f) ? diff : -diff;
+
+    if (isnan(diff) || isinf(diff)) {
+        return 0;
+    }
 
     // Check if the numbers are really close -- needed
     // when comparing numbers near zero.
     if (diff <= epsilon) {
-            return true;
+        return true;
     }
 
     absLeft = (left >= 0.f) ? left : -left;
@@ -1511,14 +1531,24 @@ static bool double_compare(const double left,
     double absRight;
     double largest;
     double relDiff;
+    double diff;
 
-    double diff = left - right;
-    diff = (diff >= 0.0) ? diff : -diff;
+    if (isinf(left) && isinf(right) && (((left) < 0) == ((right) < 0))) {
+        return 1;
+    }
+    if (isnan(left) && isnan(right)) {
+        return 1;
+    }
 
-    /*
-     * Check if the numbers are really close -- needed
-     * when comparing numbers near zero.
-     */
+    diff = left - right;
+    diff = (diff >= 0.f) ? diff : -diff;
+
+    if (isnan(diff) || isinf(diff)) {
+        return 0;
+    }
+
+    // Check if the numbers are really close -- needed
+    // when comparing numbers near zero.
     if (diff <= epsilon) {
         return true;
     }

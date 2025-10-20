@@ -23,8 +23,6 @@
 #include <stdint.h>
 #include <cmocka.h>
 
-#include <math.h>
-
 #include "../src/cmocka.c"
 
 static void test_natural_log(void **state)
