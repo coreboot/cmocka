@@ -2390,6 +2390,135 @@ void expect_not_in_range_count(#function, #parameter, uintmax_t minimum, uintmax
 
 #ifdef DOXYGEN
 /**
+ * @brief Add an event to check an integer parameter is outside a numerical
+ * range. The check would succeed if minimum > value > maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @see check_expected().
+ */
+void expect_int_not_in_range(#function,
+                             #parameter,
+                             intmax_t minimum,
+                             intmax_t maximum);
+#else
+#define expect_int_not_in_range(function, parameter, minimum, maximum) \
+    expect_int_not_in_range_count(function, parameter, minimum, maximum, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check an integer parameter is outside a
+ * numerical range. The check would succeed if minimum > value > maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_int_not_in_range_count(#function,
+                                   #parameter,
+                                   intmax_t minimum,
+                                   intmax_t maximum,
+                                   size_t count);
+#else
+#define expect_int_not_in_range_count(                   \
+    function, parameter, minimum, maximum, count)        \
+    _expect_int_not_in_range(cmocka_tostring(function),  \
+                             cmocka_tostring(parameter), \
+                             __FILE__,                   \
+                             __LINE__,                   \
+                             minimum,                    \
+                             maximum,                    \
+                             count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check an unsigned integer parameter is outside a
+ * numerical range. The check would succeed if minimum > value > maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @see check_expected().
+ */
+void expect_uint_not_in_range(#function,
+                              #parameter,
+                              uintmax_t minimum,
+                              uintmax_t maximum);
+#else
+#define expect_uint_not_in_range(function, parameter, minimum, maximum) \
+    expect_uint_not_in_range_count(function, parameter, minimum, maximum, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check an unsigned integer parameter is
+ * outside a numerical range. The check would succeed if minimum > value >
+ * maximum.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  minimum  The lower boundary of the interval to check against.
+ *
+ * @param[in]  maximum  The upper boundary of the interval to check against.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_uint_not_in_range_count(#function,
+                                    #parameter,
+                                    uintmax_t minimum,
+                                    uintmax_t maximum,
+                                    size_t count);
+#else
+#define expect_uint_not_in_range_count(                   \
+    function, parameter, minimum, maximum, count)         \
+    _expect_uint_not_in_range(cmocka_tostring(function),  \
+                              cmocka_tostring(parameter), \
+                              __FILE__,                   \
+                              __LINE__,                   \
+                              minimum,                    \
+                              maximum,                    \
+                              count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Add an event to check a parameter is inside a numerical range.
  * The check would succeed if minimum <= value <= maximum.
  *
@@ -4888,6 +5017,20 @@ void _expect_not_in_range(
     const char* const file, const int line,
     const uintmax_t minimum,
     const uintmax_t maximum, const int count);
+void _expect_int_not_in_range(const char *const function,
+                              const char *const parameter,
+                              const char *const file,
+                              const size_t line,
+                              const intmax_t minimum,
+                              const intmax_t maximum,
+                              const size_t count);
+void _expect_uint_not_in_range(const char *const function,
+                               const char *const parameter,
+                               const char *const file,
+                               const size_t line,
+                               const uintmax_t minimum,
+                               const uintmax_t maximum,
+                               const size_t count);
 void _expect_float_in_range(
     const char* const function, const char* const parameter,
     const char* const file, const int line,

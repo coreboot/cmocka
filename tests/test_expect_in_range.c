@@ -148,6 +148,44 @@ static void test_expect_uint_in_range_count_with_uintmax(void **state)
     mock_test_uint(1000);
 }
 
+static void test_expect_int_not_in_range_with_int(void **state)
+{
+    (void)state; /* unused */
+
+    expect_int_not_in_range(mock_test_int, value, -10, 10);
+    mock_test_int(-15);
+}
+
+static void test_expect_int_not_in_range_count_with_intmax(void **state)
+{
+    (void)state; /* unused */
+
+    expect_int_not_in_range_count(mock_test_intmax, value, -100, 100, 4);
+    mock_test_intmax(-101);
+    mock_test_intmax(101);
+    mock_test_intmax(-200);
+    mock_test_intmax(200);
+}
+
+static void test_expect_uint_not_in_range_with_uint(void **state)
+{
+    (void)state; /* unused */
+
+    expect_uint_not_in_range(mock_test_uint, value, 0, 100);
+    mock_test_uint(150);
+}
+
+static void test_expect_uint_not_in_range_count_with_uintmax(void **state)
+{
+    (void)state; /* unused */
+
+    expect_uint_not_in_range_count(mock_test_uint, value, 10, 1000, 4);
+    mock_test_uint(5);
+    mock_test_uint(1001);
+    mock_test_uint(0);
+    mock_test_uint(2000);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_expect_float_in_range),
@@ -162,6 +200,10 @@ int main(void) {
         cmocka_unit_test(test_expect_int_in_range_count_with_intmax),
         cmocka_unit_test(test_expect_uint_in_range_with_uint),
         cmocka_unit_test(test_expect_uint_in_range_count_with_uintmax),
+        cmocka_unit_test(test_expect_int_not_in_range_with_int),
+        cmocka_unit_test(test_expect_int_not_in_range_count_with_intmax),
+        cmocka_unit_test(test_expect_uint_not_in_range_with_uint),
+        cmocka_unit_test(test_expect_uint_not_in_range_count_with_uintmax),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
