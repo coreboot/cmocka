@@ -32,7 +32,7 @@ static void mock_function_uint64(uint64_t *result)
     *result = (uint64_t)mock_parameter_uint(result);
 }
 
-static void mock_function_float(double *result)
+static void mock_function_float(float *result)
 {
     *result = mock_parameter_float(result);
 }
@@ -128,14 +128,14 @@ static void test_will_return_uint64(void **state)
 
 static void test_will_return_float(void **state)
 {
-    double value = 1.0;
+    float value = 1.0f;
 
     (void)state; /* unused */
 
     will_set_parameter_float(mock_function_float, result, value);
-    double result_param = 0.0;
+    float result_param = 0.0f;
     mock_function_float(&result_param);
-    assert_float_equal(value, result_param, 0.0);
+    assert_float_equal(value, result_param, 0.0f);
 }
 
 static void test_will_set_parameter_double(void **state)

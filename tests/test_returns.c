@@ -36,8 +36,8 @@ uint64_t mock_function_uint64(void)
     return (uint64_t)mock_uint();
 }
 
-double mock_function_float(void);
-double mock_function_float(void)
+float mock_function_float(void);
+float mock_function_float(void)
 {
     return mock_float();
 }
@@ -129,12 +129,12 @@ static void test_will_return_uint64(void **state)
 
 static void test_will_return_float(void **state)
 {
-    double value = 1.0;
+    float value = 1.0f;
 
     (void)state; /* unused */
 
     will_return_float(mock_function_float, value);
-    assert_float_equal(value, mock_function_float(), 0.0);
+    assert_float_equal(value, mock_function_float(), 0.0f);
 }
 
 static void test_will_return_double(void **state)

@@ -19,7 +19,7 @@ void test_internal_named_mocks(void **state);
 
 void named_return_parameter(int *number, double *real, const char **text)
 {
-    *real = mock_parameter_float(real);
+    *real = mock_parameter_double(real);
     *text = mock_parameter_ptr_type(text, const char *);
     *number = mock_parameter_int(number);
 }
@@ -41,7 +41,7 @@ void test_named_return_parameter(void **state)
 
     will_set_parameter_ptr_type(named_return_parameter, text, expected_text, const char *);
     will_set_parameter_int(named_return_parameter, number, expected_number);
-    will_set_parameter_float(named_return_parameter, real, expected_real);
+    will_set_parameter_double(named_return_parameter, real, expected_real);
 
     int result_number = 0;
     double result_real = 0.0;
