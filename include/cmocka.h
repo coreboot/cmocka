@@ -711,7 +711,7 @@ void will_return_int(#function, intmax_t value);
  *
  * static void test_integer_return(void **state)
  * {
- *      will_return_int(return_uint32, 42);
+ *      will_return_uint(return_uint32, 42);
  *
  *      assert_uint_equal(my_function_calling_return_uint32(), 42);
  * }
@@ -897,9 +897,9 @@ void will_return_maybe(#function, uintmax_t value);
  *
  * static void test_pointer_return(void **state)
  * {
- *      will_return(return_pointer, "hello world");
+ *      will_return_ptr_type(return_pointer, "hello world", const char *);
  *
- *      assert_string_equal(my_function_calling_return_integer(), 42);
+ *      assert_string_equal(my_func_calling_return_pointer(), "hello world");
  * }
  * @endcode
  *
@@ -1135,12 +1135,14 @@ void will_set_parameter_int(#function, #name, intmax_t value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named unsigned integer value to be returned by mock_parameter() later.
+ * @brief Store a named unsigned integer value to be returned by
+ * mock_parameter() later.
  *
  * And adds some type checking information to be able to check
  * with call to mock_parameter_uint().
  *
- * @param[in]  #function  The function in which the given value should be return.
+ * @param[in]  #function  The function in which the given value should be
+ * return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
@@ -1154,8 +1156,8 @@ void will_set_parameter_int(#function, #name, intmax_t value);
  *
  * static void test_integer_return(void **state)
  * {
- *      will_set_parameter_uint(return_uint32, result 42);
- *      int32_t result_param = 0;
+ *      will_set_parameter_uint(return_uint32, result, 42);
+ *      uint32_t result_param = 0;
  *      return_uint32(&result_param);
  *      assert_uint_equal(result_param, 42);
  * }
@@ -1165,7 +1167,7 @@ void will_set_parameter_int(#function, #name, intmax_t value);
  * @see mock_parameter_uint()
  * @see will_set_parameter()
  */
-void will_return_uint(#function, #name, uintmax_t value);
+void will_set_parameter_uint(#function, #name, uintmax_t value);
 #else
 #define will_set_parameter_uint(function, name, value) \
     _will_set_parameter(#function,                     \
@@ -1378,7 +1380,8 @@ void will_set_parameter_maybe(#function, #name, uintmax_t value);
 /**
  * @brief Store a named pointer value to be returned by mock_parameter() later.
  *
- * @param[in]  #function  The function in which the given value should be return.
+ * @param[in]  #function  The function in which the given value should be
+ * return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
@@ -1391,7 +1394,7 @@ void will_set_parameter_maybe(#function, #name, uintmax_t value);
  * }
  * static void test_pointer_return(void **state)
  * {
- *      will_set_parameter ptr(return_pointer, result, "hello world");
+ *      will_set_parameter_ptr(return_pointer, result, "hello world");
  *      const char *returned = NULL;
  *      my_func_calling_return_pointer(&returned);
  *      assert_string_equal(returned, "hello world");
@@ -1513,13 +1516,15 @@ void will_set_parameter_ptr_count(#function, #name, void *value, #type, count);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value that may be always returned by mock_parameter_ptr().
+ * @brief Store a named pointer value that will be always returned by
+ * mock_parameter_ptr().
  *
- * This stores a value which will always be returned by mock_parameter_ptr() is
- * not required to be returned by at least one call to mock_parameter_ptr().
+ * This stores a value which will always be returned by mock_parameter_ptr()
+ * and is required to be returned by at least one call to mock_parameter_ptr().
  * If it is not returned at least once the test will fail.
  *
- * @param[in]  #function  The function in which the given value should be return.
+ * @param[in]  #function  The function in which the given value should be
+ * return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
@@ -1527,7 +1532,7 @@ void will_set_parameter_ptr_count(#function, #name, void *value, #type, count);
  *
  * This is equivalent to:
  * @code
- * will_return_ptr_count(function, value, -1);
+ * will_set_parameter_ptr_count(function, name, value, -1);
  * @endcode
  *
  * @see mock_parameter()
@@ -1544,15 +1549,17 @@ void will_set_parameter_ptr_always(#function, #name, void *value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named pointer value that may be always returned by mock_parameter_ptr().
+ * @brief Store a named pointer value that may be always returned by
+ * mock_parameter_ptr().
  *
- * This stores a value which will always be returned by mock_parameter_ptr() but is
- * not required to be returned by at least one call to mock_parameter_ptr().
+ * This stores a value which will always be returned by mock_parameter_ptr() but
+ * is not required to be returned by at least one call to mock_parameter_ptr().
  * Therefore, in contrast to will_set_parameter_ptr_always() which causes a test
- * failure if it is not returned at least once, will_set_parameter_ptr() will
- * never cause a test to fail if its value is not returned.
+ * failure if it is not returned at least once, will_set_parameter_ptr_maybe()
+ * will never cause a test to fail if its value is not returned.
  *
- * @param[in]  #function  The function in which the given value should be return.
+ * @param[in]  #function  The function in which the given value should be
+ * return.
  *
  * @param[in]  #name  The name under which the given value should be returned.
  *
@@ -1560,11 +1567,11 @@ void will_set_parameter_ptr_always(#function, #name, void *value);
  *
  * This is equivalent to:
  * @code
- * will_return_ptr_count(function, value, -2);
+ * will_set_parameter_ptr_count(function, name, value, -2);
  * @endcode
  *
- * @see mock_name()
- * @see mock_name_ptr()
+ * @see mock_parameter()
+ * @see mock_parameter_ptr()
  * @see will_set_parameter()
  * @see will_set_parameter_ptr()
  * @see will_set_parameter_ptr_count()
