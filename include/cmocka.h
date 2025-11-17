@@ -124,6 +124,13 @@ int __stdcall IsDebuggerPresent();
     }
 
 /** Assign a floating point value to CMockaValueData. */
+#define assign_float_to_cmocka_value(value) \
+    (CMockaValueData)                        \
+    {                                        \
+        .float_val = (value)                  \
+    }
+
+/** Assign a double floating point value to CMockaValueData. */
 #define assign_double_to_cmocka_value(value) \
     (CMockaValueData)                        \
     {                                        \
@@ -2476,6 +2483,138 @@ void expect_not_float_count(#function, #parameter, double value, double epsilon,
 
 #ifdef DOXYGEN
 /**
+ * @brief Add an event to check if a parameter is the given double
+ * precision floating point value.
+ *
+ * The event is triggered by calling check_expected_double() in the mocked
+ * function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for double comparison.
+ *
+ * @see check_expected_double()
+ */
+void expect_double(#function, #parameter, double value, double epsilon);
+#else
+#define expect_double(function, parameter, value, epsilon) \
+    expect_double_count(function,                          \
+                        parameter,                         \
+                        cast_to_long_double_type(value),   \
+                        cast_to_long_double_type(epsilon), \
+                        1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check if a parameter is the given double
+ * precision floating point value.
+ *
+ * The event is triggered by calling check_expected_double() in the mocked
+ * function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for double comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected_double().
+ */
+void expect_double_count(#function,
+                         #parameter,
+                         double value,
+                         double epsilon,
+                         size_t count);
+#else
+#define expect_double_count(function, parameter, value, epsilon, count) \
+    _expect_double(cmocka_tostring(function),                           \
+                   cmocka_tostring(parameter),                          \
+                   __FILE__,                                            \
+                   __LINE__,                                            \
+                   cast_to_long_double_type(value),                     \
+                   cast_to_long_double_type(epsilon),                   \
+                   count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if a parameter isn't the given double precision
+ * floating point value.
+ *
+ * The event is triggered by calling check_expected_double() in the mocked
+ * function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for double comparison.
+ *
+ * @see check_expected_double()
+ */
+void expect_not_double(#function, #parameter, double value, double epsilon);
+#else
+#define expect_not_double(function, parameter, value, epsilon) \
+    expect_not_double_count(function,                          \
+                            parameter,                         \
+                            cast_to_long_double_type(value),   \
+                            cast_to_long_double_type(epsilon), \
+                            1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check if a parameter isn't the double
+ * precision floating point value.
+ *
+ * The event is triggered by calling check_expected_double() in the mocked
+ * function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value to check.
+ *
+ * @param[in]  epsilon  The epsilon used as margin for double comparison.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected_double().
+ */
+void expect_not_double_count(#function,
+                             #parameter,
+                             double value,
+                             double epsilon,
+                             size_t count);
+#else
+#define expect_not_double_count(function, parameter, value, epsilon, count) \
+    _expect_not_double(cmocka_tostring(function),                           \
+                       cmocka_tostring(parameter),                          \
+                       __FILE__,                                            \
+                       __LINE__,                                            \
+                       cast_to_long_double_type(value),                     \
+                       cast_to_long_double_type(epsilon),                   \
+                       count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Add an event to check if the parameter value is equal to the
  *        provided string.
  *
@@ -2784,7 +2923,36 @@ void check_expected_ptr(#parameter);
 void check_expected_float(#parameter);
 #else
 #define check_expected_float(parameter) \
-    _check_expected(__func__, #parameter, __FILE__, __LINE__, \
+    _check_expected(__func__,           \
+                    #parameter,         \
+                    __FILE__,           \
+                    __LINE__,           \
+                    assign_float_to_cmocka_value(parameter))
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Determine whether a function parameter is correct.
+ *
+ * This ensures the next value queued by one of the expect*_double() macros
+ * matches the specified variable.
+ *
+ * This function needs to be called in the mock object.
+ *
+ * @param[in]  #parameter  The parameter to check.
+ *
+ * @see expect_double
+ * @see expect_not_double
+ * @see expect_double_count
+ * @see expect_not_double_count
+ */
+void check_expected_double(#parameter);
+#else
+#define check_expected_double(parameter) \
+    _check_expected(__func__,            \
+                    #parameter,          \
+                    __FILE__,            \
+                    __LINE__,            \
                     assign_double_to_cmocka_value(parameter))
 #endif
 
@@ -4296,6 +4464,8 @@ typedef union {
     uintmax_t uint_val;
     /** Holds real/floating-pointing types*/
     double real_val; // TODO: Should we use `long double` instead
+    /** Holds floating-point type */
+    float float_val;
     /** Holds pointer data */
     const void *ptr;
     // The following aren't used by CMocka currently, but are added to avoid
@@ -4479,6 +4649,21 @@ void _expect_not_float(
     const char* const function, const char* const parameter,
     const char* const file, const int line, const double value,
     const double epsilon, const int count);
+
+void _expect_double(const char *const function,
+                    const char *const parameter,
+                    const char *const file,
+                    const int line,
+                    const double value,
+                    const double epsilon,
+                    const int count);
+void _expect_not_double(const char *const function,
+                        const char *const parameter,
+                        const char *const file,
+                        const int line,
+                        const double value,
+                        const double epsilon,
+                        const int count);
 
 void _expect_string(
     const char* const function, const char* const parameter,

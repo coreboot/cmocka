@@ -10,8 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-
-static void mock_test_float(double value)
+static void mock_test_float(float value)
 {
     check_expected_float(value);
 }

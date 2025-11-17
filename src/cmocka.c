@@ -2143,7 +2143,7 @@ static int check_float_in_set(const CMockaValueData value,
                               const CMockaValueData check_value_data)
 {
     return float_value_in_set_display_error(
-        value.real_val,
+        value.float_val,
         cast_cmocka_value_to_pointer(struct check_float_set *,
                                      check_value_data),
         false);
@@ -2153,9 +2153,10 @@ static int check_float_not_in_set(const CMockaValueData value,
                                   const CMockaValueData check_value_data)
 {
     return float_value_in_set_display_error(
-        value.real_val,
+        value.float_val,
         cast_cmocka_value_to_pointer(struct check_float_set *,
-                                     check_value_data), true);
+                                     check_value_data),
+        true);
 }
 
 /* CheckParameterValue callback to check whether a value isn't within a set. */
@@ -2465,7 +2466,7 @@ static int check_float_in_range(const CMockaValueData value,
                                             check_value_data);
     assert_non_null(check_float_range);
 
-    return float_in_range_display_error(value.real_val,
+    return float_in_range_display_error(value.float_val,
                                         check_float_range->minimum,
                                         check_float_range->maximum,
                                         check_float_range->epsilon);
@@ -2480,7 +2481,7 @@ static int check_float_not_in_range(const CMockaValueData value,
                                             check_value_data);
     assert_non_null(check_float_range);
 
-    return float_not_in_range_display_error(value.real_val,
+    return float_not_in_range_display_error(value.float_val,
                                             check_float_range->minimum,
                                             check_float_range->maximum,
                                             check_float_range->epsilon);
@@ -2591,11 +2592,23 @@ static int check_float(const CMockaValueData value,
     CheckFloat * const check = cast_cmocka_value_to_pointer(
         CheckFloat*, check_value_data);
     assert_non_null(check);
+    return float_values_equal_display_error(value.float_val,
+                                            (float)check->value,
+                                            (float)check->epsilon);
+}
+
+/* CheckParameterValue callback to check whether a double is equal to an
+ * expected value. */
+static int check_double(const CMockaValueData value,
+                        const CMockaValueData check_value_data)
+{
+    CheckFloat *const check = cast_cmocka_value_to_pointer(CheckFloat *,
+                                                           check_value_data);
+    assert_non_null(check);
     return double_values_equal_display_error(
         value.real_val,
         check->value, check->epsilon);
 }
-
 
 /* Add an event to check a parameter equals an expected float. */
 void _expect_float(
@@ -2614,10 +2627,23 @@ static int check_not_float(const CMockaValueData value,
     CheckFloat * const check = cast_cmocka_value_to_pointer(
         CheckFloat*, check_value_data);
     assert_non_null(check);
-    return double_values_not_equal_display_error(value.real_val,
-                                                 check->value, check->epsilon);
+    return float_values_not_equal_display_error(value.float_val,
+                                                (float)check->value,
+                                                (float)check->epsilon);
 }
 
+/* CheckParameterValue callback to check whether a double is not equal to an
+ * expected value. */
+static int check_not_double(const CMockaValueData value,
+                            const CMockaValueData check_value_data)
+{
+    CheckFloat *const check = cast_cmocka_value_to_pointer(CheckFloat *,
+                                                           check_value_data);
+    assert_non_null(check);
+    return double_values_not_equal_display_error(value.real_val,
+                                                 check->value,
+                                                 check->epsilon);
+}
 
 /* Add an event to check a parameter is not equal to an expected float. */
 void _expect_not_float(
@@ -2628,6 +2654,61 @@ void _expect_not_float(
                        check_not_float, count);
 }
 
+static void expect_double_setup(const char *const function,
+                                const char *const parameter,
+                                const char *const file,
+                                const int line,
+                                const double value,
+                                const double epsilon,
+                                const CheckParameterValue check_function,
+                                const int count)
+{
+    CheckFloat *const check_data = (CheckFloat *)malloc(sizeof(*check_data));
+    assert_non_null(check_data);
+    declare_initialize_value_pointer_pointer(check_data_pointer, check_data);
+    check_data->value = value;
+    check_data->epsilon = epsilon;
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_function,
+                  check_data_pointer,
+                  &check_data->event,
+                  count);
+}
+
+/* Add an event to check a parameter equals an expected double. */
+void _expect_double(const char *const function,
+                    const char *const parameter,
+                    const char *const file,
+                    const int line,
+                    const double value,
+                    const double epsilon,
+                    const int count)
+{
+    expect_double_setup(
+        function, parameter, file, line, value, epsilon, check_double, count);
+}
+
+/* Add an event to check a parameter is not equal to an expected double. */
+void _expect_not_double(const char *const function,
+                        const char *const parameter,
+                        const char *const file,
+                        const int line,
+                        const double value,
+                        const double epsilon,
+                        const int count)
+{
+    expect_double_setup(function,
+                        parameter,
+                        file,
+                        line,
+                        value,
+                        epsilon,
+                        check_not_double,
+                        count);
+}
 
 /* CheckParameterValue callback to check whether a parameter equals a string. */
 static int check_string(const CMockaValueData value,

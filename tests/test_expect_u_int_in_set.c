@@ -21,7 +21,7 @@ static void mock_test_uint(uintmax_t value)
     check_expected(value);
 }
 
-static void mock_test_float(double value)
+static void mock_test_float(float value)
 {
     check_expected_float(value);
 }
