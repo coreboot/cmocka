@@ -2835,6 +2835,19 @@ static int check_value(const CMockaValueData value,
     return uint_values_equal_display_error(value.uint_val, check_value_data.uint_val);
 }
 
+static int check_int_value(const CMockaValueData value,
+                           const CMockaValueData check_value_data)
+{
+    return int_values_equal_display_error(value.int_val,
+                                          check_value_data.int_val);
+}
+
+static int check_uint_value(const CMockaValueData value,
+                            const CMockaValueData check_value_data)
+{
+    return uint_values_equal_display_error(value.uint_val,
+                                           check_value_data.uint_val);
+}
 
 /* Add an event to check a parameter equals an expected value. */
 void _expect_value(
@@ -2845,6 +2858,39 @@ void _expect_value(
                   count);
 }
 
+void _expect_int_value(const char *const function,
+                       const char *const parameter,
+                       const char *const file,
+                       const size_t line,
+                       const intmax_t value,
+                       const size_t count)
+{
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_int_value,
+                  (CMockaValueData){.int_val = value},
+                  NULL,
+                  count);
+}
+
+void _expect_uint_value(const char *const function,
+                        const char *const parameter,
+                        const char *const file,
+                        const size_t line,
+                        const uintmax_t value,
+                        const size_t count)
+{
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_uint_value,
+                  (CMockaValueData){.uint_val = value},
+                  NULL,
+                  count);
+}
 
 /* CheckParameterValue callback to check whether a value is not equal to an
  * expected value. */
