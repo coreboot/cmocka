@@ -20,6 +20,16 @@ static void mock_test_int(int value)
     check_expected(value);
 }
 
+static void mock_test_intmax(intmax_t value)
+{
+    check_expected(value);
+}
+
+static void mock_test_uint(uintmax_t value)
+{
+    check_expected(value);
+}
+
 static void test_expect_float_in_range(void **state)
 {
     (void)state; /* unused */
@@ -100,6 +110,44 @@ static void test_expect_int_not_in_range_count(void **state)
     mock_test_int(3);
 }
 
+static void test_expect_int_in_range_with_int(void **state)
+{
+    (void)state; /* unused */
+
+    expect_int_in_range(mock_test_int, value, -10, 10);
+    mock_test_int(-5);
+}
+
+static void test_expect_int_in_range_count_with_intmax(void **state)
+{
+    (void)state; /* unused */
+
+    expect_int_in_range_count(mock_test_intmax, value, -100, 100, 4);
+    mock_test_intmax(-100);
+    mock_test_intmax(0);
+    mock_test_intmax(50);
+    mock_test_intmax(100);
+}
+
+static void test_expect_uint_in_range_with_uint(void **state)
+{
+    (void)state; /* unused */
+
+    expect_uint_in_range(mock_test_uint, value, 0, 100);
+    mock_test_uint(50);
+}
+
+static void test_expect_uint_in_range_count_with_uintmax(void **state)
+{
+    (void)state; /* unused */
+
+    expect_uint_in_range_count(mock_test_uint, value, 10, 1000, 4);
+    mock_test_uint(10);
+    mock_test_uint(100);
+    mock_test_uint(500);
+    mock_test_uint(1000);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_expect_float_in_range),
@@ -110,6 +158,10 @@ int main(void) {
         cmocka_unit_test(test_expect_int_in_range_count),
         cmocka_unit_test(test_expect_int_not_in_range),
         cmocka_unit_test(test_expect_int_not_in_range_count),
+        cmocka_unit_test(test_expect_int_in_range_with_int),
+        cmocka_unit_test(test_expect_int_in_range_count_with_intmax),
+        cmocka_unit_test(test_expect_uint_in_range_with_uint),
+        cmocka_unit_test(test_expect_uint_in_range_count_with_uintmax),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

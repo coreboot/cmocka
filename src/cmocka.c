@@ -251,6 +251,18 @@ typedef struct CheckIntegerRange {
     uintmax_t maximum;
 } CheckIntegerRange;
 
+struct check_integer_range {
+    CheckParameterEvent event;
+    intmax_t minimum;
+    intmax_t maximum;
+};
+
+struct check_unsigned_integer_range {
+    CheckParameterEvent event;
+    uintmax_t minimum;
+    uintmax_t maximum;
+};
+
 typedef struct CheckFloatRange {
     CheckParameterEvent event;
     double minimum;
@@ -2470,6 +2482,31 @@ static int check_not_in_range(const CMockaValueData value,
         value.uint_val, check_integer_range->minimum, check_integer_range->maximum);
 }
 
+static int check_int_in_range(const CMockaValueData value,
+                              const CMockaValueData check_value_data)
+{
+    struct check_integer_range *const check_integer_range =
+        cast_cmocka_value_to_pointer(struct check_integer_range *,
+                                     check_value_data);
+    assert_non_null(check_integer_range);
+
+    return int_in_range_display_error(value.int_val,
+                                      check_integer_range->minimum,
+                                      check_integer_range->maximum);
+}
+
+static int check_uint_in_range(const CMockaValueData value,
+                               const CMockaValueData check_value_data)
+{
+    struct check_unsigned_integer_range *const check_uint_range =
+        cast_cmocka_value_to_pointer(struct check_unsigned_integer_range *,
+                                     check_value_data);
+    assert_non_null(check_uint_range);
+
+    return uint_in_range_display_error(value.uint_val,
+                                       check_uint_range->minimum,
+                                       check_uint_range->maximum);
+}
 
 /* Create the callback data for check_in_range() or check_not_in_range() and
  * register a check event. */
@@ -2490,6 +2527,60 @@ static void expect_range(
                   check_data, &check_integer_range->event, count);
 }
 
+static void __expect_int_in_range(const char *const function,
+                                  const char *const parameter,
+                                  const char *const file,
+                                  const size_t line,
+                                  const intmax_t minimum,
+                                  const intmax_t maximum,
+                                  const CheckParameterValue check_function,
+                                  const size_t count)
+{
+    struct check_integer_range *const check_integer_range =
+        (struct check_integer_range *)malloc(sizeof(*check_integer_range));
+    declare_initialize_value_pointer_pointer(check_data, check_integer_range);
+
+    assert_non_null(check_integer_range);
+
+    check_integer_range->minimum = minimum;
+    check_integer_range->maximum = maximum;
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_function,
+                  check_data,
+                  &check_integer_range->event,
+                  count);
+}
+
+static void __expect_uint_in_range(const char *const function,
+                                   const char *const parameter,
+                                   const char *const file,
+                                   const size_t line,
+                                   const uintmax_t minimum,
+                                   const uintmax_t maximum,
+                                   const CheckParameterValue check_function,
+                                   const size_t count)
+{
+    struct check_unsigned_integer_range *const check_uint_range =
+        (struct check_unsigned_integer_range *)malloc(
+            sizeof(*check_uint_range));
+    declare_initialize_value_pointer_pointer(check_data, check_uint_range);
+
+    assert_non_null(check_uint_range);
+
+    check_uint_range->minimum = minimum;
+    check_uint_range->maximum = maximum;
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_function,
+                  check_data,
+                  &check_uint_range->event,
+                  count);
+}
 
 /* Add an event to determine whether a parameter is within a range. */
 void _expect_in_range(
@@ -2501,6 +2592,41 @@ void _expect_in_range(
                  check_in_range, count);
 }
 
+void _expect_int_in_range(const char *const function,
+                          const char *const parameter,
+                          const char *const file,
+                          const size_t line,
+                          const intmax_t minimum,
+                          const intmax_t maximum,
+                          const size_t count)
+{
+    __expect_int_in_range(function,
+                          parameter,
+                          file,
+                          line,
+                          minimum,
+                          maximum,
+                          check_int_in_range,
+                          count);
+}
+
+void _expect_uint_in_range(const char *const function,
+                           const char *const parameter,
+                           const char *const file,
+                           const size_t line,
+                           const uintmax_t minimum,
+                           const uintmax_t maximum,
+                           const size_t count)
+{
+    __expect_uint_in_range(function,
+                           parameter,
+                           file,
+                           line,
+                           minimum,
+                           maximum,
+                           check_uint_in_range,
+                           count);
+}
 
 /* Add an event to determine whether a parameter is not within a range. */
 void _expect_not_in_range(
