@@ -24,14 +24,14 @@ static void test_no_expects_fail(void **state)
 static void test_expect_check_count_remaining_fail(void **state)
 {
     (void)state; /* unused */
-    expect_check_count(mock_test_a, value, custom_checker, cast_int_to_cmocka_value(0), 2);
+    expect_check_data_count(mock_test_a, value, custom_checker, assign_int_to_cmocka_value(0), 2);
     mock_test_a(0);
 }
 
 static void test_expect_check_count_always_remaining_fail(void **state)
 {
     (void)state; /* unused */
-    expect_check_count(mock_test_a, value, custom_checker, cast_int_to_cmocka_value(0), EXPECT_ALWAYS);
+    expect_check_data_count(mock_test_a, value, custom_checker, assign_int_to_cmocka_value(0), EXPECT_ALWAYS);
 }
 
 int main(void) {

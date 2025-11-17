@@ -97,6 +97,10 @@ int __stdcall IsDebuggerPresent();
 #define cast_to_uintmax_type(value) \
     ((uintmax_t)(value))
 
+/* Perform a safe cast from pointer to uintmax_t. */
+#define cast_ptr_to_uintmax_type(value) \
+    ((uintmax_t)(uintptr_t)(value))
+
 /* Perform cast to double. */
 #define cast_to_double_type(value) \
     ((double)(value))
@@ -1824,25 +1828,12 @@ void will_set_errno_maybe(#function, intmax_t value);
 
 #ifdef DOXYGEN
 /**
- * @brief Add a custom parameter checking function.
- *
- * If the event parameter is NULL the event structure is allocated internally
- * by this function. If the parameter is provided it must be allocated on the
- * heap and doesn't need to be deallocated by the caller.
- *
- * @param[in]  #function  The function to add a custom parameter checking
- *                        function for.
- *
- * @param[in]  #parameter The parameters passed to the function.
- *
- * @param[in]  #check_function  The check function to call.
- *
- * @param[in]  check_data       The data to pass to the check function.
+ * @deprecated Use expect_check_data()
  */
 void expect_check(function,
                   parameter,
                   CheckParameterValue check_function,
-                  CMockaValueData check_data);
+                  const void *check_data);
 #else
 #define expect_check(function, parameter, check_function, check_data) \
     _expect_check(cmocka_tostring(function),                          \
@@ -1850,7 +1841,7 @@ void expect_check(function,
                   __FILE__,                                           \
                   __LINE__,                                           \
                   check_function,                                     \
-                  check_data,                                         \
+                  cast_to_uintmax_type(check_data),                   \
                   NULL,                                               \
                   1)
 #endif
@@ -1858,48 +1849,94 @@ void expect_check(function,
 
 #ifdef DOXYGEN
 /**
- * @brief Add a custom parameter checking function.
+ * @deprecated Use expect_check_data_count()
+ */
+void expect_check_count(function,
+                        parameter,
+                        CheckParameterValue check_function,
+                        const void *check_data,
+                        size_t count);
+#else
+#define expect_check_count(                                 \
+    function, parameter, check_function, check_data, count) \
+    _expect_check(cmocka_tostring(function),                \
+                  cmocka_tostring(parameter),               \
+                  __FILE__,                                 \
+                  __LINE__,                                 \
+                  check_function,                           \
+                  cast_to_uintmax_type(check_data),         \
+                  NULL,                                     \
+                  count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add a custom parameter checking function using CMockaValueData (new API).
  *
- * If the event parameter is NULL the event structure is allocated internally
- * by this function. If the parameter is provided it must be allocated on the
- * heap and doesn't need to be deallocated by the caller.
+ * This is the new API that uses CMockaValueData for type-safe parameter checking.
+ * It allows checking of integer, float, double, and pointer values.
  *
  * @param[in]  #function  The function to add a custom parameter checking
  *                        function for.
  *
  * @param[in]  #parameter The parameters passed to the function.
  *
- * @param[in]  #check_function  The check function to call.
+ * @param[in]  #check_function  The check function to call (CheckParameterValueData).
  *
- * @param[in]  check_data       The data to pass to the check function.
- *
- * @param[in]  count  The count parameter gives the number of times the value
- *                    should be validated by check_expected(). If count is set
- *                    to @ref EXPECT_ALWAYS the value will always be returned,
- *                    and cmocka expects check_expected() to be issued at least
- *                    once. If count is set to @ref EXPECT_MAYBE, any number of
- *                    calls to check_expected() is accepted, including zero.
- *
+ * @param[in]  check_data  The data to pass to the check function (CMockaValueData).
  */
-void expect_check_count(function,
-                        parameter,
-                        CheckParameterValue check_function,
-                        CMockaValueData check_data,
-                        size_t count);
+void expect_check_data(function,
+                       parameter,
+                       CheckParameterValueData check_function,
+                       CMockaValueData check_data);
 #else
-#define expect_check_count(function,          \
-                           parameter,         \
-                           check_function,    \
-                           check_data,        \
-                           count)             \
-    _expect_check(cmocka_tostring(function),  \
-                  cmocka_tostring(parameter), \
-                  __FILE__,                   \
-                  __LINE__,                   \
-                  check_function,             \
-                  check_data,                 \
-                  NULL,                       \
-                  count)
+#define expect_check_data(function, parameter, check_function, check_data) \
+    _expect_check_data(cmocka_tostring(function),                          \
+                       cmocka_tostring(parameter),                         \
+                       __FILE__,                                           \
+                       __LINE__,                                           \
+                       check_function,                                     \
+                       check_data,                                         \
+                       NULL,                                               \
+                       1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add a custom parameter checking function using CMockaValueData with count (new API).
+ *
+ * This is the new API that uses CMockaValueData for type-safe parameter checking.
+ *
+ * @param[in]  #function  The function to add a custom parameter checking
+ *                        function for.
+ *
+ * @param[in]  #parameter The parameters passed to the function.
+ *
+ * @param[in]  #check_function  The check function to call (CheckParameterValueData).
+ *
+ * @param[in]  check_data  The data to pass to the check function (CMockaValueData).
+ *
+ * @param[in]  count  The number of times this check should be called.
+ */
+void expect_check_data_count(function,
+                             parameter,
+                             CheckParameterValueData check_function,
+                             CMockaValueData check_data,
+                             size_t count);
+#else
+#define expect_check_data_count(function,          \
+                                parameter,         \
+                                check_function,    \
+                                check_data,        \
+                                count)             \
+    _expect_check_data(cmocka_tostring(function),  \
+                       cmocka_tostring(parameter), \
+                       __FILE__,                   \
+                       __LINE__,                   \
+                       check_function,             \
+                       check_data,                 \
+                       NULL,                       \
+                       count)
 #endif
 
 #ifdef DOXYGEN
@@ -5241,9 +5278,13 @@ typedef union {
 /* Function prototype for setup, test and teardown functions. */
 typedef void (*UnitTestFunction)(void **state);
 
-/* Function that determines whether a function parameter value is correct. */
-typedef int (*CheckParameterValue)(const CMockaValueData value,
-                                   const CMockaValueData check_value_data);
+/* Function that determines whether a function parameter value is correct (old API). */
+typedef int (*CheckParameterValue)(const uintmax_t value,
+                                   const uintmax_t check_value_data);
+
+/* Function that determines whether a function parameter value is correct (new API with CMockaValueData). */
+typedef int (*CheckParameterValueData)(const CMockaValueData value,
+                                       const CMockaValueData check_value_data);
 
 /* Function that determines whether a function parameter value is correct. */
 typedef int (*CheckIntParameterValue)(const intmax_t value,
@@ -5301,12 +5342,21 @@ typedef struct SourceLocation {
 } SourceLocation;
 
 /* Event that's called to check a parameter value. */
+/* Event that's called to check a parameter value (old API). */
 typedef struct CheckParameterEvent {
     SourceLocation location;
     const char *parameter_name;
     CheckParameterValue check_value;
-    CMockaValueData check_value_data;
+    uintmax_t check_value_data;
 } CheckParameterEvent;
+
+/* Event that's called to check a parameter value (new API with CMockaValueData). */
+typedef struct CheckParameterEventData {
+    SourceLocation location;
+    const char *parameter_name;
+    CheckParameterValueData check_value;
+    CMockaValueData check_value_data;
+} CheckParameterEventData;
 
 /* Used by expect_assert_failure() and mock_assert(). */
 CMOCKA_DLLEXTERN extern int global_expecting_assert;
@@ -5336,11 +5386,20 @@ void _expect_function_call(
 void _function_called(const char * const function, const char* const file,
                           const int line);
 
+/* Old API function using uintmax_t */
 void _expect_check(
     const char* const function, const char* const parameter,
     const char* const file, const int line,
     const CheckParameterValue check_function,
-    const CMockaValueData check_data, CheckParameterEvent * const event,
+    const uintmax_t check_data, CheckParameterEvent * const event,
+    const int count) CMOCKA_DEPRECATED;
+
+/* New API function using CMockaValueData */
+void _expect_check_data(
+    const char* const function, const char* const parameter,
+    const char* const file, const int line,
+    const CheckParameterValueData check_function,
+    const CMockaValueData check_data, CheckParameterEventData * const event,
     const int count);
 
 void _expect_int_in_set(const char *const function,

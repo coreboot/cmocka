@@ -240,25 +240,25 @@ typedef void (*CleanupListValue)(const void *value, void *cleanup_value_data);
 
 /* Structure used to check the range of integer types.a */
 typedef struct CheckIntegerRange {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     uintmax_t minimum;
     uintmax_t maximum;
 } CheckIntegerRange;
 
 struct check_integer_range {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     intmax_t minimum;
     intmax_t maximum;
 };
 
 struct check_unsigned_integer_range {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     uintmax_t minimum;
     uintmax_t maximum;
 };
 
 typedef struct CheckFloatRange {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     double minimum;
     double maximum;
     double epsilon;
@@ -266,44 +266,44 @@ typedef struct CheckFloatRange {
 
 /* Structure used to check whether an integer value is in a set. */
 typedef struct CheckIntegerSet {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const uintmax_t *set;
     size_t size_of_set;
 } CheckIntegerSet;
 
 struct check_integer_set {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const intmax_t *set;
     size_t size_of_set;
 };
 
 struct check_unsigned_integer_set {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const uintmax_t *set;
     size_t size_of_set;
 };
 
 typedef struct CheckFloat {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     double value;
     double epsilon;
 } CheckFloat;
 
 struct check_float {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     double value;
     double epsilon;
 };
 
 typedef struct CheckFloatSet {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const double *set;
     size_t size_of_set;
     double epsilon;
 } CheckFloatSet;
 
 struct check_float_set {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const double *set;
     size_t size_of_set;
     double epsilon;
@@ -312,10 +312,17 @@ struct check_float_set {
 /* Used to check whether a parameter matches the area of memory referenced by
  * this structure.  */
 typedef struct CheckMemoryData {
-    CheckParameterEvent event;
+    CheckParameterEventData event;
     const void *memory;
     size_t size;
 } CheckMemoryData;
+
+/* Wrapper structure for old API check functions */
+typedef struct OldAPICheckWrapper {
+    CheckParameterEventData event;  /* Must be first for casting */
+    CheckParameterValue old_check_function;
+    uintmax_t old_check_data;
+} OldAPICheckWrapper;
 
 void _additional_msg(const char * const msg);
 static ListNode* list_initialize(ListNode * const node);
@@ -1375,22 +1382,63 @@ void _will_set_parameter(const char *const function_name,
  * parameter is provided it must be allocated on the heap and doesn't need to
  * be deallocated by the caller.
  */
-void _expect_check(
-        const char* const function, const char* const parameter,
-        const char* const file, const int line,
-        const CheckParameterValue check_function,
-        const CMockaValueData check_data,
-        CheckParameterEvent * const event, const int count) {
-    CheckParameterEvent * const check =
-        event ? event : (CheckParameterEvent*)malloc(sizeof(*check));
-    const char* symbols[] = {function, parameter};
+/* Wrapper function for old API callbacks - converts CMockaValueData to uintmax_t */
+static int old_api_check_wrapper(const CMockaValueData value,
+                                 const CMockaValueData check_value_data)
+{
+    /* The wrapper pointer is stored in the ptr field of check_value_data */
+    OldAPICheckWrapper *wrapper = (OldAPICheckWrapper *)check_value_data.ptr;
+    return wrapper->old_check_function(value.uint_val, wrapper->old_check_data);
+}
+
+/* Old API function using uintmax_t for backward compatibility */
+void _expect_check(const char *const function,
+                   const char *const parameter,
+                   const char *const file,
+                   const int line,
+                   const CheckParameterValue check_function,
+                   const uintmax_t check_data,
+                   CheckParameterEvent *const event,
+                   const int count)
+{
+    /* Wrap old API check function to work with new internal implementation */
+    OldAPICheckWrapper *const wrapper = event ? (OldAPICheckWrapper *)event
+                                              : (OldAPICheckWrapper *)malloc(
+                                                    sizeof(*wrapper));
+    const char *symbols[] = {function, parameter};
+    assert_non_null(wrapper);
+    wrapper->event.parameter_name = parameter;
+    wrapper->event.check_value = old_api_check_wrapper;
+    wrapper->event.check_value_data = (CMockaValueData){
+        .ptr = wrapper}; /* Store wrapper pointer */
+    wrapper->old_check_function = check_function;
+    wrapper->old_check_data = check_data;
+    set_source_location(&wrapper->event.location, file, line);
+    add_symbol_value(
+        &global_function_parameter_map_head, symbols, 2, wrapper, count);
+}
+
+/* New API function using CMockaValueData */
+void _expect_check_data(const char *const function,
+                        const char *const parameter,
+                        const char *const file,
+                        const int line,
+                        const CheckParameterValueData check_function,
+                        const CMockaValueData check_data,
+                        CheckParameterEventData *const event,
+                        const int count)
+{
+    CheckParameterEventData *const check = event ? event
+                                                 : (CheckParameterEventData *)
+                                                       malloc(sizeof(*check));
+    const char *symbols[] = {function, parameter};
     assert_non_null(check);
     check->parameter_name = parameter;
     check->check_value = check_function;
     check->check_value_data = check_data;
     set_source_location(&check->location, file, line);
-    add_symbol_value(&global_function_parameter_map_head, symbols, 2, check,
-                     count);
+    add_symbol_value(
+        &global_function_parameter_map_head, symbols, 2, check, count);
 }
 
 /*
@@ -2249,7 +2297,7 @@ static void expect_set(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t values[], const size_t number_of_values,
-        const CheckParameterValue check_function, const int count) {
+        const CheckParameterValueData check_function, const int count) {
     CheckIntegerSet * const check_integer_set =
         (CheckIntegerSet*)malloc(sizeof(*check_integer_set) +
                (sizeof(values[0]) * number_of_values));
@@ -2265,9 +2313,14 @@ static void expect_set(
     memcpy(set, values, number_of_values * sizeof(values[0]));
     check_integer_set->set = set;
     check_integer_set->size_of_set = number_of_values;
-    _expect_check(
-        function, parameter, file, line, check_function,
-        check_data, &check_integer_set->event, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_integer_set->event,
+                       count);
 }
 
 static void __expect_int_in_set(const char *const function,
@@ -2276,7 +2329,7 @@ static void __expect_int_in_set(const char *const function,
                                 const size_t line,
                                 const intmax_t values[],
                                 const size_t number_of_values,
-                                const CheckParameterValue check_function,
+                                const CheckParameterValueData check_function,
                                 const size_t count)
 {
     struct check_integer_set *const check_integer_set =
@@ -2295,14 +2348,14 @@ static void __expect_int_in_set(const char *const function,
     check_integer_set->set = set;
     check_integer_set->size_of_set = number_of_values;
 
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_integer_set->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_integer_set->event,
+                       count);
 }
 
 static void __expect_float_in_set(const char *const function,
@@ -2312,7 +2365,7 @@ static void __expect_float_in_set(const char *const function,
                                   const double values[],
                                   const size_t number_of_values,
                                   const double epsilon,
-                                  const CheckParameterValue check_function,
+                                  const CheckParameterValueData check_function,
                                   const size_t count)
 {
     struct check_float_set *const check_float_set =
@@ -2332,14 +2385,14 @@ static void __expect_float_in_set(const char *const function,
     check_float_set->set = set;
     check_float_set->size_of_set = number_of_values;
 
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_float_set->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_float_set->event,
+                       count);
 }
 
 static void __expect_uint_in_set(const char *const function,
@@ -2348,7 +2401,7 @@ static void __expect_uint_in_set(const char *const function,
                                  const size_t line,
                                  const uintmax_t values[],
                                  const size_t number_of_values,
-                                 const CheckParameterValue check_function,
+                                 const CheckParameterValueData check_function,
                                  const size_t count)
 {
     struct check_unsigned_integer_set *const check_uint_set =
@@ -2367,14 +2420,14 @@ static void __expect_uint_in_set(const char *const function,
     check_uint_set->set = set;
     check_uint_set->size_of_set = number_of_values;
 
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_uint_set->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_uint_set->event,
+                       count);
 }
 
 /* Add an event to check whether a value is in a set. */
@@ -2583,7 +2636,7 @@ static void expect_range(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t minimum, const uintmax_t maximum,
-        const CheckParameterValue check_function, const int count) {
+        const CheckParameterValueData check_function, const int count) {
     CheckIntegerRange * const check_integer_range =
         (CheckIntegerRange*)malloc(sizeof(*check_integer_range));
     declare_initialize_value_pointer_pointer(check_data, check_integer_range);
@@ -2592,8 +2645,14 @@ static void expect_range(
 
     check_integer_range->minimum = minimum;
     check_integer_range->maximum = maximum;
-    _expect_check(function, parameter, file, line, check_function,
-                  check_data, &check_integer_range->event, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_integer_range->event,
+                       count);
 }
 
 static void __expect_int_in_range(const char *const function,
@@ -2602,7 +2661,7 @@ static void __expect_int_in_range(const char *const function,
                                   const size_t line,
                                   const intmax_t minimum,
                                   const intmax_t maximum,
-                                  const CheckParameterValue check_function,
+                                  const CheckParameterValueData check_function,
                                   const size_t count)
 {
     struct check_integer_range *const check_integer_range =
@@ -2613,7 +2672,7 @@ static void __expect_int_in_range(const char *const function,
 
     check_integer_range->minimum = minimum;
     check_integer_range->maximum = maximum;
-    _expect_check(function,
+    _expect_check_data(function,
                   parameter,
                   file,
                   line,
@@ -2629,7 +2688,7 @@ static void __expect_uint_in_range(const char *const function,
                                    const size_t line,
                                    const uintmax_t minimum,
                                    const uintmax_t maximum,
-                                   const CheckParameterValue check_function,
+                                   const CheckParameterValueData check_function,
                                    const size_t count)
 {
     struct check_unsigned_integer_range *const check_uint_range =
@@ -2641,14 +2700,14 @@ static void __expect_uint_in_range(const char *const function,
 
     check_uint_range->minimum = minimum;
     check_uint_range->maximum = maximum;
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_uint_range->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_uint_range->event,
+                       count);
 }
 
 /* Add an event to determine whether a parameter is within a range. */
@@ -2713,7 +2772,7 @@ static void __expect_int_not_in_range(const char *const function,
                                       const size_t line,
                                       const intmax_t minimum,
                                       const intmax_t maximum,
-                                      const CheckParameterValue check_function,
+                                      const CheckParameterValueData check_function,
                                       const size_t count)
 {
     struct check_integer_range *const check_integer_range =
@@ -2724,14 +2783,14 @@ static void __expect_int_not_in_range(const char *const function,
 
     check_integer_range->minimum = minimum;
     check_integer_range->maximum = maximum;
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_integer_range->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_integer_range->event,
+                       count);
 }
 
 static void __expect_uint_not_in_range(const char *const function,
@@ -2740,7 +2799,7 @@ static void __expect_uint_not_in_range(const char *const function,
                                        const size_t line,
                                        const uintmax_t minimum,
                                        const uintmax_t maximum,
-                                       const CheckParameterValue check_function,
+                                       const CheckParameterValueData check_function,
                                        const size_t count)
 {
     struct check_unsigned_integer_range *const check_uint_range =
@@ -2752,14 +2811,14 @@ static void __expect_uint_not_in_range(const char *const function,
 
     check_uint_range->minimum = minimum;
     check_uint_range->maximum = maximum;
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data,
-                  &check_uint_range->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_uint_range->event,
+                       count);
 }
 
 void _expect_int_not_in_range(const char *const function,
@@ -2834,7 +2893,7 @@ static void expect_range_float(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const double minimum, const double maximum, const double epsilon,
-        const CheckParameterValue check_function, const int count) {
+        const CheckParameterValueData check_function, const int count) {
     CheckFloatRange * const check_float_range =
         (CheckFloatRange*)malloc(sizeof(*check_float_range));
 
@@ -2844,8 +2903,14 @@ static void expect_range_float(
     check_float_range->minimum = minimum;
     check_float_range->maximum = maximum;
     check_float_range->epsilon = epsilon;
-    _expect_check(function, parameter, file, line, check_function,
-                  check_data, &check_float_range->event, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data,
+                       &check_float_range->event,
+                       count);
 }
 
 
@@ -2897,8 +2962,14 @@ void _expect_value(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t value, const int count) {
-    _expect_check(function, parameter, file, line, check_value, (CMockaValueData){.uint_val = value}, NULL,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_value,
+                       (CMockaValueData){.uint_val = value},
+                       NULL,
+                       count);
 }
 
 void _expect_int_value(const char *const function,
@@ -2908,7 +2979,7 @@ void _expect_int_value(const char *const function,
                        const intmax_t value,
                        const size_t count)
 {
-    _expect_check(function,
+    _expect_check_data(function,
                   parameter,
                   file,
                   line,
@@ -2925,7 +2996,7 @@ void _expect_uint_value(const char *const function,
                         const uintmax_t value,
                         const size_t count)
 {
-    _expect_check(function,
+    _expect_check_data(function,
                   parameter,
                   file,
                   line,
@@ -2968,14 +3039,14 @@ void _expect_int_not_value(const char *const function,
                            const intmax_t value,
                            const size_t count)
 {
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_int_not_value,
-                  (CMockaValueData){.int_val = value},
-                  NULL,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_int_not_value,
+                       (CMockaValueData){.int_val = value},
+                       NULL,
+                       count);
 }
 
 /* Add an event to check a parameter (uint) is not equal to an expected value.
@@ -2987,14 +3058,14 @@ void _expect_uint_not_value(const char *const function,
                             const uintmax_t value,
                             const size_t count)
 {
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_uint_not_value,
-                  (CMockaValueData){.uint_val = value},
-                  NULL,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_uint_not_value,
+                       (CMockaValueData){.uint_val = value},
+                       NULL,
+                       count);
 }
 
 /* Add an event to check a parameter is not equal to an expected value. */
@@ -3002,9 +3073,14 @@ void _expect_not_value(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const uintmax_t value, const int count) {
-    _expect_check(function, parameter, file, line, check_not_value,
-                  (CMockaValueData){.uint_val = value},
-                  NULL, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_not_value,
+                       (CMockaValueData){.uint_val = value},
+                       NULL,
+                       count);
 }
 
 /* Create the callback data for check_float() or check_not_float() and
@@ -3013,15 +3089,21 @@ static void expect_float_setup(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const double value, const double epsilon,
-        const CheckParameterValue check_function, const int count) {
+        const CheckParameterValueData check_function, const int count) {
     CheckFloat * const check_data =
         (CheckFloat*)malloc(sizeof(*check_data));
     assert_non_null(check_data);
     declare_initialize_value_pointer_pointer(check_data_pointer, check_data);
     check_data->value = value;
     check_data->epsilon = epsilon;
-    _expect_check(function, parameter, file, line, check_function,
-                  check_data_pointer, &check_data->event, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data_pointer,
+                       &check_data->event,
+                       count);
 }
 
 
@@ -3100,7 +3182,7 @@ static void expect_double_setup(const char *const function,
                                 const int line,
                                 const double value,
                                 const double epsilon,
-                                const CheckParameterValue check_function,
+                                const CheckParameterValueData check_function,
                                 const int count)
 {
     CheckFloat *const check_data = (CheckFloat *)malloc(sizeof(*check_data));
@@ -3108,14 +3190,14 @@ static void expect_double_setup(const char *const function,
     declare_initialize_value_pointer_pointer(check_data_pointer, check_data);
     check_data->value = value;
     check_data->epsilon = epsilon;
-    _expect_check(function,
-                  parameter,
-                  file,
-                  line,
-                  check_function,
-                  check_data_pointer,
-                  &check_data->event,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data_pointer,
+                       &check_data->event,
+                       count);
 }
 
 /* Add an event to check a parameter equals an expected double. */
@@ -3166,8 +3248,14 @@ void _expect_string(
         const int count) {
     declare_initialize_value_pointer_pointer(string_pointer,
                                              discard_const(string));
-    _expect_check(function, parameter, file, line, check_string,
-                  string_pointer, NULL, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_string,
+                       string_pointer,
+                       NULL,
+                       count);
 }
 
 
@@ -3188,8 +3276,14 @@ void _expect_not_string(
         const int count) {
     declare_initialize_value_pointer_pointer(string_pointer,
                                              discard_const(string));
-    _expect_check(function, parameter, file, line, check_not_string,
-                  string_pointer, NULL, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_not_string,
+                       string_pointer,
+                       NULL,
+                       count);
 }
 
 /* CheckParameterValue callback to check whether a parameter equals an area of
@@ -3211,7 +3305,7 @@ static void expect_memory_setup(
         const char* const function, const char* const parameter,
         const char* const file, const int line,
         const void * const memory, const size_t size,
-        const CheckParameterValue check_function, const int count) {
+        const CheckParameterValueData check_function, const int count) {
     CheckMemoryData * const check_data =
         (CheckMemoryData*)malloc(sizeof(*check_data) + size);
 
@@ -3225,8 +3319,14 @@ static void expect_memory_setup(
     memcpy(mem, memory, size);
     check_data->memory = mem;
     check_data->size = size;
-    _expect_check(function, parameter, file, line, check_function,
-                  check_data_pointer, &check_data->event, count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_function,
+                       check_data_pointer,
+                       (CheckParameterEventData *)&check_data->event,
+                       count);
 }
 
 
@@ -3277,8 +3377,14 @@ static int check_any(const CMockaValueData value,
 void _expect_any(
         const char* const function, const char* const parameter,
         const char* const file, const int line, const int count) {
-    _expect_check(function, parameter, file, line, check_any, (CMockaValueData){.ptr = NULL}, NULL,
-                  count);
+    _expect_check_data(function,
+                       parameter,
+                       file,
+                       line,
+                       check_any,
+                       (CMockaValueData){.ptr = NULL},
+                       NULL,
+                       count);
 }
 
 
@@ -3290,7 +3396,7 @@ void _check_expected(
     const int rc = get_symbol_value(&global_function_parameter_map_head,
                                     symbols, 2, &result);
     if (rc) {
-        CheckParameterEvent * const check = (CheckParameterEvent*)result;
+        CheckParameterEventData * const check = (CheckParameterEventData*)result;
         int check_succeeded;
         global_last_parameter_location = check->location;
         check_succeeded = check->check_value(value, check->check_value_data);

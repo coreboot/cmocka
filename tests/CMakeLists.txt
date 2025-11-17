@@ -19,6 +19,10 @@ set(CMOCKA_TESTS
     test_alloc
     test_buffer
     test_expect_check
+    test_expect_check_old_api
+    test_expect_check_old_api_fail
+    test_expect_check_new_api
+    test_expect_check_new_api_fail
     test_expect_u_int_in_set
     test_expect_u_int_not_in_set
     test_expect_value
@@ -195,6 +199,23 @@ set_tests_properties(
     PASS_REGULAR_EXPRESSION
     "\\[  FAILED  \\] tests: 3 test"
 )
+
+# test_expect_check_old_api_fail
+set_tests_properties(
+    test_expect_check_old_api_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] tests: 5 test"
+)
+
+# test_expect_check_new_api_fail
+set_tests_properties(
+    test_expect_check_new_api_fail
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "\\[  FAILED  \\] tests: 8 test"
+)
+
 
 # stop_fail
 set_tests_properties(
