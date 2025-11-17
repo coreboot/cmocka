@@ -263,7 +263,7 @@ uintmax_t mock(void);
  *
  * The value would be casted to type internally to avoid having the
  * caller to do the cast manually. Type safety checks are disabled with that
- * functoin.
+ * function.
  *
  * @param[in]  #type  The expected type of the return value
  *
@@ -405,7 +405,7 @@ type mock_ptr_type(#type);
  * @see will_set_parameter_maybe()
  * @see will_set_parameter_ptr()
  * @see will_set_parameter_ptr_type()
- * @see will_set_parameter_ptr_coint()
+ * @see will_set_parameter_ptr_count()
  * @see will_set_parameter_ptr_always()
  * @see will_set_parameter_ptr_maybe()
  */
