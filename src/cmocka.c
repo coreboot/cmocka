@@ -2159,6 +2159,26 @@ static int check_float_not_in_set(const CMockaValueData value,
         true);
 }
 
+static int check_int_not_in_set(const CMockaValueData value,
+                                const CMockaValueData check_value_data)
+{
+    return int_value_in_set_display_error(
+        value.int_val,
+        cast_cmocka_value_to_pointer(struct check_integer_set *,
+                                     check_value_data),
+        true);
+}
+
+static int check_uint_not_in_set(const CMockaValueData value,
+                                 const CMockaValueData check_value_data)
+{
+    return uint_value_in_set_display_error(
+        value.uint_val,
+        cast_cmocka_value_to_pointer(struct check_unsigned_integer_set *,
+                                     check_value_data),
+        true);
+}
+
 /* CheckParameterValue callback to check whether a value isn't within a set. */
 static int check_not_in_set(const CMockaValueData value,
                             const CMockaValueData check_value_data) {
@@ -2389,6 +2409,41 @@ void _expect_not_in_set(
                check_not_in_set, count);
 }
 
+void _expect_int_not_in_set(const char *const function,
+                            const char *const parameter,
+                            const char *const file,
+                            const size_t line,
+                            const intmax_t values[],
+                            const size_t number_of_values,
+                            const size_t count)
+{
+    __expect_int_in_set(function,
+                        parameter,
+                        file,
+                        line,
+                        values,
+                        number_of_values,
+                        check_int_not_in_set,
+                        count);
+}
+
+void _expect_uint_not_in_set(const char *const function,
+                             const char *const parameter,
+                             const char *const file,
+                             const size_t line,
+                             const uintmax_t values[],
+                             const size_t number_of_values,
+                             const size_t count)
+{
+    __expect_uint_in_set(function,
+                         parameter,
+                         file,
+                         line,
+                         values,
+                         number_of_values,
+                         check_uint_not_in_set,
+                         count);
+}
 
 /* CheckParameterValue callback to check whether a value is within a range. */
 static int check_in_range(const CMockaValueData value,
