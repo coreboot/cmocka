@@ -42,6 +42,12 @@ double mock_function_float(void)
     return mock_float();
 }
 
+double mock_function_double(void);
+double mock_function_double(void)
+{
+    return mock_double();
+}
+
 const char *mock_function_ptr(void);
 const char *mock_function_ptr(void)
 {
@@ -131,6 +137,26 @@ static void test_will_return_float(void **state)
     assert_float_equal(value, mock_function_float(), 0.0);
 }
 
+static void test_will_return_double(void **state)
+{
+    double value = 2.5;
+
+    (void)state; /* unused */
+
+    will_return_double(mock_function_double, value);
+    assert_double_equal(value, mock_function_double(), 0.0);
+}
+
+static void test_mock_double(void **state)
+{
+    double value = 3.14159;
+
+    (void)state; /* unused */
+
+    will_return_double(mock_function_double, value);
+    assert_double_equal(value, mock_function_double(), 0.001);
+}
+
 static void test_will_return_ptr(void **state)
 {
     const char *value = "What a Wurst!";
@@ -150,6 +176,8 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_uint),
         cmocka_unit_test(test_will_return_uint64),
         cmocka_unit_test(test_will_return_float),
+        cmocka_unit_test(test_will_return_double),
+        cmocka_unit_test(test_mock_double),
         cmocka_unit_test(test_will_return_ptr),
     };
 

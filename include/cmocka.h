@@ -325,7 +325,7 @@ uintmax_t mock_uint(void);
 
 #ifdef DOXYGEN
 /**
- * @brief Retrieve an unsigned integer return value of the current function.
+ * @brief Retrieve a floating point return value of the current function.
  *
  * @return The value which was stored to return by this function.
  *
@@ -336,6 +336,23 @@ double mock_float(void);
 #define mock_float() (_mock(__func__, __FILE__, __LINE__, NULL)).real_val
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve a double precision floating point return value of the
+ * current function.
+ *
+ * This is an alias for mock_float() with clearer naming to indicate it
+ * returns a double type.
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @see will_return_double()
+ * @see mock_float()
+ */
+double mock_double(void);
+#else
+#define mock_double() (_mock(__func__, __FILE__, __LINE__, NULL)).real_val
+#endif
 
 #ifdef DOXYGEN
 /**
@@ -499,6 +516,35 @@ uintmax_t mock_parameter_uint(#name);
 double mock_parameter_float(#name);
 #else
 #define mock_parameter_float(name) \
+    (_mock_parameter(__func__, #name, __FILE__, __LINE__, "double")).real_val
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve a named double precision floating point value for the
+ * current function.
+ *
+ * This is an alias for mock_parameter_float() with clearer naming to indicate
+ * it returns a double type.
+ *
+ * @param[in]  #name  The name under which to look for the value
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @code
+ * double param;
+ *
+ * param = mock_parameter_double(param);
+ * @endcode
+ *
+ * @see mock_parameter()
+ * @see mock_parameter_float()
+ * @see will_set_parameter_double()
+ * @see will_set_parameter_float()
+ */
+double mock_parameter_double(#name);
+#else
+#define mock_parameter_double(name) \
     (_mock_parameter(__func__, #name, __FILE__, __LINE__, "double")).real_val
 #endif
 
@@ -709,17 +755,18 @@ void will_return_uint(#function, uintmax_t value);
  *      return (float)mock_double();
  * }
  *
- * static void test_integer_return(void **state)
+ * static void test_float_return(void **state)
  * {
- *      will_return_int(return_float, 1.0);
+ *      will_return_float(return_float, 1.0);
  *
  *      assert_float_equal(my_function_calling_return_float(), 1.0);
  * }
  * @endcode
  *
  * @see mock_float()
+ * @see mock_double()
  */
-void will_return_float(#function, intmax_t value);
+void will_return_float(#function, double value);
 #else
 #define will_return_float(function, value)             \
     _will_return(#function,                            \
@@ -730,6 +777,46 @@ void will_return_float(#function, intmax_t value);
                  1)
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Store a double precision floating point value to be returned by
+ * mock() later.
+ *
+ * This is an alias for will_return_float() with clearer naming to indicate it
+ * stores a double type.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @code
+ * double return_double(void)
+ * {
+ *      return mock_double();
+ * }
+ *
+ * static void test_double_return(void **state)
+ * {
+ *      will_return_double(return_double, 2.5);
+ *
+ *      assert_double_equal(my_function_calling_return_double(), 2.5, 0.01);
+ * }
+ * @endcode
+ *
+ * @see mock_double()
+ * @see mock_float()
+ * @see will_return_float()
+ */
+void will_return_double(#function, double value);
+#else
+#define will_return_double(function, value)            \
+    _will_return(#function,                            \
+                 __FILE__,                             \
+                 __LINE__,                             \
+                 "double",                             \
+                 assign_double_to_cmocka_value(value), \
+                 1)
+#endif
 
 #ifdef DOXYGEN
 /**
@@ -1146,6 +1233,57 @@ void will_set_parameter_float(#function, #name, double value);
                  "double",                             \
                  assign_double_to_cmocka_value(value), \
                  1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named double precision floating point value to be returned
+ * by mock_parameter() later.
+ *
+ * This is an alias for will_set_parameter_float() with clearer naming to
+ * indicate it stores a double type.
+ *
+ * And adds some type checking information to be able to check
+ * with call to mock_parameter_double().
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter().
+ *
+ * @code
+ * void return_double(double *result)
+ * {
+ *      *result = mock_parameter_double(result);
+ * }
+ *
+ * static void test_double_return(void **state)
+ * {
+ *      will_set_parameter_double(return_double, result, 34.7);
+ *      double result_param = NAN;
+ *      return_double(&result_param);
+ *      assert_double_equal(result_param, 34.7, 0.0);
+ * }
+ * @endcode
+ *
+ * @see mock_parameter()
+ * @see mock_parameter_double()
+ * @see mock_parameter_float()
+ * @see will_set_parameter()
+ * @see will_set_parameter_float()
+ */
+void will_set_parameter_double(#function, #name, double value);
+#else
+#define will_set_parameter_double(function, name, value)      \
+    _will_set_parameter(#function,                            \
+                        #name,                                \
+                        __FILE__,                             \
+                        __LINE__,                             \
+                        "double",                             \
+                        assign_double_to_cmocka_value(value), \
+                        1)
 #endif
 
 #ifdef DOXYGEN
