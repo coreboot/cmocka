@@ -2892,6 +2892,24 @@ void _expect_uint_value(const char *const function,
                   count);
 }
 
+/* CheckParameterValue callback to check whether a value (int) is not equal to
+ * an expected value. */
+static int check_int_not_value(const CMockaValueData value,
+                               const CMockaValueData check_value_data)
+{
+    return int_values_not_equal_display_error(value.int_val,
+                                              check_value_data.int_val);
+}
+
+/* CheckParameterValue callback to check whether a value (uint) is not equal to
+ * an expected value. */
+static int check_uint_not_value(const CMockaValueData value,
+                                const CMockaValueData check_value_data)
+{
+    return uint_values_not_equal_display_error(value.uint_val,
+                                               check_value_data.uint_val);
+}
+
 /* CheckParameterValue callback to check whether a value is not equal to an
  * expected value. */
 static int check_not_value(const CMockaValueData value,
@@ -2899,6 +2917,42 @@ static int check_not_value(const CMockaValueData value,
     return uint_values_not_equal_display_error(value.uint_val, check_value_data.uint_val);
 }
 
+/* Add an event to check a parameter (int) is not equal to an expected value. */
+void _expect_int_not_value(const char *const function,
+                           const char *const parameter,
+                           const char *const file,
+                           const size_t line,
+                           const intmax_t value,
+                           const size_t count)
+{
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_int_not_value,
+                  (CMockaValueData){.int_val = value},
+                  NULL,
+                  count);
+}
+
+/* Add an event to check a parameter (uint) is not equal to an expected value.
+ */
+void _expect_uint_not_value(const char *const function,
+                            const char *const parameter,
+                            const char *const file,
+                            const size_t line,
+                            const uintmax_t value,
+                            const size_t count)
+{
+    _expect_check(function,
+                  parameter,
+                  file,
+                  line,
+                  check_uint_not_value,
+                  (CMockaValueData){.uint_val = value},
+                  NULL,
+                  count);
+}
 
 /* Add an event to check a parameter is not equal to an expected value. */
 void _expect_not_value(

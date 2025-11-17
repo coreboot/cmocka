@@ -2800,6 +2800,112 @@ void expect_uint_value_count(#function,
 
 #ifdef DOXYGEN
 /**
+ * @brief Add an event to check if a parameter (int) isn't the given value.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value (intmax_t) to check.
+ *
+ * @see check_expected().
+ */
+void expect_int_not_value(#function, #parameter, intmax_t value);
+#else
+#define expect_int_not_value(function, parameter, value) \
+    expect_int_not_value_count(function, parameter, value, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check if a parameter (int) isn't the given
+ * value.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value (intmax_t) to check.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_int_not_value_count(#function,
+                                #parameter,
+                                intmax_t value,
+                                size_t count);
+#else
+#define expect_int_not_value_count(function, parameter, value, count) \
+    _expect_int_not_value(cmocka_tostring(function),                  \
+                          cmocka_tostring(parameter),                 \
+                          __FILE__,                                   \
+                          __LINE__,                                   \
+                          value,                                      \
+                          count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to check if a parameter (uint) isn't the given value.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value (uintmax_t) to check.
+ *
+ * @see check_expected().
+ */
+void expect_uint_not_value(#function, #parameter, uintmax_t value);
+#else
+#define expect_uint_not_value(function, parameter, value) \
+    expect_uint_not_value_count(function, parameter, value, 1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Add an event to repeatedly check if a parameter (uint) isn't the given
+ * value.
+ *
+ * The event is triggered by calling check_expected() in the mocked function.
+ *
+ * @param[in]  #function  The function to add the check for.
+ *
+ * @param[in]  #parameter The name of the parameter passed to the function.
+ *
+ * @param[in]  value  The value (uintmax_t) to check.
+ *
+ * @param[in]  count  The count parameter returns the number of times the value
+ *                    should be returned by check_expected(). If count is set
+ *                    to -1 the value will always be returned.
+ *
+ * @see check_expected().
+ */
+void expect_uint_not_value_count(#function,
+                                 #parameter,
+                                 uintmax_t value,
+                                 size_t count);
+#else
+#define expect_uint_not_value_count(function, parameter, value, count) \
+    _expect_uint_not_value(cmocka_tostring(function),                  \
+                           cmocka_tostring(parameter),                 \
+                           __FILE__,                                   \
+                           __LINE__,                                   \
+                           value,                                      \
+                           count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Add an event to check if a parameter isn't the given value.
  *
  * The event is triggered by calling check_expected() in the mocked function.
@@ -5165,6 +5271,18 @@ void _expect_uint_value(const char *const function,
                         const size_t line,
                         const uintmax_t value,
                         const size_t count);
+void _expect_int_not_value(const char *const function,
+                           const char *const parameter,
+                           const char *const file,
+                           const size_t line,
+                           const intmax_t value,
+                           const size_t count);
+void _expect_uint_not_value(const char *const function,
+                            const char *const parameter,
+                            const char *const file,
+                            const size_t line,
+                            const uintmax_t value,
+                            const size_t count);
 void _expect_not_value(
     const char* const function, const char* const parameter,
     const char* const file, const int line, const uintmax_t value,
