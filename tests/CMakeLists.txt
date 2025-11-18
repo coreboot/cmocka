@@ -52,6 +52,7 @@ set(CMOCKA_TESTS
     test_assert_set
     test_assert_set_fail
     test_basics
+    test_has_mock
     test_log
     test_skip
     test_stop

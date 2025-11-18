@@ -1245,6 +1245,25 @@ CMockaValueData _mock_parameter(const char *const function,
     return (CMockaValueData){.ptr = NULL};
 }
 
+/* Check if mock data is available for the current function */
+bool _has_mock(const char *const symbol_name)
+{
+    ListNode *target_node = NULL;
+
+    if (symbol_name == NULL) {
+        return false;
+    }
+
+    if (global_function_result_map_head.next == NULL) {
+        return false;
+    }
+
+    return list_find(&global_function_result_map_head,
+                     symbol_name,
+                     symbol_names_match,
+                     &target_node);
+}
+
 /* Ensure that function is being called in proper order */
 void _function_called(const char *const function,
                       const char *const file,

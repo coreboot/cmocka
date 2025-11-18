@@ -288,6 +288,37 @@ uintmax_t mock(void);
 
 #ifdef DOXYGEN
 /**
+ * @brief Check if data is available for the current mock function.
+ *
+ * This function checks if there is data available for the current mock function
+ * which calls has_mock() without consuming it. This is useful when you want to
+ * check if mock data has been set up before calling mock().
+ *
+ * @return true if mock data is available, false otherwise.
+ *
+ * @code
+ * int example_mock_function(void)
+ * {
+ *     if (has_mock()) {
+ *         return mock_int();
+ *     }
+ *     return default_value;
+ * }
+ * @endcode
+ *
+ * @see mock()
+ * @see mock_int()
+ * @see mock_uint()
+ * @see mock_float()
+ * @see will_return()
+ */
+bool has_mock(void);
+#else
+#define has_mock() _has_mock(__func__)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Retrieve an integer return value of the current function.
  *
  * @return The value which was stored to return by this function.
@@ -5280,6 +5311,8 @@ CMockaValueData _mock_parameter(const char *const function,
                       const char *const file,
                       const int line,
                       const char *type);
+
+bool _has_mock(const char *const function);
 
 void _expect_function_call(
     const char * const function_name,
