@@ -187,6 +187,23 @@ int __stdcall IsDebuggerPresent();
 #define CMOCKA_DEPRECATED
 #endif
 
+/* Deprecation warnings for macros */
+#if defined(__GNUC__) || defined(__clang__)
+/* Use a deprecated typedef in a statement expression to generate warnings
+ * that work even when the header is included as a system header (-isystem).
+ */
+#define CMOCKA_DEPRECATION_WARNING(msg)                                 \
+    __extension__({                                                     \
+        typedef int cmocka_macro __attribute__((deprecated(msg)));      \
+        cmocka_macro cmocka_deprecated_var __attribute__((unused)) = 0; \
+        (void)sizeof(cmocka_deprecated_var);                            \
+    });
+#elif defined(_MSC_VER)
+#define CMOCKA_DEPRECATION_WARNING(msg) __pragma(message("warning: " msg))
+#else
+#define CMOCKA_DEPRECATION_WARNING(msg)
+#endif
+
 #if defined(__GNUC__)
 #define CMOCKA_NORETURN __attribute__ ((noreturn))
 #elif defined(_MSC_VER)
@@ -1845,15 +1862,19 @@ void expect_check(function,
                   CheckParameterValue check_function,
                   const void *check_data);
 #else
-#define expect_check(function, parameter, check_function, check_data) \
-    _expect_check(cmocka_tostring(function),                          \
-                  cmocka_tostring(parameter),                         \
-                  __FILE__,                                           \
-                  __LINE__,                                           \
-                  check_function,                                     \
-                  cast_to_uintmax_type(check_data),                   \
-                  NULL,                                               \
-                  1)
+#define expect_check(function, parameter, check_function, check_data)     \
+    do {                                                                  \
+        CMOCKA_DEPRECATION_WARNING(                                       \
+            "expect_check: use expect_check_data instead")                \
+        _expect_check(cmocka_tostring(function),                          \
+                      cmocka_tostring(parameter),                         \
+                      __FILE__,                                           \
+                      __LINE__,                                           \
+                      check_function,                                     \
+                      cast_to_uintmax_type(check_data),                   \
+                      NULL,                                               \
+                      1);                                                 \
+    } while (0)
 #endif
 
 
@@ -1867,16 +1888,20 @@ void expect_check_count(function,
                         const void *check_data,
                         size_t count);
 #else
-#define expect_check_count(                                 \
-    function, parameter, check_function, check_data, count) \
-    _expect_check(cmocka_tostring(function),                \
-                  cmocka_tostring(parameter),               \
-                  __FILE__,                                 \
-                  __LINE__,                                 \
-                  check_function,                           \
-                  cast_to_uintmax_type(check_data),         \
-                  NULL,                                     \
-                  count)
+#define expect_check_count(                                            \
+    function, parameter, check_function, check_data, count)            \
+    do {                                                               \
+        CMOCKA_DEPRECATION_WARNING(                                    \
+            "expect_check_count: use expect_check_data_count instead") \
+        _expect_check(cmocka_tostring(function),                       \
+                      cmocka_tostring(parameter),                      \
+                      __FILE__,                                        \
+                      __LINE__,                                        \
+                      check_function,                                  \
+                      cast_to_uintmax_type(check_data),                \
+                      NULL,                                            \
+                      count);                                          \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -1951,23 +1976,16 @@ void expect_check_data_count(function,
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if the parameter value is part of the provided
- *        array.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value_array[] The array to check for the value.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_in_set() or expect_uint_in_set()
  */
 void expect_in_set(#function, #parameter, uintmax_t value_array[]);
 #else
-#define expect_in_set(function, parameter, value_array) \
-    expect_in_set_count(function, parameter, value_array, 1)
+#define expect_in_set(function, parameter, value_array)                       \
+    do {                                                                      \
+        CMOCKA_DEPRECATION_WARNING("expect_in_set: use expect_int_in_set or " \
+                                   "expect_uint_in_set instead")              \
+        expect_in_set_count(function, parameter, value_array, 1);             \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2014,33 +2032,23 @@ void expect_in_set(#function, #parameter, intmax_t value_array[]);
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if the parameter value is part of the provided
- *        array.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value_array[] The array to check for the value.
- *
- * @param[in]  count  The count parameter returns the number of times the value
- *                    should be returned by check_expected(). If count is set
- *                    to -1 the value will always be returned.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_in_set_count() or expect_uint_in_set_count()
  */
 void expect_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
 #else
-#define expect_in_set_count(function, parameter, value_array, count)    \
-    _expect_uint_in_set(cmocka_tostring(function),                      \
-                        cmocka_tostring(parameter),                     \
-                        __FILE__,                                       \
-                        __LINE__,                                       \
-                        value_array,                                    \
-                        sizeof(value_array) / sizeof((value_array)[0]), \
-                        count)
+#define expect_in_set_count(function, parameter, value_array, count)        \
+    do {                                                                    \
+        CMOCKA_DEPRECATION_WARNING(                                         \
+            "expect_in_set_count: use expect_int_in_set_count or "          \
+            "expect_uint_in_set_count instead")                             \
+        _expect_uint_in_set(cmocka_tostring(function),                      \
+                            cmocka_tostring(parameter),                     \
+                            __FILE__,                                       \
+                            __LINE__,                                       \
+                            value_array,                                    \
+                            sizeof(value_array) / sizeof((value_array)[0]), \
+                            count);                                         \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2107,50 +2115,38 @@ void expect_int_in_set_count(#function, #parameter, uintmax_t value_array[], siz
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if the parameter value is not part of the
- *        provided array.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value_array[] The array to check for the value.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_not_in_set() or expect_uint_not_in_set()
  */
 void expect_not_in_set(#function, #parameter, uintmax_t value_array[]);
 #else
-#define expect_not_in_set(function, parameter, value_array) \
-    expect_not_in_set_count(function, parameter, value_array, 1)
+#define expect_not_in_set(function, parameter, value_array)           \
+    do {                                                              \
+        CMOCKA_DEPRECATION_WARNING(                                   \
+            "expect_not_in_set: use expect_int_not_in_set or "        \
+            "expect_uint_not_in_set instead")                         \
+        expect_not_in_set_count(function, parameter, value_array, 1); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if the parameter value is not part of the
- *        provided array.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value_array[] The array to check for the value.
- *
- * @param[in]  count  The count parameter returns the number of times the value
- *                    should be returned by check_expected(). If count is set
- *                    to -1 the value will always be returned.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_not_in_set_count() or expect_uint_not_in_set_count()
  */
 void expect_not_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
 #else
-#define expect_not_in_set_count(function, parameter, value_array, count) \
-    _expect_not_in_set( \
-        cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, value_array, \
-        sizeof(value_array) / sizeof((value_array)[0]), count)
+#define expect_not_in_set_count(function, parameter, value_array, count)   \
+    do {                                                                   \
+        CMOCKA_DEPRECATION_WARNING(                                        \
+            "expect_not_in_set_count: use expect_int_not_in_set_count or " \
+            "expect_uint_not_in_set_count instead")                        \
+        _expect_not_in_set(cmocka_tostring(function),                      \
+                           cmocka_tostring(parameter),                     \
+                           __FILE__,                                       \
+                           __LINE__,                                       \
+                           value_array,                                    \
+                           sizeof(value_array) / sizeof((value_array)[0]), \
+                           count);                                         \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2380,53 +2376,38 @@ void expect_float_not_in_set_count(#function, #parameter, double value_array[], 
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check a parameter is inside a numerical range.
- * The check would succeed if minimum <= value <= maximum.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  minimum  The lower boundary of the interval to check against.
- *
- * @param[in]  maximum  The upper boundary of the interval to check against.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_in_range()
  */
 void expect_in_range(#function, #parameter, uintmax_t minimum, uintmax_t maximum);
 #else
-#define expect_in_range(function, parameter, minimum, maximum) \
-    expect_in_range_count(function, parameter, minimum, maximum, 1)
+#define expect_in_range(function, parameter, minimum, maximum)           \
+    do {                                                                 \
+        CMOCKA_DEPRECATION_WARNING(                                      \
+            "expect_in_range: use expect_int_in_range or "               \
+            "expect_uint_in_range instead")                              \
+        expect_in_range_count(function, parameter, minimum, maximum, 1); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to repeatedly check a parameter is inside a
- * numerical range. The check would succeed if minimum <= value <= maximum.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  minimum  The lower boundary of the interval to check against.
- *
- * @param[in]  maximum  The upper boundary of the interval to check against.
- *
- * @param[in]  count  The count parameter returns the number of times the value
- *                    should be returned by check_expected(). If count is set
- *                    to -1 the value will always be returned.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_in_range_count()
  */
 void expect_in_range_count(#function, #parameter, uintmax_t minimum, uintmax_t maximum, size_t count);
 #else
 #define expect_in_range_count(function, parameter, minimum, maximum, count) \
-    _expect_in_range(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, minimum, \
-                     maximum, count)
+    do {                                                                    \
+        CMOCKA_DEPRECATION_WARNING(                                         \
+            "expect_in_range_count: use expect_int_in_range_count or "      \
+            "expect_uint_in_range_count instead")                           \
+        _expect_in_range(cmocka_tostring(function),                         \
+                         cmocka_tostring(parameter),                        \
+                         __FILE__,                                          \
+                         __LINE__,                                          \
+                         minimum,                                           \
+                         maximum,                                           \
+                         count);                                            \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2864,53 +2845,36 @@ void expect_float_not_in_range_count(#function, #parameter, double minimum, doub
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if a parameter is the given integer based value.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value  The value to check.
- *
- * @see check_expected()
- * @see expect_string()
- * @see expect_memory()
- * @see expect_any()
+ * @deprecated Use expect_int_value() or expect_uint_value()
  */
 void expect_value(#function, #parameter, uintmax_t value);
 #else
-#define expect_value(function, parameter, value) \
-    expect_value_count(function, parameter, value, 1)
+#define expect_value(function, parameter, value)                            \
+    do {                                                                    \
+        CMOCKA_DEPRECATION_WARNING("expect_value: use expect_int_value or " \
+                                   "expect_uint_value instead")             \
+        expect_value_count(function, parameter, value, 1);                  \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to repeatedly check if a parameter is the given integer
- * based value.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value  The value to check.
- *
- * @param[in]  count  The count parameter returns the number of times the value
- *                    should be returned by check_expected(). If count is set
- *                    to -1 the value will always be returned.
- *
- * @see check_expected().
- * @see expect_not_string()
- * @see expect_not_memory()
+ * @deprecated Use expect_int_value_count() or expect_uint_value_count()
  */
 void expect_value_count(#function, #parameter, uintmax_t value, size_t count);
 #else
-#define expect_value_count(function, parameter, value, count) \
-    _expect_value(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
-                  cast_to_uintmax_type(value), count)
+#define expect_value_count(function, parameter, value, count)    \
+    do {                                                         \
+        CMOCKA_DEPRECATION_WARNING(                              \
+            "expect_value_count: use expect_int_value_count or " \
+            "expect_uint_value_count instead")                   \
+        _expect_value(cmocka_tostring(function),                 \
+                      cmocka_tostring(parameter),                \
+                      __FILE__,                                  \
+                      __LINE__,                                  \
+                      cast_to_uintmax_type(value),               \
+                      count);                                    \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -3128,47 +3092,37 @@ void expect_uint_not_value_count(#function,
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to check if a parameter isn't the given value.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value  The value to check.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_not_value() or expect_uint_not_value()
  */
 void expect_not_value(#function, #parameter, uintmax_t value);
 #else
-#define expect_not_value(function, parameter, value) \
-    expect_not_value_count(function, parameter, value, 1)
+#define expect_not_value(function, parameter, value)           \
+    do {                                                       \
+        CMOCKA_DEPRECATION_WARNING(                            \
+            "expect_not_value: use expect_int_not_value or "   \
+            "expect_uint_not_value instead")                   \
+        expect_not_value_count(function, parameter, value, 1); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Add an event to repeatedly check if a parameter isn't the given value.
- *
- * The event is triggered by calling check_expected() in the mocked function.
- *
- * @param[in]  #function  The function to add the check for.
- *
- * @param[in]  #parameter The name of the parameter passed to the function.
- *
- * @param[in]  value  The value to check.
- *
- * @param[in]  count  The count parameter returns the number of times the value
- *                    should be returned by check_expected(). If count is set
- *                    to -1 the value will always be returned.
- *
- * @see check_expected().
+ * @deprecated Use expect_int_not_value_count() or expect_uint_not_value_count()
  */
 void expect_not_value_count(#function, #parameter, uintmax_t value, size_t count);
 #else
-#define expect_not_value_count(function, parameter, value, count) \
-    _expect_not_value(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
-                      cast_to_uintmax_type(value), count)
+#define expect_not_value_count(function, parameter, value, count)        \
+    do {                                                                 \
+        CMOCKA_DEPRECATION_WARNING(                                      \
+            "expect_not_value_count: use expect_int_not_value_count or " \
+            "expect_uint_not_value_count instead")                       \
+        _expect_not_value(cmocka_tostring(function),                     \
+                          cmocka_tostring(parameter),                    \
+                          __FILE__,                                      \
+                          __LINE__,                                      \
+                          cast_to_uintmax_type(value),                   \
+                          count);                                        \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -4354,11 +4308,17 @@ void assert_uint_not_in_range(uintmax_t value,
  */
 void assert_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 #else
-#define assert_in_range(value, minimum, maximum) \
-    _assert_uint_in_range( \
-        cast_to_uintmax_type(value), \
-        cast_to_uintmax_type(minimum), \
-        cast_to_uintmax_type(maximum), __FILE__, __LINE__)
+#define assert_in_range(value, minimum, maximum)             \
+    do {                                                     \
+        CMOCKA_DEPRECATION_WARNING(                          \
+            "assert_in_range: use assert_int_in_range or "   \
+            "assert_uint_in_range instead")                  \
+        _assert_uint_in_range(cast_to_uintmax_type(value),   \
+                              cast_to_uintmax_type(minimum), \
+                              cast_to_uintmax_type(maximum), \
+                              __FILE__,                      \
+                              __LINE__);                     \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -4367,11 +4327,17 @@ void assert_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
  */
 void assert_not_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 #else
-#define assert_not_in_range(value, minimum, maximum) \
-    _assert_uint_not_in_range( \
-        cast_to_uintmax_type(value), \
-        cast_to_uintmax_type(minimum), \
-        cast_to_uintmax_type(maximum), __FILE__, __LINE__)
+#define assert_not_in_range(value, minimum, maximum)               \
+    do {                                                           \
+        CMOCKA_DEPRECATION_WARNING(                                \
+            "assert_not_in_range: use assert_int_not_in_range or " \
+            "assert_uint_not_in_range instead")                    \
+        _assert_uint_not_in_range(cast_to_uintmax_type(value),     \
+                                  cast_to_uintmax_type(minimum),   \
+                                  cast_to_uintmax_type(maximum),   \
+                                  __FILE__,                        \
+                                  __LINE__);                       \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -4436,8 +4402,13 @@ void assert_float_in_range(double value, double minimum, double maximum, double 
  */
 void assert_in_set(uintmax_t value, uintmax_t values[], size_t count);
 #else
-#define assert_in_set(value, values, number_of_values) \
-    _assert_uint_in_set(value, values, number_of_values, __FILE__, __LINE__)
+#define assert_in_set(value, values, number_of_values)                        \
+    do {                                                                      \
+        CMOCKA_DEPRECATION_WARNING("assert_in_set: use assert_int_in_set or " \
+                                   "assert_uint_in_set instead")              \
+        _assert_uint_in_set(                                                  \
+            value, values, number_of_values, __FILE__, __LINE__);             \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -4839,7 +4810,9 @@ static inline void _unit_test_dummy(void **state) {
  *
  * @deprecated This function was deprecated in favor of cmocka_unit_test
  */
-#define unit_test(f) { #f, f, UNIT_TEST_FUNCTION_TYPE_TEST }
+#define unit_test(f)                                                        \
+    (CMOCKA_DEPRECATION_WARNING("unit_test: use cmocka_unit_test instead")( \
+        UnitTest){#f, f, UNIT_TEST_FUNCTION_TYPE_TEST})
 
 #define _unit_test_setup(test, setup) \
     { #test "_" #setup, setup, UNIT_TEST_FUNCTION_TYPE_SETUP }
@@ -4848,10 +4821,11 @@ static inline void _unit_test_dummy(void **state) {
  *
  * @deprecated This function was deprecated in favor of cmocka_unit_test_setup
  */
-#define unit_test_setup(test, setup) \
-    _unit_test_setup(test, setup), \
-    unit_test(test), \
-    _unit_test_teardown(test, _unit_test_dummy)
+#define unit_test_setup(test, setup)                           \
+    CMOCKA_DEPRECATION_WARNING(                                \
+        "unit_test_setup: use cmocka_unit_test_setup instead") \
+    _unit_test_setup(test, setup), unit_test(test),            \
+        _unit_test_teardown(test, _unit_test_dummy)
 
 #define _unit_test_teardown(test, teardown) \
     { #test "_" #teardown, teardown, UNIT_TEST_FUNCTION_TYPE_TEARDOWN }
@@ -4860,24 +4834,29 @@ static inline void _unit_test_dummy(void **state) {
  *
  * @deprecated This function was deprecated in favor of cmocka_unit_test_teardown
  */
-#define unit_test_teardown(test, teardown) \
-    _unit_test_setup(test, _unit_test_dummy), \
-    unit_test(test), \
-    _unit_test_teardown(test, teardown)
+#define unit_test_teardown(test, teardown)                           \
+    CMOCKA_DEPRECATION_WARNING(                                      \
+        "unit_test_teardown: use cmocka_unit_test_teardown instead") \
+    _unit_test_setup(test, _unit_test_dummy), unit_test(test),       \
+        _unit_test_teardown(test, teardown)
 
 /** Initializes a UnitTest structure for a group setup function.
  *
  * @deprecated This function was deprecated in favor of cmocka_run_group_tests
  */
-#define group_test_setup(setup) \
-    { "group_" #setup, setup, UNIT_TEST_FUNCTION_TYPE_GROUP_SETUP }
+#define group_test_setup(setup)                                            \
+    (CMOCKA_DEPRECATION_WARNING(                                           \
+        "group_test_setup: use cmocka_run_group_tests instead")(UnitTest){ \
+        "group_" #setup, setup, UNIT_TEST_FUNCTION_TYPE_GROUP_SETUP})
 
 /** Initializes a UnitTest structure for a group teardown function.
  *
  * @deprecated This function was deprecated in favor of cmocka_run_group_tests
  */
-#define group_test_teardown(teardown) \
-    { "group_" #teardown, teardown, UNIT_TEST_FUNCTION_TYPE_GROUP_TEARDOWN }
+#define group_test_teardown(teardown)                                         \
+    (CMOCKA_DEPRECATION_WARNING(                                              \
+        "group_test_teardown: use cmocka_run_group_tests instead")(UnitTest){ \
+        "group_" #teardown, teardown, UNIT_TEST_FUNCTION_TYPE_GROUP_TEARDOWN})
 
 /**
  * Initialize an array of UnitTest structures with a setup function for a test
@@ -4886,11 +4865,11 @@ static inline void _unit_test_dummy(void **state) {
  * @deprecated This function was deprecated in favor of
  * cmocka_unit_test_setup_teardown
  */
-#define unit_test_setup_teardown(test, setup, teardown) \
-    _unit_test_setup(test, setup), \
-    unit_test(test), \
-    _unit_test_teardown(test, teardown)
-
+#define unit_test_setup_teardown(test, setup, teardown)                   \
+    CMOCKA_DEPRECATION_WARNING("unit_test_setup_teardown: use "           \
+                               "cmocka_unit_test_setup_teardown instead") \
+    _unit_test_setup(test, setup), unit_test(test),                       \
+        _unit_test_teardown(test, teardown)
 
 /** Initializes a CMUnitTest structure. */
 #define cmocka_unit_test(f) { #f, f, NULL, NULL, NULL }
@@ -5465,11 +5444,13 @@ void _expect_float_not_in_set(
     const char* const file, const size_t line, const double values[],
     const size_t number_of_values, const double epsilon, const size_t count);
 
-void _expect_in_range(
-    const char* const function, const char* const parameter,
-    const char* const file, const int line,
-    const uintmax_t minimum,
-    const uintmax_t maximum, const int count);
+void _expect_in_range(const char *const function,
+                      const char *const parameter,
+                      const char *const file,
+                      const int line,
+                      const uintmax_t minimum,
+                      const uintmax_t maximum,
+                      const int count) CMOCKA_DEPRECATED;
 void _expect_int_in_range(const char *const function,
                           const char *const parameter,
                           const char *const file,
@@ -5816,8 +5797,12 @@ enum cm_message_output {
  */
 void cm_print_error(const char* const format, ...);
 #else
-#define cm_print_error(format, ...) \
-    cmocka_print_error(format, ##__VA_ARGS__)
+#define cm_print_error(format, ...)                           \
+    do {                                                      \
+        CMOCKA_DEPRECATION_WARNING(                           \
+            "cm_print_error: use cmocka_print_error instead") \
+        cmocka_print_error(format, ##__VA_ARGS__);            \
+    } while (0)
 #endif
 
 /**
