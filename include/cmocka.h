@@ -89,6 +89,10 @@ int __stdcall IsDebuggerPresent();
 #define cast_to_long_double_type(value) \
     ((double)(value))
 
+/* Perform cast to float. */
+#define cast_to_float_type(value) \
+    ((float)(value))
+
 /**
  * Perform a cast from an integer to CMockaValueData.
  *
@@ -3154,9 +3158,12 @@ void expect_float_count(#function, #parameter, double value, double epsilon, siz
  */
 void expect_not_float(#function, #parameter, double value, double epsilon);
 #else
-#define expect_not_float(function, parameter, epsilon, value) \
-    expect_not_float_count(function, parameter, cast_to_long_double_type(value), \
-                           cast_to_long_double_type(epsilon), 1)
+#define expect_not_float(function, parameter, value, epsilon) \
+    expect_not_float_count(function,                          \
+                           parameter,                         \
+                           cast_to_float_type(value),         \
+                           cast_to_float_type(epsilon),       \
+                           1)
 #endif
 
 #ifdef DOXYGEN
@@ -3185,8 +3192,13 @@ void expect_not_float(#function, #parameter, double value, double epsilon);
 void expect_not_float_count(#function, #parameter, double value, double epsilon, size_t count);
 #else
 #define expect_not_float_count(function, parameter, value, epsilon, count) \
-    _expect_not_float(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
-                      cast_to_long_double_type(value), cast_to_long_double_type(epsilon), count)
+    _expect_not_float(cmocka_tostring(function),                           \
+                      cmocka_tostring(parameter),                          \
+                      __FILE__,                                            \
+                      __LINE__,                                            \
+                      cast_to_float_type(value),                           \
+                      cast_to_float_type(epsilon),                         \
+                      count)
 #endif
 
 #ifdef DOXYGEN
