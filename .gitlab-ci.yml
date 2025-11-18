@@ -145,6 +145,7 @@ fedora/csbuild:
 
       export CI_COMMIT_RANGE="$CI_COMMIT_BEFORE_SHA..$CI_COMMIT_SHA"
 
+    - export CSCPPC_ADD_OPTS="--library=./cppcheck/cmocka.cfg"
     - csbuild
       --build-dir=obj-csbuild
       --prep-cmd="cmake -DCMAKE_BUILD_TYPE=Debug -DPICKY_DEVELOPER=ON -DUNIT_TESTING=ON @SRCDIR@"
