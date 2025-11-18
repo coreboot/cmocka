@@ -1440,7 +1440,7 @@ static double ln(double x)
         return NAN;
     }
 
-    if (x == 1.0) {
+    if (double_compare(x, 1.0, 0.0000000001)) {
         return 0.0;
     }
 
