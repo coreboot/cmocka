@@ -86,7 +86,7 @@ int __stdcall IsDebuggerPresent();
     ((uintmax_t)(value))
 
 /* Perform cast to double. */
-#define cast_to_long_double_type(value) \
+#define cast_to_double_type(value) \
     ((double)(value))
 
 /* Perform cast to float. */
@@ -2703,9 +2703,9 @@ void expect_float_in_range_count(#function, #parameter, double minimum, double m
                            cmocka_tostring(parameter),          \
                            __FILE__,                            \
                            __LINE__,                            \
-                           cast_to_long_double_type(minimum),   \
-                           cast_to_long_double_type(maximum),   \
-                           cast_to_long_double_type(epsilon),   \
+                           cast_to_double_type(minimum),   \
+                           cast_to_double_type(maximum),   \
+                           cast_to_double_type(epsilon),   \
                            count)
 #endif
 
@@ -2765,9 +2765,9 @@ void expect_float_not_in_range_count(#function, #parameter, double minimum, doub
                                cmocka_tostring(parameter),          \
                                __FILE__,                            \
                                __LINE__,                            \
-                               cast_to_long_double_type(minimum),   \
-                               cast_to_long_double_type(maximum),   \
-                               cast_to_long_double_type(epsilon),   \
+                               cast_to_double_type(minimum),   \
+                               cast_to_double_type(maximum),   \
+                               cast_to_double_type(epsilon),   \
                                count)
 #endif
 
@@ -3102,8 +3102,8 @@ void expect_not_value_count(#function, #parameter, uintmax_t value, size_t count
 void expect_float(#function, #parameter, double value, double epsilon);
 #else
 #define expect_float(function, parameter, value, epsilon) \
-    expect_float_count(function, parameter, cast_to_long_double_type(value), \
-                       cast_to_long_double_type(epsilon), 1)
+    expect_float_count(function, parameter, cast_to_double_type(value), \
+                       cast_to_double_type(epsilon), 1)
 #endif
 
 #ifdef DOXYGEN
@@ -3133,7 +3133,7 @@ void expect_float_count(#function, #parameter, double value, double epsilon, siz
 #else
 #define expect_float_count(function, parameter, value, epsilon, count) \
     _expect_float(cmocka_tostring(function), cmocka_tostring(parameter), __FILE__, __LINE__, \
-                  cast_to_long_double_type(value), cast_to_long_double_type(epsilon), count)
+                  cast_to_double_type(value), cast_to_double_type(epsilon), count)
 #endif
 
 #ifdef DOXYGEN
@@ -3224,8 +3224,8 @@ void expect_double(#function, #parameter, double value, double epsilon);
 #define expect_double(function, parameter, value, epsilon) \
     expect_double_count(function,                          \
                         parameter,                         \
-                        cast_to_long_double_type(value),   \
-                        cast_to_long_double_type(epsilon), \
+                        cast_to_double_type(value),   \
+                        cast_to_double_type(epsilon), \
                         1)
 #endif
 
@@ -3262,8 +3262,8 @@ void expect_double_count(#function,
                    cmocka_tostring(parameter),                          \
                    __FILE__,                                            \
                    __LINE__,                                            \
-                   cast_to_long_double_type(value),                     \
-                   cast_to_long_double_type(epsilon),                   \
+                   cast_to_double_type(value),                     \
+                   cast_to_double_type(epsilon),                   \
                    count)
 #endif
 
@@ -3290,8 +3290,8 @@ void expect_not_double(#function, #parameter, double value, double epsilon);
 #define expect_not_double(function, parameter, value, epsilon) \
     expect_not_double_count(function,                          \
                             parameter,                         \
-                            cast_to_long_double_type(value),   \
-                            cast_to_long_double_type(epsilon), \
+                            cast_to_double_type(value),   \
+                            cast_to_double_type(epsilon), \
                             1)
 #endif
 
@@ -3328,8 +3328,8 @@ void expect_not_double_count(#function,
                        cmocka_tostring(parameter),                          \
                        __FILE__,                                            \
                        __LINE__,                                            \
-                       cast_to_long_double_type(value),                     \
-                       cast_to_long_double_type(epsilon),                   \
+                       cast_to_double_type(value),                     \
+                       cast_to_double_type(epsilon),                   \
                        count)
 #endif
 
@@ -4300,10 +4300,10 @@ void assert_not_in_range(uintmax_t value, uintmax_t minimum, uintmax_t maximum);
 void assert_float_not_in_range(double value, double minimum, double maximum, double epsilon);
 #else
 #define assert_float_not_in_range(value, minimum, maximum, epsilon)   \
-    _assert_float_not_in_range(cast_to_long_double_type(value),       \
-                               cast_to_long_double_type(minimum),     \
-                               cast_to_long_double_type(maximum),     \
-                               cast_to_long_double_type(epsilon),     \
+    _assert_float_not_in_range(cast_to_double_type(value),       \
+                               cast_to_double_type(minimum),     \
+                               cast_to_double_type(maximum),     \
+                               cast_to_double_type(epsilon),     \
                                __FILE__,                              \
                                __LINE__)
 #endif
@@ -4328,10 +4328,10 @@ void assert_float_in_range(double value, double minimum, double maximum, double 
 #else
 #define assert_float_in_range(value, minimum, maximum, epsilon) \
     _assert_float_in_range(                                     \
-        cast_to_long_double_type(value),                        \
-        cast_to_long_double_type(minimum),                      \
-        cast_to_long_double_type(maximum),                      \
-        cast_to_long_double_type(epsilon), __FILE__, __LINE__)
+        cast_to_double_type(value),                        \
+        cast_to_double_type(minimum),                      \
+        cast_to_double_type(maximum),                      \
+        cast_to_double_type(epsilon), __FILE__, __LINE__)
 #endif
 
 #ifdef DOXYGEN
