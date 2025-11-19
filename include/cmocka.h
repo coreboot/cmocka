@@ -1202,6 +1202,119 @@ void will_return_always(#function, uintmax_t value);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store an integer value that may always be returned by mock_int().
+ *
+ * This stores a value which will always be returned by mock_int() but is not
+ * required to be returned by at least one call to mock_int(). Therefore,
+ * in contrast to will_return_int_always() which causes a test failure if it
+ * is not returned at least once, will_return_int_maybe() will never cause a
+ * test to fail if its value is not returned.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_int().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_int_count(function, value, -2);
+ * @endcode
+ *
+ * @see will_return_int_count()
+ * @see mock_int()
+ */
+void will_return_int_maybe(#function, intmax_t value);
+#else
+#define will_return_int_maybe(function, value) \
+    will_return_int_count(function, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store an unsigned integer value that may always be returned by
+ * mock_uint().
+ *
+ * This stores a value which will always be returned by mock_uint() but is not
+ * required to be returned by at least one call to mock_uint(). Therefore,
+ * in contrast to will_return_uint_always() which causes a test failure if it
+ * is not returned at least once, will_return_uint_maybe() will never cause a
+ * test to fail if its value is not returned.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_uint().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_uint_count(function, value, -2);
+ * @endcode
+ *
+ * @see will_return_uint_count()
+ * @see mock_uint()
+ */
+void will_return_uint_maybe(#function, uintmax_t value);
+#else
+#define will_return_uint_maybe(function, value) \
+    will_return_uint_count(function, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a float value that may always be returned by mock_float().
+ *
+ * This stores a value which will always be returned by mock_float() but is not
+ * required to be returned by at least one call to mock_float(). Therefore,
+ * in contrast to will_return_float_always() which causes a test failure if it
+ * is not returned at least once, will_return_float_maybe() will never cause a
+ * test to fail if its value is not returned.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_float().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_float_count(function, value, -2);
+ * @endcode
+ *
+ * @see will_return_float_count()
+ * @see mock_float()
+ */
+void will_return_float_maybe(#function, float value);
+#else
+#define will_return_float_maybe(function, value) \
+    will_return_float_count(function, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a double value that may always be returned by mock_double().
+ *
+ * This stores a value which will always be returned by mock_double() but is not
+ * required to be returned by at least one call to mock_double(). Therefore,
+ * in contrast to will_return_double_always() which causes a test failure if it
+ * is not returned at least once, will_return_double_maybe() will never cause a
+ * test to fail if its value is not returned.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock_double().
+ *
+ * This is equivalent to:
+ * @code
+ * will_return_double_count(function, value, -2);
+ * @endcode
+ *
+ * @see will_return_double_count()
+ * @see mock_double()
+ */
+void will_return_double_maybe(#function, double value);
+#else
+#define will_return_double_maybe(function, value) \
+    will_return_double_count(function, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a value that may be always returned by mock().
  *
  * This stores a value which will always be returned by mock() but is not
