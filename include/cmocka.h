@@ -776,6 +776,51 @@ void will_return_int(#function, intmax_t value);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store an integer value to be returned a specified number of times by
+ * mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned by mock_int(). If count is set to -1, the value will
+ * always be returned but must be returned at least once. If count is set to -2,
+ * the value will always be returned by mock_int(), but is not required to be
+ * returned.
+ *
+ * @code
+ * int32_t return_int32(void)
+ * {
+ *      return (int32_t)mock_int();
+ * }
+ *
+ * static void test_integer_return(void **state)
+ * {
+ *      will_return_int_count(return_int32, -42, 3);
+ *
+ *      assert_int_equal(my_function_calling_return_int32(), -42);
+ *      assert_int_equal(my_function_calling_return_int32(), -42);
+ *      assert_int_equal(my_function_calling_return_int32(), -42);
+ * }
+ * @endcode
+ *
+ * @see mock_int()
+ * @see will_return_int()
+ */
+void will_return_int_count(#function, intmax_t value, int count);
+#else
+#define will_return_int_count(function, value, count) \
+    _will_return(#function,                           \
+                 __FILE__,                            \
+                 __LINE__,                            \
+                 "intmax_t",                          \
+                 assign_int_to_cmocka_value(value),   \
+                 count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a unsigned integer value to be returned by mock() later.
  *
  * @param[in]  #function  The function which should return the given value.
@@ -810,6 +855,50 @@ void will_return_uint(#function, uintmax_t value);
                  1)
 #endif
 
+#ifdef DOXYGEN
+/**
+ * @brief Store an unsigned integer value to be returned a specified number of
+ * times by mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The value to be returned by mock().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned by mock_uint(). If count is set to -1, the value will
+ * always be returned but must be returned at least once. If count is set to -2,
+ * the value will always be returned by mock_uint(), but is not required to be
+ * returned.
+ *
+ * @code
+ * uint32_t return_uint32(void)
+ * {
+ *      return (uint32_t)mock_uint();
+ * }
+ *
+ * static void test_integer_return(void **state)
+ * {
+ *      will_return_uint_count(return_uint32, 42, 3);
+ *
+ *      assert_uint_equal(my_function_calling_return_uint32(), 42);
+ *      assert_uint_equal(my_function_calling_return_uint32(), 42);
+ *      assert_uint_equal(my_function_calling_return_uint32(), 42);
+ * }
+ * @endcode
+ *
+ * @see mock_uint()
+ * @see will_return_uint()
+ */
+void will_return_uint_count(#function, uintmax_t value, int count);
+#else
+#define will_return_uint_count(function, value, count) \
+    _will_return(#function,                            \
+                 __FILE__,                             \
+                 __LINE__,                             \
+                 "uintmax_t",                          \
+                 assign_uint_to_cmocka_value(value),   \
+                 count)
+#endif
 
 #ifdef DOXYGEN
 /**
@@ -849,6 +938,51 @@ void will_return_float(#function, float value);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store a float value to be returned a specified number of times by
+ * mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The float value to be returned by mock().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned by mock_float(). If count is set to -1, the value will
+ * always be returned but must be returned at least once. If count is set to -2,
+ * the value will always be returned by mock_float(), but is not required to be
+ * returned.
+ *
+ * @code
+ * float return_float(void)
+ * {
+ *      return mock_float();
+ * }
+ *
+ * static void test_float_return(void **state)
+ * {
+ *      will_return_float_count(return_float, 1.0f, 3);
+ *
+ *      assert_float_equal(my_function_calling_return_float(), 1.0f, 0.01f);
+ *      assert_float_equal(my_function_calling_return_float(), 1.0f, 0.01f);
+ *      assert_float_equal(my_function_calling_return_float(), 1.0f, 0.01f);
+ * }
+ * @endcode
+ *
+ * @see mock_float()
+ * @see will_return_float()
+ */
+void will_return_float_count(#function, float value, int count);
+#else
+#define will_return_float_count(function, value, count) \
+    _will_return(#function,                             \
+                 __FILE__,                              \
+                 __LINE__,                              \
+                 "float",                               \
+                 assign_float_to_cmocka_value(value),   \
+                 count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a double precision floating point value to be returned by
  * mock() later.
  *
@@ -881,6 +1015,51 @@ void will_return_double(#function, double value);
                  "double",                             \
                  assign_double_to_cmocka_value(value), \
                  1)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a double precision floating point value to be returned a
+ * specified number of times by mock() later.
+ *
+ * @param[in]  #function  The function which should return the given value.
+ *
+ * @param[in]  value The double value to be returned by mock().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned by mock_double(). If count is set to -1, the value will
+ * always be returned but must be returned at least once. If count is set to -2,
+ * the value will always be returned by mock_double(), but is not required to be
+ * returned.
+ *
+ * @code
+ * double return_double(void)
+ * {
+ *      return mock_double();
+ * }
+ *
+ * static void test_double_return(void **state)
+ * {
+ *      will_return_double_count(return_double, 2.5, 3);
+ *
+ *      assert_double_equal(my_function_calling_return_double(), 2.5, 0.01);
+ *      assert_double_equal(my_function_calling_return_double(), 2.5, 0.01);
+ *      assert_double_equal(my_function_calling_return_double(), 2.5, 0.01);
+ * }
+ * @endcode
+ *
+ * @see mock_double()
+ * @see will_return_double()
+ */
+void will_return_double_count(#function, double value, int count);
+#else
+#define will_return_double_count(function, value, count) \
+    _will_return(#function,                              \
+                 __FILE__,                               \
+                 __LINE__,                               \
+                 "double",                               \
+                 assign_double_to_cmocka_value(value),   \
+                 count)
 #endif
 
 #ifdef DOXYGEN

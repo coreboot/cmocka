@@ -99,6 +99,19 @@ static void test_will_return_int(void **state)
     assert_int_equal(value, mock_function_int());
 }
 
+static void test_will_return_int_count(void **state)
+{
+    intmax_t value;
+
+    (void)state; /* unused */
+
+    value = -42;
+    will_return_int_count(mock_function_int, value, 3);
+    assert_int_equal(value, mock_function_int());
+    assert_int_equal(value, mock_function_int());
+    assert_int_equal(value, mock_function_int());
+}
+
 static void test_will_return_uint(void **state)
 {
     uintmax_t value;
@@ -107,6 +120,19 @@ static void test_will_return_uint(void **state)
 
     value = rand();
     will_return_uint(mock_function_uint, value);
+    assert_uint_equal(value, mock_function_uint());
+}
+
+static void test_will_return_uint_count(void **state)
+{
+    uintmax_t value;
+
+    (void)state; /* unused */
+
+    value = 42;
+    will_return_uint_count(mock_function_uint, value, 3);
+    assert_uint_equal(value, mock_function_uint());
+    assert_uint_equal(value, mock_function_uint());
     assert_uint_equal(value, mock_function_uint());
 }
 
@@ -132,6 +158,18 @@ static void test_will_return_float(void **state)
     assert_float_equal(value, mock_function_float(), 0.0f);
 }
 
+static void test_will_return_float_count(void **state)
+{
+    float value = 3.14f;
+
+    (void)state; /* unused */
+
+    will_return_float_count(mock_function_float, value, 3);
+    assert_float_equal(value, mock_function_float(), 0.01f);
+    assert_float_equal(value, mock_function_float(), 0.01f);
+    assert_float_equal(value, mock_function_float(), 0.01f);
+}
+
 static void test_will_return_double(void **state)
 {
     double value = 2.5;
@@ -140,6 +178,18 @@ static void test_will_return_double(void **state)
 
     will_return_double(mock_function_double, value);
     assert_double_equal(value, mock_function_double(), 0.0);
+}
+
+static void test_will_return_double_count(void **state)
+{
+    double value = 2.718281828;
+
+    (void)state; /* unused */
+
+    will_return_double_count(mock_function_double, value, 3);
+    assert_double_equal(value, mock_function_double(), 0.001);
+    assert_double_equal(value, mock_function_double(), 0.001);
+    assert_double_equal(value, mock_function_double(), 0.001);
 }
 
 static void test_mock_double(void **state)
@@ -168,10 +218,14 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_maybe_for_one_mock_call),
         cmocka_unit_test(test_will_return_maybe_for_more_than_one_call),
         cmocka_unit_test(test_will_return_int),
+        cmocka_unit_test(test_will_return_int_count),
         cmocka_unit_test(test_will_return_uint),
+        cmocka_unit_test(test_will_return_uint_count),
         cmocka_unit_test(test_will_return_uint64),
         cmocka_unit_test(test_will_return_float),
+        cmocka_unit_test(test_will_return_float_count),
         cmocka_unit_test(test_will_return_double),
+        cmocka_unit_test(test_will_return_double_count),
         cmocka_unit_test(test_mock_double),
         cmocka_unit_test(test_will_return_ptr),
     };
