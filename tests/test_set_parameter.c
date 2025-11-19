@@ -287,6 +287,46 @@ static void test_will_set_parameter_double_always(void **state)
     assert_double_equal(value, result_param, 0.0001);
 }
 
+static void test_will_set_parameter_int_maybe(void **state)
+{
+    intmax_t value = -123;
+
+    (void)state; /* unused */
+
+    will_set_parameter_int_maybe(mock_function_int, result, value);
+    /* Maybe variants don't require the value to be consumed */
+}
+
+static void test_will_set_parameter_uint_maybe(void **state)
+{
+    uintmax_t value = 456;
+
+    (void)state; /* unused */
+
+    will_set_parameter_uint_maybe(mock_function_uint, result, value);
+    /* Maybe variants don't require the value to be consumed */
+}
+
+static void test_will_set_parameter_float_maybe(void **state)
+{
+    float value = 2.236f;
+
+    (void)state; /* unused */
+
+    will_set_parameter_float_maybe(mock_function_float, result, value);
+    /* Maybe variants don't require the value to be consumed */
+}
+
+static void test_will_set_parameter_double_maybe(void **state)
+{
+    double value = 2.23606798;
+
+    (void)state; /* unused */
+
+    will_set_parameter_double_maybe(mock_function_double, result, value);
+    /* Maybe variants don't require the value to be consumed */
+}
+
 int main(int argc, char **argv) {
     const struct CMUnitTest alloc_tests[] = {
         cmocka_unit_test(test_will_return_maybe_for_no_calls),
@@ -307,6 +347,10 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_set_parameter_uint_always),
         cmocka_unit_test(test_will_set_parameter_float_always),
         cmocka_unit_test(test_will_set_parameter_double_always),
+        cmocka_unit_test(test_will_set_parameter_int_maybe),
+        cmocka_unit_test(test_will_set_parameter_uint_maybe),
+        cmocka_unit_test(test_will_set_parameter_float_maybe),
+        cmocka_unit_test(test_will_set_parameter_double_maybe),
     };
 
     (void)argc;

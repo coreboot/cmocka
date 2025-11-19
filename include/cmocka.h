@@ -2042,6 +2042,114 @@ void will_set_parameter_always(#function, #name, uintmax_t value);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store a named integer value that may always be returned by mock_parameter_int().
+ *
+ * This stores a value which will always be returned by mock_parameter_int() but is not
+ * required to be returned by at least one call to mock_parameter_int().
+ *
+ * @param[in]  #function  The function in which the given value should be return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_int().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_int_count(function, name, value, -2);
+ * @endcode
+ *
+ * @see mock_parameter_int()
+ * @see will_set_parameter_int_count()
+ */
+void will_set_parameter_int_maybe(#function, #name, intmax_t value);
+#else
+#define will_set_parameter_int_maybe(function, name, value) \
+    will_set_parameter_int_count(function, name, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named unsigned integer value that may always be returned by mock_parameter_uint().
+ *
+ * This stores a value which will always be returned by mock_parameter_uint() but is not
+ * required to be returned by at least one call to mock_parameter_uint().
+ *
+ * @param[in]  #function  The function in which the given value should be return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_uint().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_uint_count(function, name, value, -2);
+ * @endcode
+ *
+ * @see mock_parameter_uint()
+ * @see will_set_parameter_uint_count()
+ */
+void will_set_parameter_uint_maybe(#function, #name, uintmax_t value);
+#else
+#define will_set_parameter_uint_maybe(function, name, value) \
+    will_set_parameter_uint_count(function, name, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named float value that may always be returned by mock_parameter_float().
+ *
+ * This stores a value which will always be returned by mock_parameter_float() but is not
+ * required to be returned by at least one call to mock_parameter_float().
+ *
+ * @param[in]  #function  The function in which the given value should be return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_float().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_float_count(function, name, value, -2);
+ * @endcode
+ *
+ * @see mock_parameter_float()
+ * @see will_set_parameter_float_count()
+ */
+void will_set_parameter_float_maybe(#function, #name, float value);
+#else
+#define will_set_parameter_float_maybe(function, name, value) \
+    will_set_parameter_float_count(function, name, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named double value that may always be returned by mock_parameter_double().
+ *
+ * This stores a value which will always be returned by mock_parameter_double() but is not
+ * required to be returned by at least one call to mock_parameter_double().
+ *
+ * @param[in]  #function  The function in which the given value should be return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_double().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_double_count(function, name, value, -2);
+ * @endcode
+ *
+ * @see mock_parameter_double()
+ * @see will_set_parameter_double_count()
+ */
+void will_set_parameter_double_maybe(#function, #name, double value);
+#else
+#define will_set_parameter_double_maybe(function, name, value) \
+    will_set_parameter_double_count(function, name, (value), WILL_RETURN_ONCE)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a named value that may be always returned by mock_parameter().
  *
  * This stores a value which will always be returned by mock_parameter() but is not
