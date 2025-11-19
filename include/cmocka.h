@@ -1153,51 +1153,37 @@ void will_return_double_always(#function, double value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a value to be returned by mock() later.
- *
- * @param[in]  #function  The function which should return the given value.
- *
- * @param[in]  value The value to be returned by mock().
- *
- * @param[in]  count The parameter indicates the number of times the value should
- *                   be returned by mock(). If count is set to -1, the value
- *                   will always be returned but must be returned at least once.
- *                   If count is set to -2, the value will always be returned
- *                   by mock(), but is not required to be returned.
- *
- * @see mock()
+ * @deprecated Use will_return_int_count() or will_return_uint_count()
  */
 void will_return_count(#function, uintmax_t value, int count);
 #else
-#define will_return_count(function, value, count) \
-    _will_return(cmocka_tostring(function),       \
-                 __FILE__,                        \
-                 __LINE__,                        \
-                 NULL,                            \
-                 cast_int_to_cmocka_value(value), \
-                 count)
+#define will_return_count(function, value, count)              \
+    do {                                                       \
+        CMOCKA_DEPRECATION_WARNING(                            \
+            "will_return_count: use will_return_int_count or " \
+            "will_return_uint_count instead")                  \
+        _will_return(cmocka_tostring(function),                \
+                     __FILE__,                                 \
+                     __LINE__,                                 \
+                     NULL,                                     \
+                     cast_int_to_cmocka_value(value),          \
+                     count);                                   \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
 /**
- * @brief Store a value that will be always returned by mock().
- *
- * @param[in]  #function  The function which should return the given value.
- *
- * @param[in]  #value The value to be returned by mock().
- *
- * This is equivalent to:
- * @code
- * will_return_count(function, value, -1);
- * @endcode
- *
- * @see will_return_count()
- * @see mock()
+ * @deprecated Use will_return_int_always() or will_return_uint_always()
  */
 void will_return_always(#function, uintmax_t value);
 #else
-#define will_return_always(function, value) \
-    will_return_count(function, (value), WILL_RETURN_ALWAYS)
+#define will_return_always(function, value)                       \
+    do {                                                          \
+        CMOCKA_DEPRECATION_WARNING(                               \
+            "will_return_always: use will_return_int_always or "  \
+            "will_return_uint_always instead")                    \
+        will_return_count(function, (value), WILL_RETURN_ALWAYS); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -1315,30 +1301,17 @@ void will_return_double_maybe(#function, double value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a value that may be always returned by mock().
- *
- * This stores a value which will always be returned by mock() but is not
- * required to be returned by at least one call to mock(). Therefore,
- * in contrast to will_return_always() which causes a test failure if it
- * is not returned at least once, will_return_maybe() will never cause a test
- * to fail if its value is not returned.
- *
- * @param[in]  #function  The function which should return the given value.
- *
- * @param[in]  #value The value to be returned by mock().
- *
- * This is equivalent to:
- * @code
- * will_return_count(function, value, -2);
- * @endcode
- *
- * @see will_return_count()
- * @see mock()
+ * @deprecated Use will_return_int_maybe() or will_return_uint_maybe()
  */
 void will_return_maybe(#function, uintmax_t value);
 #else
-#define will_return_maybe(function, value) \
-    will_return_count(function, (value), WILL_RETURN_ONCE)
+#define will_return_maybe(function, value)                      \
+    do {                                                        \
+        CMOCKA_DEPRECATION_WARNING(                             \
+            "will_return_maybe: use will_return_int_maybe or "  \
+            "will_return_uint_maybe instead")                   \
+        will_return_count(function, (value), WILL_RETURN_ONCE); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -1863,52 +1836,24 @@ void will_set_parameter_double_count(#function, #name, double value, int count);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value to be returned a specified number of times
- * by mock_parameter() later.
- *
- * @param[in]  #function  The function in which the given value should be return.
- *
- * @param[in]  #name  The name under which the given value should be returned.
- *
- * @param[in]  value The value to be returned by mock_parameter().
- *
- * @param[in]  count The parameter indicates the number of times the value should
- *                   be returned by mock(). If count is set to -1, the value
- *                   will always be returned but must be returned at least once.
- *                   If count is set to -2, the value will always be returned
- *                   by mock(), but is not required to be returned.
- *
- * @code
- * void return_two_int(int *resultA, int *resultB)
- * {
- *      *resultA = mock_parameter_float(result);
- *      *resultB = mock_parameter_float(result);
- * }
- *
- * static void test_integer_return(void **state)
- * {
- *      will_set_parameter_count(return_two_int, result, 3, 2);
- *      int result_paramA = 0;
- *      int result_paramB = 0;
- *      return_two_int(&result_paramA, &result_paramB);
- *      assert_int_equal(result_paramA, 3);
- *      assert_int_equal(result_paramB, 3);
- * }
- * @endcode
- *
- * @see mock_parameter()
- * @see will_set_parameter()
+ * @deprecated Use will_set_parameter_int_count() or
+ * will_set_parameter_uint_count()
  */
 void will_set_parameter_count(#function, #name, uintmax_t value, int count);
 #else
-#define will_set_parameter_count(function, name, value, count) \
-    _will_set_parameter(cmocka_tostring(function),             \
-                 #name,                                       \
-                 __FILE__,                                    \
-                 __LINE__,                                    \
-                 NULL,                                        \
-                 cast_int_to_cmocka_value(value),             \
-                 count)
+#define will_set_parameter_count(function, name, value, count)               \
+    do {                                                                     \
+        CMOCKA_DEPRECATION_WARNING(                                          \
+            "will_set_parameter_count: use will_set_parameter_int_count or " \
+            "will_set_parameter_uint_count instead")                         \
+        _will_set_parameter(cmocka_tostring(function),                       \
+                            #name,                                           \
+                            __FILE__,                                        \
+                            __LINE__,                                        \
+                            NULL,                                            \
+                            cast_int_to_cmocka_value(value),                 \
+                            count);                                          \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2017,27 +1962,18 @@ void will_set_parameter_double_always(#function, #name, double value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value that will be always be returned by mock_parameter().
- *
- * @param[in]  #function  The function in which the given value should be return.
- *
- * @param[in]  #name  The name under which the given value should be returned.
- *
- * @param[in]  value The value to be returned by mock_parameter().
- *
- * This is equivalent to:
- * @code
- * will_return_count(function, value, -1);
- * @endcode
- *
- * @see mock_parameter()
- * @see will_set_parameter()
- * @see will_set_parameter_count()
+ * @deprecated Use will_set_parameter_int_always() or
+ * will_set_parameter_uint_always()
  */
 void will_set_parameter_always(#function, #name, uintmax_t value);
 #else
-#define will_set_parameter_always(function, name, value) \
-    will_set_parameter_count(function, name, (value), WILL_RETURN_ALWAYS)
+#define will_set_parameter_always(function, name, value)                       \
+    do {                                                                       \
+        CMOCKA_DEPRECATION_WARNING(                                            \
+            "will_set_parameter_always: use will_set_parameter_int_always or " \
+            "will_set_parameter_uint_always instead")                          \
+        will_set_parameter_count(function, name, (value), WILL_RETURN_ALWAYS); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -2150,33 +2086,18 @@ void will_set_parameter_double_maybe(#function, #name, double value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a named value that may be always returned by mock_parameter().
- *
- * This stores a value which will always be returned by mock_parameter() but is not
- * required to be returned by at least one call to mock_parameter(). Therefore,
- * in contrast to will_set_parameter_always() which causes a test failure if it
- * is not returned at least once, will_set_parameter_maybe() will never cause a test
- * to fail if its value is not returned.
- *
- * @param[in]  #function  The function in which the given value should be return.
- *
- * @param[in]  #name  The name under which the given value should be returned.
- *
- * @param[in]  value The value to be returned by mock_parameter().
- *
- * This is equivalent to:
- * @code
- * will_set_parameter_count(function, name, value, -2);
- * @endcode
- *
- * @see mock_parameter()
- * @see will_return()
- * @see will_return_count()
+ * @deprecated Use will_set_parameter_int_maybe() or
+ * will_set_parameter_uint_maybe()
  */
 void will_set_parameter_maybe(#function, #name, uintmax_t value);
 #else
-#define will_set_parameter_maybe(function, name, value) \
-    will_set_parameter_count(function, name, (value), WILL_RETURN_ONCE)
+#define will_set_parameter_maybe(function, name, value)                      \
+    do {                                                                     \
+        CMOCKA_DEPRECATION_WARNING(                                          \
+            "will_set_parameter_maybe: use will_set_parameter_int_maybe or " \
+            "will_set_parameter_uint_maybe instead")                         \
+        will_set_parameter_count(function, name, (value), WILL_RETURN_ONCE); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
