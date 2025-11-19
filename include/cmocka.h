@@ -1913,6 +1913,110 @@ void will_set_parameter_count(#function, #name, uintmax_t value, int count);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store a named integer value that will always be returned by
+ * mock_parameter_int().
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_int().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_int_count(function, name, value, -1);
+ * @endcode
+ *
+ * @see mock_parameter_int()
+ * @see will_set_parameter_int_count()
+ */
+void will_set_parameter_int_always(#function, #name, intmax_t value);
+#else
+#define will_set_parameter_int_always(function, name, value) \
+    will_set_parameter_int_count(function, name, (value), WILL_RETURN_ALWAYS)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named unsigned integer value that will always be returned by
+ * mock_parameter_uint().
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_uint().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_uint_count(function, name, value, -1);
+ * @endcode
+ *
+ * @see mock_parameter_uint()
+ * @see will_set_parameter_uint_count()
+ */
+void will_set_parameter_uint_always(#function, #name, uintmax_t value);
+#else
+#define will_set_parameter_uint_always(function, name, value) \
+    will_set_parameter_uint_count(function, name, (value), WILL_RETURN_ALWAYS)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named float value that will always be returned by
+ * mock_parameter_float().
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_float().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_float_count(function, name, value, -1);
+ * @endcode
+ *
+ * @see mock_parameter_float()
+ * @see will_set_parameter_float_count()
+ */
+void will_set_parameter_float_always(#function, #name, float value);
+#else
+#define will_set_parameter_float_always(function, name, value) \
+    will_set_parameter_float_count(function, name, (value), WILL_RETURN_ALWAYS)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named double value that will always be returned by
+ * mock_parameter_double().
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_double().
+ *
+ * This is equivalent to:
+ * @code
+ * will_set_parameter_double_count(function, name, value, -1);
+ * @endcode
+ *
+ * @see mock_parameter_double()
+ * @see will_set_parameter_double_count()
+ */
+void will_set_parameter_double_always(#function, #name, double value);
+#else
+#define will_set_parameter_double_always(function, name, value) \
+    will_set_parameter_double_count(function, name, (value), WILL_RETURN_ALWAYS)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a named value that will be always be returned by mock_parameter().
  *
  * @param[in]  #function  The function in which the given value should be return.
