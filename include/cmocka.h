@@ -110,6 +110,16 @@ int __stdcall IsDebuggerPresent();
     ((float)(value))
 
 /**
+ * Perform cast to void pointer.
+ *
+ * ISO C forbids conversion between function pointers and void*. This macro
+ * provides a portable way to perform such conversions by casting through
+ * uintptr_t, which is allowed by POSIX and works on all practical platforms.
+ */
+#define cast_to_void_pointer(ptr) \
+    ((void *)(uintptr_t)(ptr))
+
+/**
  * Perform a cast from an integer to CMockaValueData.
  *
  * For backwards compatibility reasons, this explicitly casts to `uintmax_t`.
@@ -3936,7 +3946,9 @@ void assert_ptr_equal(void *a, void *b);
 void assert_ptr_equal_msg(void *a, void *b, const char *const msg);
 #else
 #define assert_ptr_equal_msg(a, b, msg) \
-    _assert_ptr_equal_msg((a), (b), __FILE__, __LINE__, (msg))
+    _assert_ptr_equal_msg(cast_to_void_pointer(a), \
+                          cast_to_void_pointer(b), \
+                          __FILE__, __LINE__, (msg))
 #endif
 
 #ifdef DOXYGEN
@@ -3974,13 +3986,16 @@ void assert_ptr_not_equal_msg(void *a, void *b, const char *const msg);
 #ifdef __has_builtin
 #if __has_builtin(__builtin_unreachable)
 #define assert_ptr_not_equal_msg(a, b, msg) \
-    do { const void *p1 = (a), *p2 = (b); \
-	 _assert_ptr_not_equal_msg((a), (b), __FILE__, __LINE__, (msg)); \
+    do { const void *p1 = cast_to_void_pointer(a), \
+                    *p2 = cast_to_void_pointer(b); \
+	 _assert_ptr_not_equal_msg(p1, p2, __FILE__, __LINE__, (msg)); \
 	 if (p1 == p2) __builtin_unreachable(); } while(0)
 #endif
 #else
 #define assert_ptr_not_equal_msg(a, b, msg) \
-    _assert_ptr_not_equal_msg((a), (b), __FILE__, __LINE__, (msg))
+    _assert_ptr_not_equal_msg(cast_to_void_pointer(a), \
+                              cast_to_void_pointer(b), \
+                              __FILE__, __LINE__, (msg))
 #endif
 #endif
 

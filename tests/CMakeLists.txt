@@ -49,6 +49,7 @@ set(CMOCKA_TESTS
     test_assert_ptr_fail
     test_assert_ptr_msg
     test_assert_ptr_msg_fail
+    test_assert_funcptr
     test_assert_u_int
     test_assert_u_int_fail
     test_assert_range
