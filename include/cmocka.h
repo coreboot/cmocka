@@ -1732,6 +1732,137 @@ void will_set_parameter_double(#function, #name, double value);
 
 #ifdef DOXYGEN
 /**
+ * @brief Store a named integer value to be returned a specified number of times
+ * by mock_parameter_int() later.
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_int().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned. If count is set to -1, the value will always be returned
+ * but must be returned at least once. If count is set to -2, the value will
+ * always be returned, but is not required to be returned.
+ *
+ * @see mock_parameter_int()
+ * @see will_set_parameter_int()
+ */
+void will_set_parameter_int_count(#function, #name, intmax_t value, int count);
+#else
+#define will_set_parameter_int_count(function, name, value, count) \
+    _will_set_parameter(#function,                                 \
+                        #name,                                     \
+                        __FILE__,                                  \
+                        __LINE__,                                  \
+                        "intmax_t",                                \
+                        assign_int_to_cmocka_value(value),         \
+                        count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named unsigned integer value to be returned a specified
+ * number of times by mock_parameter_uint() later.
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_uint().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned. If count is set to -1, the value will always be returned
+ * but must be returned at least once. If count is set to -2, the value will
+ * always be returned, but is not required to be returned.
+ *
+ * @see mock_parameter_uint()
+ * @see will_set_parameter_uint()
+ */
+void will_set_parameter_uint_count(#function,
+                                   #name,
+                                   uintmax_t value,
+                                   int count);
+#else
+#define will_set_parameter_uint_count(function, name, value, count) \
+    _will_set_parameter(#function,                                  \
+                        #name,                                      \
+                        __FILE__,                                   \
+                        __LINE__,                                   \
+                        "uintmax_t",                                \
+                        assign_uint_to_cmocka_value(value),         \
+                        count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named float value to be returned a specified number of times
+ * by mock_parameter_float() later.
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_float().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned. If count is set to -1, the value will always be returned
+ * but must be returned at least once. If count is set to -2, the value will
+ * always be returned, but is not required to be returned.
+ *
+ * @see mock_parameter_float()
+ * @see will_set_parameter_float()
+ */
+void will_set_parameter_float_count(#function, #name, float value, int count);
+#else
+#define will_set_parameter_float_count(function, name, value, count) \
+    _will_set_parameter(#function,                                   \
+                        #name,                                       \
+                        __FILE__,                                    \
+                        __LINE__,                                    \
+                        "float",                                     \
+                        assign_float_to_cmocka_value(value),         \
+                        count)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Store a named double value to be returned a specified number of times
+ * by mock_parameter_double() later.
+ *
+ * @param[in]  #function  The function in which the given value should be
+ * return.
+ *
+ * @param[in]  #name  The name under which the given value should be returned.
+ *
+ * @param[in]  value The value to be returned by mock_parameter_double().
+ *
+ * @param[in]  count The parameter indicates the number of times the value
+ * should be returned. If count is set to -1, the value will always be returned
+ * but must be returned at least once. If count is set to -2, the value will
+ * always be returned, but is not required to be returned.
+ *
+ * @see mock_parameter_double()
+ * @see will_set_parameter_double()
+ */
+void will_set_parameter_double_count(#function, #name, double value, int count);
+#else
+#define will_set_parameter_double_count(function, name, value, count) \
+    _will_set_parameter(#function,                                    \
+                        #name,                                        \
+                        __FILE__,                                     \
+                        __LINE__,                                     \
+                        "double",                                     \
+                        assign_double_to_cmocka_value(value),         \
+                        count)
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Store a named value to be returned a specified number of times
  * by mock_parameter() later.
  *

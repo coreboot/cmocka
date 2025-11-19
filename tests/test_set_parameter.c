@@ -169,6 +169,66 @@ static void test_will_return_ptr(void **state)
     assert_string_equal(value, result_param);
 }
 
+static void test_will_set_parameter_int_count(void **state)
+{
+    intmax_t value = -100;
+
+    (void)state; /* unused */
+
+    will_set_parameter_int_count(mock_function_int, result, value, 3);
+    intmax_t result_param;
+    mock_function_int(&result_param);
+    assert_int_equal(value, result_param);
+    mock_function_int(&result_param);
+    assert_int_equal(value, result_param);
+    mock_function_int(&result_param);
+    assert_int_equal(value, result_param);
+}
+
+static void test_will_set_parameter_uint_count(void **state)
+{
+    uintmax_t value = 999;
+
+    (void)state; /* unused */
+
+    will_set_parameter_uint_count(mock_function_uint, result, value, 3);
+    uintmax_t result_param;
+    mock_function_uint(&result_param);
+    assert_uint_equal(value, result_param);
+    mock_function_uint(&result_param);
+    assert_uint_equal(value, result_param);
+    mock_function_uint(&result_param);
+    assert_uint_equal(value, result_param);
+}
+
+static void test_will_set_parameter_float_count(void **state)
+{
+    float value = 3.14f;
+
+    (void)state; /* unused */
+
+    will_set_parameter_float_count(mock_function_float, result, value, 2);
+    float result_param;
+    mock_function_float(&result_param);
+    assert_float_equal(value, result_param, 0.01f);
+    mock_function_float(&result_param);
+    assert_float_equal(value, result_param, 0.01f);
+}
+
+static void test_will_set_parameter_double_count(void **state)
+{
+    double value = 2.71828;
+
+    (void)state; /* unused */
+
+    will_set_parameter_double_count(mock_function_double, result, value, 2);
+    double result_param;
+    mock_function_double(&result_param);
+    assert_double_equal(value, result_param, 0.0001);
+    mock_function_double(&result_param);
+    assert_double_equal(value, result_param, 0.0001);
+}
+
 int main(int argc, char **argv) {
     const struct CMUnitTest alloc_tests[] = {
         cmocka_unit_test(test_will_return_maybe_for_no_calls),
@@ -181,6 +241,10 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_set_parameter_double),
         cmocka_unit_test(test_mock_parameter_double),
         cmocka_unit_test(test_will_return_ptr),
+        cmocka_unit_test(test_will_set_parameter_int_count),
+        cmocka_unit_test(test_will_set_parameter_uint_count),
+        cmocka_unit_test(test_will_set_parameter_float_count),
+        cmocka_unit_test(test_will_set_parameter_double_count),
     };
 
     (void)argc;
