@@ -212,6 +212,54 @@ static void test_will_return_ptr(void **state)
     assert_string_equal(value, mock_function_ptr());
 }
 
+static void test_will_return_int_always(void **state)
+{
+    intmax_t value = -100;
+
+    (void)state; /* unused */
+
+    will_return_int_always(mock_function_int, value);
+    assert_int_equal(value, mock_function_int());
+    assert_int_equal(value, mock_function_int());
+    assert_int_equal(value, mock_function_int());
+}
+
+static void test_will_return_uint_always(void **state)
+{
+    uintmax_t value = 999;
+
+    (void)state; /* unused */
+
+    will_return_uint_always(mock_function_uint, value);
+    assert_uint_equal(value, mock_function_uint());
+    assert_uint_equal(value, mock_function_uint());
+    assert_uint_equal(value, mock_function_uint());
+}
+
+static void test_will_return_float_always(void **state)
+{
+    float value = 1.414f;
+
+    (void)state; /* unused */
+
+    will_return_float_always(mock_function_float, value);
+    assert_float_equal(value, mock_function_float(), 0.001f);
+    assert_float_equal(value, mock_function_float(), 0.001f);
+    assert_float_equal(value, mock_function_float(), 0.001f);
+}
+
+static void test_will_return_double_always(void **state)
+{
+    double value = 1.732050808;
+
+    (void)state; /* unused */
+
+    will_return_double_always(mock_function_double, value);
+    assert_double_equal(value, mock_function_double(), 0.0001);
+    assert_double_equal(value, mock_function_double(), 0.0001);
+    assert_double_equal(value, mock_function_double(), 0.0001);
+}
+
 int main(int argc, char **argv) {
     const struct CMUnitTest alloc_tests[] = {
         cmocka_unit_test(test_will_return_maybe_for_no_calls),
@@ -228,6 +276,10 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_double_count),
         cmocka_unit_test(test_mock_double),
         cmocka_unit_test(test_will_return_ptr),
+        cmocka_unit_test(test_will_return_int_always),
+        cmocka_unit_test(test_will_return_uint_always),
+        cmocka_unit_test(test_will_return_float_always),
+        cmocka_unit_test(test_will_return_double_always),
     };
 
     (void)argc;
