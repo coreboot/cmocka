@@ -166,9 +166,10 @@ int __stdcall IsDebuggerPresent();
 
 #if defined(__GNUC__)
 #define CMOCKA_DEPRECATED __attribute__ ((deprecated))
-#elif defined(_MSC_VER)
-#define CMOCKA_DEPRECATED __declspec(deprecated)
 #else
+/* MSVC requires __declspec(deprecated) before the function declaration,
+ * not after it. Since we already use CMOCKA_DEPRECATION_WARNING() in
+ * the macro wrappers, we don't need function-level deprecation for MSVC. */
 #define CMOCKA_DEPRECATED
 #endif
 
