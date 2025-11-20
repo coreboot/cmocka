@@ -154,4 +154,11 @@ to <tt>CMOCKA_XML_FILE=cm_%%g.xml</tt>. In this %g will be replaced by
 the group_name of the test and a file will be created for each group,
 othwerwise all groups will be printed into the same file.
 
+Error messages from test failures are controlled by the
+<tt>CMOCKA_ERROR_OUTPUT</tt> environment variable. The supported values are:
+ - <tt>STDOUT</tt> for standard output (default)
+ - <tt>STDERR</tt> for standard error
+The case doesn't matter. This allows you to redirect error messages
+separately from test results when needed.
+
 */

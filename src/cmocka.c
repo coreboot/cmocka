@@ -4250,10 +4250,40 @@ void vprint_message_default_impl(const char* const format, va_list args)
 }
 
 
-void vprint_error_default_impl(const char* const format, va_list args)
+/* Check CMOCKA_ERROR_OUTPUT environment variable, default is stdout */
+static FILE *cm_get_error_output(void)
 {
-    vfprintf(stderr, format, args);
-    fflush(stderr);
+    static bool env_checked = false;
+    static FILE *error_output = NULL;
+    char *env = NULL;
+
+    if (env_checked) {
+        return error_output;
+    }
+
+    /* Default to stdout */
+    error_output = stdout;
+
+    env = getenv("CMOCKA_ERROR_OUTPUT");
+    if (env != NULL) {
+        if (strcasecmp(env, "stderr") == 0) {
+            error_output = stderr;
+        } else if (strcasecmp(env, "stdout") == 0) {
+            error_output = stdout;
+        }
+    }
+
+    env_checked = true;
+
+    return error_output;
+}
+
+static void vprint_error_default_impl(const char* const format, va_list args)
+{
+    FILE *output = cm_get_error_output();
+
+    vfprintf(output, format, args);
+    fflush(output);
 #ifdef _WIN32
     char buffer[4096];
 
