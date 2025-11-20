@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include <limits.h>
+
 #include <cmocka.h>
 #include <cmocka_private.h>
 
@@ -37,6 +39,20 @@ static void test_assert_uint_not_in_range(void **state)
     assert_int_not_in_range(0, 1, UINTMAX_MAX);
 }
 
+static void test_assert_uint_in_range_limits(void **state)
+{
+    (void)state; /* unused */
+    /* Test with values greater than UINT_MAX */
+    uintmax_t large_value = (uintmax_t)UINT_MAX + 1000;
+    uintmax_t large_min = (uintmax_t)UINT_MAX + 1;
+    uintmax_t large_max = (uintmax_t)UINT_MAX + 2000;
+
+    assert_uint_in_range(large_value, large_min, large_max);
+    assert_uint_in_range(large_min, large_min, large_max);
+    assert_uint_in_range(large_max, large_min, large_max);
+    assert_uint_in_range(UINTMAX_MAX, 0, UINTMAX_MAX);
+}
+
 static void test_assert_float_in_range(void **state)
 {
     (void)state; /* unused */
@@ -63,6 +79,7 @@ int main(void) {
         cmocka_unit_test(test_assert_int_not_in_range),
         cmocka_unit_test(test_assert_uint_in_range),
         cmocka_unit_test(test_assert_uint_not_in_range),
+        cmocka_unit_test(test_assert_uint_in_range_limits),
         cmocka_unit_test(test_assert_float_in_range),
         cmocka_unit_test(test_assert_float_not_in_range),
     };
