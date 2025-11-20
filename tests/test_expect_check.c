@@ -133,6 +133,92 @@ static void test_expect_string_count_maybe_2(void **state)
     expect_string_count(mock_test_ptr, value, string, EXPECT_MAYBE);
 }
 
+static void mock_test_int(int value)
+{
+    check_expected_int(value);
+}
+
+static void test_expect_int_value(void **state)
+{
+    (void)state; /* unused */
+    expect_int_value(mock_test_int, value, 42);
+    mock_test_int(42);
+}
+
+static void test_expect_int_value_count(void **state)
+{
+    (void)state; /* unused */
+    expect_int_value_count(mock_test_int, value, -100, 3);
+    mock_test_int(-100);
+    mock_test_int(-100);
+    mock_test_int(-100);
+}
+
+static void test_expect_int_value_count_always(void **state)
+{
+    (void)state; /* unused */
+    expect_int_value_count(mock_test_int, value, 0, EXPECT_ALWAYS);
+    mock_test_int(0);
+    mock_test_int(0);
+}
+
+static void test_expect_int_value_count_maybe_1(void **state)
+{
+    (void)state; /* unused */
+    expect_int_value_count(mock_test_int, value, 123, EXPECT_MAYBE);
+    mock_test_int(123);
+    mock_test_int(123);
+}
+
+static void test_expect_int_value_count_maybe_2(void **state)
+{
+    (void)state; /* unused */
+    expect_int_value_count(mock_test_int, value, 456, EXPECT_MAYBE);
+}
+
+static void mock_test_uint(unsigned int value)
+{
+    check_expected_uint(value);
+}
+
+static void test_expect_uint_value(void **state)
+{
+    (void)state; /* unused */
+    expect_uint_value(mock_test_uint, value, 42U);
+    mock_test_uint(42U);
+}
+
+static void test_expect_uint_value_count(void **state)
+{
+    (void)state; /* unused */
+    expect_uint_value_count(mock_test_uint, value, 100U, 3);
+    mock_test_uint(100U);
+    mock_test_uint(100U);
+    mock_test_uint(100U);
+}
+
+static void test_expect_uint_value_count_always(void **state)
+{
+    (void)state; /* unused */
+    expect_uint_value_count(mock_test_uint, value, 0U, EXPECT_ALWAYS);
+    mock_test_uint(0U);
+    mock_test_uint(0U);
+}
+
+static void test_expect_uint_value_count_maybe_1(void **state)
+{
+    (void)state; /* unused */
+    expect_uint_value_count(mock_test_uint, value, 999U, EXPECT_MAYBE);
+    mock_test_uint(999U);
+    mock_test_uint(999U);
+}
+
+static void test_expect_uint_value_count_maybe_2(void **state)
+{
+    (void)state; /* unused */
+    expect_uint_value_count(mock_test_uint, value, 777U, EXPECT_MAYBE);
+}
+
 static void mock_test_b(double value)
 {
     check_expected_float(value);
@@ -246,6 +332,16 @@ int main(void)
         cmocka_unit_test(test_expect_string_count_always),
         cmocka_unit_test(test_expect_string_count_maybe_1),
         cmocka_unit_test(test_expect_string_count_maybe_2),
+        cmocka_unit_test(test_expect_int_value),
+        cmocka_unit_test(test_expect_int_value_count),
+        cmocka_unit_test(test_expect_int_value_count_always),
+        cmocka_unit_test(test_expect_int_value_count_maybe_1),
+        cmocka_unit_test(test_expect_int_value_count_maybe_2),
+        cmocka_unit_test(test_expect_uint_value),
+        cmocka_unit_test(test_expect_uint_value_count),
+        cmocka_unit_test(test_expect_uint_value_count_always),
+        cmocka_unit_test(test_expect_uint_value_count_maybe_1),
+        cmocka_unit_test(test_expect_uint_value_count_maybe_2),
         cmocka_unit_test(test_expect_float),
         cmocka_unit_test(test_expect_float_count),
         cmocka_unit_test(test_expect_float_count_always),

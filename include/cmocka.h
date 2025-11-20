@@ -4280,20 +4280,22 @@ void expect_any_count(#function, #parameter, size_t count);
 
 #ifdef DOXYGEN
 /**
- * @brief Determine whether a function parameter is correct.
- *
- * This ensures the next value queued by one of the expect_*() macros matches
- * the specified variable.
- *
- * This function needs to be called in the mock object.
- *
- * @param[in]  #parameter  The parameter to check.
+ * @deprecated Use check_expected_int(), check_expected_uint(),
+ * check_expected_float or check_expetecd_double() instead.
  */
 void check_expected(#parameter);
 #else
-#define check_expected(parameter) \
-    _check_expected(__func__, #parameter, __FILE__, __LINE__, \
-                    cast_int_to_cmocka_value(parameter))
+#define check_expected(parameter)                             \
+    do {                                                      \
+        CMOCKA_DEPRECATION_WARNING(                           \
+            "check_expected: use check_expected_int or "      \
+            "check_expected_uint instead")                    \
+        _check_expected(__func__,                             \
+                        #parameter,                           \
+                        __FILE__,                             \
+                        __LINE__,                             \
+                        cast_int_to_cmocka_value(parameter)); \
+    } while (0)
 #endif
 
 #ifdef DOXYGEN
@@ -4312,6 +4314,48 @@ void check_expected_ptr(#parameter);
 #define check_expected_ptr(parameter) \
     _check_expected(__func__, #parameter, __FILE__, __LINE__, \
                     cast_ptr_to_cmocka_value(parameter))
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Determine whether a function parameter is correct.
+ *
+ * This ensures the next value queued by one of the expect_int*() macros matches
+ * the specified variable.
+ *
+ * This function needs to be called in the mock object.
+ *
+ * @param[in]  #parameter  The parameter to check.
+ */
+void check_expected_int(#parameter);
+#else
+#define check_expected_int(parameter) \
+    _check_expected(__func__,         \
+                    #parameter,       \
+                    __FILE__,         \
+                    __LINE__,         \
+                    assign_int_to_cmocka_value(parameter))
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Determine whether a function parameter is correct.
+ *
+ * This ensures the next value queued by one of the expect_uint*() macros
+ * matches the specified variable.
+ *
+ * This function needs to be called in the mock object.
+ *
+ * @param[in]  #parameter  The parameter to check.
+ */
+void check_expected_uint(#parameter);
+#else
+#define check_expected_uint(parameter) \
+    _check_expected(__func__,          \
+                    #parameter,        \
+                    __FILE__,          \
+                    __LINE__,          \
+                    assign_uint_to_cmocka_value(parameter))
 #endif
 
 #ifdef DOXYGEN
