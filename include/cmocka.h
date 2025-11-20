@@ -2565,6 +2565,146 @@ void expect_check_count(function,
  * @param[in]  #check_function  The check function to call (CheckParameterValueData).
  *
  * @param[in]  check_data  The data to pass to the check function (CMockaValueData).
+ *
+ * ## Checker Function Interface
+ *
+ * The checker function must have the following signature:
+ * @code
+ * int checker_function(CMockaValueData value, CMockaValueData check_data);
+ * @endcode
+ *
+ * ### Parameters
+ * - **value**: The actual parameter value passed to the mocked function.
+ *   This is provided via check_expected(), check_expected_int(),
+ *   check_expected_uint(), check_expected_float(), or check_expected_double()
+ *   in the mocked function.
+ * - **check_data**: The expected data that was passed to expect_check_data().
+ *   This contains the value you want to compare against.
+ *
+ * ### Return Value
+ * The checker function should return:
+ * - **Non-zero** (typically 1 or true) if the check succeeds
+ * - **Zero** (0 or false) if the check fails
+ *
+ * When the checker returns zero, cmocka will fail the test with an appropriate
+ * error message.
+ *
+ * ### Accessing Values in CMockaValueData
+ *
+ * The CMockaValueData union contains the following fields:
+ * - **int_val**: For signed integer types (intmax_t)
+ * - **uint_val**: For unsigned integer types (uintmax_t)
+ * - **float_val**: For single-precision floating-point types (float)
+ * - **real_val**: For double-precision floating-point types (double)
+ * - **ptr**: For pointer types (const void *)
+ *
+ * ## Usage Notes
+ *
+ * 1. **Calling will_return() in the checker**: You can call will_return() or
+ *    other cmocka setup functions within your checker function to set up return
+ *    values dynamically based on the parameter being checked. This is useful
+ *    when the return value depends on the input parameter.
+ *
+ * 2. **Checking multiple parameters**: To check all parameters of a function
+ *    at once, you can pass a pointer to a struct containing all parameter
+ *    values as the check_data. Your checker function can then validate all
+ *    fields in a single call. See example below.
+ *
+ * 3. **Memory allocation for check_data**: If you allocate memory for the
+ *    check_data parameter (e.g., for a struct), you are responsible for
+ *    managing its lifetime. The checker function receives the data by value,
+ *    so if you pass a pointer in check_data.ptr, ensure it remains valid
+ *    until the checker is called. Note that cmocka does not free this memory
+ *    automatically.
+ *
+ * @code
+ * // Example: Custom range checker
+ * typedef struct {
+ *     int min;
+ *     int max;
+ * } range_data;
+ *
+ * int check_in_custom_range(CMockaValueData value, CMockaValueData check_data)
+ * {
+ *     range_data *range = (range_data *)check_data.ptr;
+ *     int val = value.int_val;
+ *
+ *     // Return 1 (true) if in range, 0 (false) otherwise
+ *     return (val >= range->min && val <= range->max);
+ * }
+ *
+ * // In your test:
+ * void test_custom_check(void **state)
+ * {
+ *     range_data range = {10, 20};
+ *     expect_check_data(my_function, param,
+ *                       check_in_custom_range,
+ *                       cast_ptr_to_cmocka_value(&range));
+ *     my_function(15);  // This will pass
+ * }
+ *
+ * // The mocked function:
+ * void my_function(int param)
+ * {
+ *     check_expected_int(param);  // Triggers the checker
+ * }
+ * @endcode
+ *
+ * @code
+ * // Example: Checker that also sets return values
+ * int check_and_setup_return(CMockaValueData value, CMockaValueData check_data)
+ * {
+ *     int expected = check_data.int_val;
+ *     int actual = value.int_val;
+ *
+ *     if (actual == expected) {
+ *         // Set up return value dynamically based on the parameter
+ *         will_return_int(some_other_function, actual * 2);
+ *         return 1;  // Success
+ *     }
+ *     return 0;  // Failure
+ * }
+ * @endcode
+ *
+ * @code
+ * // Example: Checking multiple parameters at once
+ * typedef struct {
+ *     int expected_a;
+ *     int expected_b;
+ *     const char *expected_str;
+ * } multi_param_check;
+ *
+ * int check_multiple_params(CMockaValueData value, CMockaValueData check_data)
+ * {
+ *     multi_param_check *expected = (multi_param_check *)check_data.ptr;
+ *     multi_param_check *actual = (multi_param_check *)value.ptr;
+ *
+ *     return (actual->expected_a == expected->expected_a &&
+ *             actual->expected_b == expected->expected_b &&
+ *             strcmp(actual->expected_str, expected->expected_str) == 0);
+ * }
+ *
+ * // In your test:
+ * void test_multi_param(void **state)
+ * {
+ *     multi_param_check expected = {42, 100, "test"};
+ *     multi_param_check actual = {42, 100, "test"};
+ *
+ *     expect_check_data(my_function, params,
+ *                      check_multiple_params,
+ *                      cast_ptr_to_cmocka_value(&expected));
+ *
+ *     // In the mocked function, you would pack all params into a struct
+ *     // and call check_expected_ptr(params)
+ * }
+ * @endcode
+ *
+ * @see check_expected_int()
+ * @see check_expected_uint()
+ * @see check_expected_float()
+ * @see check_expected_double()
+ * @see check_expected_ptr()
+ * @see expect_check_data_count()
  */
 void expect_check_data(function,
                        parameter,
@@ -2584,20 +2724,68 @@ void expect_check_data(function,
 
 #ifdef DOXYGEN
 /**
- * @brief Add a custom parameter checking function using CMockaValueData with count (new API).
+ * @brief Add a custom parameter checking function using CMockaValueData with
+ * count (new API).
  *
- * This is the new API that uses CMockaValueData for type-safe parameter checking.
+ * This is the new API that uses CMockaValueData for type-safe parameter
+ * checking.  This version allows you to specify how many times the check should
+ * be performed.
  *
  * @param[in]  #function  The function to add a custom parameter checking
  *                        function for.
  *
  * @param[in]  #parameter The parameters passed to the function.
  *
- * @param[in]  #check_function  The check function to call (CheckParameterValueData).
+ * @param[in]  #check_function  The check function to call
+ *                              (CheckParameterValueData).
  *
  * @param[in]  check_data  The data to pass to the check function (CMockaValueData).
  *
  * @param[in]  count  The number of times this check should be called.
+ *                    - A specific positive number: The check will be performed
+ *                      exactly that many times.
+ *                    - **EXPECT_ALWAYS** (-1): The check will always be
+ *                      performed and must be called at least once. The test
+ *                      will fail if not called.
+ *                    - **EXPECT_MAYBE** (-2): The check will always be
+ *                      performed but is not required to be called. The test
+ *                      will not fail if the checker is never invoked.
+ *
+ * See expect_check_data() for detailed documentation on the checker function
+ * interface, usage notes, and examples.
+ *
+ * @code
+ * // Example: Check a parameter exactly 3 times
+ * expect_check_data_count(my_function, param,
+ *                        my_checker,
+ *                        assign_int_to_cmocka_value(42),
+ *                        3);
+ * my_function(42);
+ * my_function(42);
+ * my_function(42);
+ * @endcode
+ *
+ * @code
+ * // Example: Always check (must be called at least once)
+ * expect_check_data_count(my_function, param,
+ *                        my_checker,
+ *                        assign_int_to_cmocka_value(42),
+ *                        EXPECT_ALWAYS);
+ * my_function(42);
+ * my_function(42);
+ * // Can call any number of times, but at least once
+ * @endcode
+ *
+ * @code
+ * // Example: Optional check (may or may not be called)
+ * expect_check_data_count(my_function, param,
+ *                        my_checker,
+ *                        assign_int_to_cmocka_value(42),
+ *                        EXPECT_MAYBE);
+ * // my_function may or may not be called - test won't fail either way
+ * @endcode
+ *
+ * @see expect_check_data()
  */
 void expect_check_data_count(function,
                              parameter,
