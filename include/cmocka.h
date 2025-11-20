@@ -2452,7 +2452,8 @@ void will_set_errno_maybe(#function, intmax_t value);
 #define will_set_errno_maybe(function, value)    \
     will_set_errno_count(function, (value), WILL_RETURN_ONCE);
 #endif
-/** @} */
+
+/** @} */ /* cmocka_mock */
 
 /**
  * @defgroup cmocka_param Checking Parameters
@@ -4599,23 +4600,26 @@ void check_expected_double(#parameter);
                     assign_double_to_cmocka_value(parameter))
 #endif
 
-/** @} */
+/** @} */ /* cmocka_param */
 
 /**
  * @defgroup cmocka_asserts Assert Macros
  * @ingroup cmocka
  *
- * This is a set of useful assert macros like the standard C libary's
- * assert(3) macro.
+ * Assertion macros for validating test conditions.
  *
- * On an assertion failure a cmocka assert macro will write the failure to the
- * standard error stream and signal a test failure. Due to limitations of the C
- * language the general C standard library assert() and cmocka's assert_true()
- * and assert_false() macros can only display the expression that caused the
- * assert failure. cmocka's type specific assert macros, assert_{type}_equal()
- * and assert_{type}_not_equal(), display the data that caused the assertion
- * failure which increases data visibility aiding debugging of failing test
- * cases.
+ * CMocka provides type-specific assertion macros that display detailed
+ * information about failures, making debugging easier than the standard C
+ * library's assert(3) macro.
+ *
+ * On an assertion failure a cmocka assert macro will write the failure to
+ * the standard error stream and signal a test failure. Due to limitations
+ * of the C language the general C standard library assert() and cmocka's
+ * assert_true() and assert_false() macros can only display the expression
+ * that caused the assert failure. cmocka's type specific assert macros,
+ * assert_{type}_equal() and assert_{type}_not_equal(), display the data
+ * that caused the assertion failure which increases data visibility aiding
+ * debugging of failing test cases.
  *
  * @{
  */
@@ -5480,16 +5484,18 @@ void assert_float_not_in_set(double value, double values[], size_t count, double
     }
 #endif
 
-/** @} */
+/** @} */ /* cmocka_asserts */
 
 /**
  * @defgroup cmocka_call_order Call Ordering
  * @ingroup cmocka
  *
- * It is often beneficial to  make sure that functions are called in an
- * order. This is independent of mock returns and parameter checking as both
- * of the aforementioned do not check the order in which they are called from
- * different functions.
+ * Verify that functions are called in the expected order.
+ *
+ * This module provides functionality to ensure functions are called in a
+ * specific sequence, independent of mock return values and parameter
+ * checking. Both of the aforementioned do not verify the order in which
+ * functions are called.
  *
  * <ul>
  * <li><strong>expect_function_call(function)</strong> - The
@@ -5615,15 +5621,20 @@ void ignore_function_calls(#function);
     _expect_function_call(cmocka_tostring(function), __FILE__, __LINE__, -2)
 #endif
 
-/** @} */
+/** @} */ /* cmocka_call_order */
 
 /**
  * @defgroup cmocka_exec Running Tests
  * @ingroup cmocka
  *
- * This is the way tests are executed with CMocka.
+ * Test execution framework and test runners.
  *
- * The following example illustrates this macro's use with the unit_test macro.
+ * This module provides the infrastructure for defining, organizing, and
+ * running tests, including support for setup/teardown functions (fixtures),
+ * test grouping, and multiple test runner macros.
+ *
+ * The following example illustrates how to define and run tests with
+ * CMocka.
  *
  * @code
  * void Test0(void **state);
@@ -5934,7 +5945,7 @@ int cmocka_run_group_tests_name(const char *group_name,
         _cmocka_run_group_tests(group_name, group_tests, sizeof(group_tests) / sizeof((group_tests)[0]), group_setup, group_teardown)
 #endif
 
-/** @} */
+/** @} */ /* cmocka_exec */
 
 /**
  * @defgroup cmocka_alloc Dynamic Memory Allocation
@@ -6043,8 +6054,7 @@ void test_free(void *ptr);
 #define free test_free
 #endif /* UNIT_TESTING */
 
-/** @} */
-
+/** @} */ /* cmocka_alloc */
 
 /**
  * @defgroup cmocka_mock_assert Standard Assertions
@@ -6140,7 +6150,7 @@ void expect_assert_failure(function fn_call);
   }
 #endif
 
-/** @} */
+/** @} */ /* cmocka_mock_assert */
 
 /**
  * CMocka value data type.
@@ -6635,13 +6645,29 @@ int _cmocka_run_group_tests(const char *group_name,
                             CMFixtureFunction group_setup,
                             CMFixtureFunction group_teardown);
 
+/**
+ * @defgroup cmocka_config Configuration and Output
+ * @ingroup cmocka
+ *
+ * Configure test execution behavior and output formatting.
+ *
+ * This module provides functions to customize CMocka's behavior, including
+ * setting custom output callbacks, controlling output format (STANDARD,
+ * SUBUNIT, TAP, XML), and filtering which tests to run or skip.
+ *
+ * @{
+ */
+
 /* Standard output and error print methods. */
 void print_message(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
 void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
 void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
 void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
 
-/** Callbacks which can be set via cmocka_set_callbacks().
+/**
+ * Callbacks which can be set via cmocka_set_callbacks().
+ *
+ * @ingroup cmocka_config
  * @sa cmocka_set_callbacks()
  */
 struct CMCallbacks {
@@ -6668,22 +6694,33 @@ struct CMCallbacks {
  * @brief Set callback functions for CMocka.
  *
  * Input is a structure containing function pointers to one or more
- * user-supplied callback functions. A NULL pointer for a particular callback
- * will set that callback to the default implementation.
+ * user-supplied callback functions. A NULL pointer for a particular
+ * callback will set that callback to the default implementation.
  *
  * See the CMCallbacks documentation for details of each callback.
  *
  * @param[in] f_callbacks A structure containing the user callbacks to use.
  *
+ * @ingroup cmocka_config
  * @sa CMCallbacks
  */
 void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
 
+/**
+ * @brief Output format options for test results.
+ *
+ * @ingroup cmocka_config
+ */
 enum cm_message_output {
+    /** Standard CMocka output format */
     CM_OUTPUT_STANDARD = 1,
-    CM_OUTPUT_STDOUT = 1, /* API compatibility */
+    /** Alias for CM_OUTPUT_STANDARD (for API compatibility) */
+    CM_OUTPUT_STDOUT = 1,
+    /** Subunit output format for test result aggregation */
     CM_OUTPUT_SUBUNIT = 2,
+    /** Test Anything Protocol (TAP) output format */
     CM_OUTPUT_TAP = 4,
+    /** JUnit-compatible XML output format */
     CM_OUTPUT_XML = 8,
 };
 
@@ -6705,11 +6742,13 @@ void cm_print_error(const char* const format, ...);
  * @brief Print error message using the cmocka output format.
  *
  * This prints an error message using the message output defined by the
- * environment variable CMOCKA_MESSAGE_OUTPUT or cmocka_set_message_output().
+ * environment variable CMOCKA_MESSAGE_OUTPUT or
+ * cmocka_set_message_output().
  *
- * @param format  The formant string fprintf(3) uses.
-
+ * @param format  The format string fprintf(3) uses.
  * @param ...     The parameters used to fill format.
+ *
+ * @ingroup cmocka_config
  */
 void cmocka_print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
 
@@ -6723,9 +6762,11 @@ void cmocka_print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1
  * Multiple outputs separated with comma are permitted.
  * (e.g. export CMOCKA_MESSAGE_OUTPUT=STANDARD,XML)
  *
- * @param[in] output    The output format from cm_message_output to use for the
- *                      test. For multiple outputs OR options together.
+ * @param[in] output    The output format from cm_message_output to use
+ *                      for the test. For multiple outputs OR options
+ *                      together.
  *
+ * @ingroup cmocka_config
  */
 void cmocka_set_message_output(uint32_t output);
 
@@ -6733,12 +6774,14 @@ void cmocka_set_message_output(uint32_t output);
 /**
  * @brief Set a pattern to only run the test matching the pattern.
  *
- * This allows to filter tests and only run the ones matching the pattern. The
- * pattern can include two wildards. The first is '*', a wildcard that matches
- * zero or more characters, or '?', a wildcard that matches exactly one
- * character.
+ * This allows to filter tests and only run the ones matching the pattern.
+ * The pattern can include two wildcards. The first is '*', a wildcard that
+ * matches zero or more characters, or '?', a wildcard that matches exactly
+ * one character.
  *
  * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
+ *
+ * @ingroup cmocka_config
  */
 void cmocka_set_test_filter(const char *pattern);
 
@@ -6746,15 +6789,18 @@ void cmocka_set_test_filter(const char *pattern);
  * @brief Set a pattern to skip tests matching the pattern.
  *
  * This allows to filter tests and skip the ones matching the pattern. The
- * pattern can include two wildards. The first is '*', a wildcard that matches
- * zero or more characters, or '?', a wildcard that matches exactly one
- * character.
+ * pattern can include two wildcards. The first is '*', a wildcard that
+ * matches zero or more characters, or '?', a wildcard that matches exactly
+ * one character.
  *
  * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
+ *
+ * @ingroup cmocka_config
  */
 void cmocka_set_skip_filter(const char *pattern);
 
+/** @} */ /* cmocka_config */
 
-/** @} */
+/** @} */ /* cmocka */
 
 #endif /* CMOCKA_H_ */
