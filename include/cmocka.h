@@ -4581,8 +4581,10 @@ void assert_ptr_not_equal(void *a, void *b);
  * @param[in]  msg      The error message to print when a & b are equal.
  */
 void assert_ptr_not_equal_msg(void *a, void *b, const char *const msg);
-#else
-#ifdef __has_builtin
+#else /* DOXYGEN */
+
+#if defined(__has_builtin)
+
 #if __has_builtin(__builtin_unreachable)
 #define assert_ptr_not_equal_msg(a, b, msg)                   \
     do {                                                      \
@@ -4590,17 +4592,29 @@ void assert_ptr_not_equal_msg(void *a, void *b, const char *const msg);
                    *cmocka_p2 = cast_to_void_pointer(b);      \
         _assert_ptr_not_equal_msg(                            \
             cmocka_p1, cmocka_p2, __FILE__, __LINE__, (msg)); \
-        if (cmocka_p1 == cmocka_p2)                           \
+        if (cmocka_p1 == cmocka_p2) {                         \
             __builtin_unreachable();                          \
+        } \
     } while (0)
-#endif
-#else
-#define assert_ptr_not_equal_msg(a, b, msg) \
-    _assert_ptr_not_equal_msg(cast_to_void_pointer(a), \
-                              cast_to_void_pointer(b), \
-                              __FILE__, __LINE__, (msg))
-#endif
-#endif
+#else /* __has_builtin(__builtin_unreachable) */
+#define assert_ptr_not_equal_msg(a, b, msg)        \
+_assert_ptr_not_equal_msg(cast_to_void_pointer(a), \
+                          cast_to_void_pointer(b), \
+                          __FILE__,                \
+                          __LINE__,                \
+                          (msg))
+#endif /* __has_builtin(__builtin_unreachable) */
+
+#else /* defined(__has_builtin) */
+#define assert_ptr_not_equal_msg(a, b, msg)        \
+_assert_ptr_not_equal_msg(cast_to_void_pointer(a), \
+                          cast_to_void_pointer(b), \
+                          __FILE__,                \
+                          __LINE__,                \
+                          (msg))
+#endif /* __has_builtin(__builtin_unreachable) */
+
+#endif /* DOXYGEN */
 
 #ifdef DOXYGEN
 /**
