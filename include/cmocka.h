@@ -315,7 +315,8 @@ uintmax_t mock(void);
  *
  * @param[in]  #type  The expected type of the return value
  *
- * @return The value which was stored to return by this function.
+ * @return The value which was stored to return by this function casted to the
+ *         specified type.
  *
  * @code
  * int param;
@@ -325,7 +326,7 @@ uintmax_t mock(void);
  *
  * @see will_return()
  */
-#type mock_type(#type);
+type mock_type(#type);
 #else
 #define mock_type(type) ((type) mock())
 #endif
