@@ -28,21 +28,14 @@
 #   endif /* CMOCKA_EXPORTS */
 #  endif /* ndef CMOCKA_STATIC */
 
+#ifndef __func__
 #define __func__ __FUNCTION__
+#endif /* __func__ */
 
-# ifndef inline
+#ifndef inline
 #define inline __inline
-# endif /* inline */
+#endif /* inline */
 
-#  if _MSC_VER < 1500
-#   ifdef __cplusplus
-extern "C" {
-#   endif   /* __cplusplus */
-int __stdcall IsDebuggerPresent();
-#   ifdef __cplusplus
-} /* extern "C" */
-#   endif   /* __cplusplus */
-#  endif  /* _MSC_VER < 1500 */
 # endif /* _MSC_VER */
 #endif  /* _WIN32 */
 
