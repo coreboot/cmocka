@@ -7,13 +7,13 @@
 
 static void mock_test_a(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 int custom_checker(CMockaValueData param, CMockaValueData check);
 int custom_checker(CMockaValueData param, CMockaValueData check)
 {
-    assert_int_equal(param.uint_val, check.uint_val);
+    assert_uint_equal(param.uint_val, check.uint_val);
     return true;
 }
 
@@ -320,6 +320,39 @@ static void test_expect_not_float_count_maybe_2(void **state)
     expect_not_float_count(mock_test_b, value, d, precision, EXPECT_MAYBE);
 }
 
+/* Test struct passed by value using check_expected_any() */
+struct test_struct {
+    int x;
+    int y;
+};
+
+static void mock_test_struct(struct test_struct s)
+{
+    check_expected_any(s);
+}
+
+static int check_struct_equal(CMockaValueData actual, CMockaValueData expected)
+{
+    struct test_struct *actual_s = (struct test_struct *)actual.ptr;
+    struct test_struct *expected_s = (struct test_struct *)expected.ptr;
+
+    return (actual_s->x == expected_s->x && actual_s->y == expected_s->y);
+}
+
+static void test_expect_struct(void **state)
+{
+    (void)state; /* unused */
+    struct test_struct expected = {.x = 10, .y = 20};
+
+    expect_check_data(mock_test_struct,
+                      s,
+                      check_struct_equal,
+                      cast_ptr_to_cmocka_value(&expected));
+
+    struct test_struct actual = {.x = 10, .y = 20};
+    mock_test_struct(actual);
+}
+
 int main(void)
 {
     const struct CMUnitTest tests[] = {
@@ -351,7 +384,9 @@ int main(void)
         cmocka_unit_test(test_expect_not_float_count),
         cmocka_unit_test(test_expect_not_float_count_always),
         cmocka_unit_test(test_expect_not_float_count_maybe_1),
-        cmocka_unit_test(test_expect_not_float_count_maybe_2)};
+        cmocka_unit_test(test_expect_not_float_count_maybe_2),
+        cmocka_unit_test(test_expect_struct),
+    };
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

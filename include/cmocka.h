@@ -4487,6 +4487,41 @@ void check_expected(#parameter);
 
 #ifdef DOXYGEN
 /**
+ * @brief Check that any parameter value matches the next value in the queue.
+ *
+ * This generic parameter checker works with any type including structs passed
+ * by value. It passes the address of the parameter, making it suitable for
+ * struct validation with custom checkers.
+ *
+ * Use this when:
+ * - Checking structs passed by value with expect_check_data()
+ * - Generic/template code where the type isn't known
+ *
+ * For scalar types, prefer the type-specific versions:
+ * - check_expected_int() for signed integers
+ * - check_expected_uint() for unsigned integers
+ * - check_expected_float() for float types
+ * - check_expected_double() for double types
+ * - check_expected_ptr() for pointers
+ *
+ * @param[in]  #parameter  The parameter to check.
+ *
+ * @see check_expected_int()
+ * @see check_expected_uint()
+ * @see check_expected_float()
+ * @see check_expected_double()
+ * @see check_expected_ptr()
+ * @see expect_check_data()
+ */
+void check_expected_any(#parameter);
+#else
+#define check_expected_any(parameter) \
+    _check_expected(__func__, #parameter, __FILE__, __LINE__, \
+                    cast_ptr_to_cmocka_value(&(parameter)))
+#endif
+
+#ifdef DOXYGEN
+/**
  * @brief Determine whether a function parameter is correct.
  *
  * This ensures the next value queued by one of the expect_*() macros matches
