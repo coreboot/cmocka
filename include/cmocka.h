@@ -2226,7 +2226,7 @@ void will_set_parameter_ptr_type(#function, #name, void *value, #type);
  * @see will_named_return()
  * @see will_named_return_ptr()
  */
-void will_set_parameter_ptr_count(#function, #name, void *value, #type, count);
+void will_set_parameter_ptr_count(#function, #name, void *value, int count);
 #else
 #define will_set_parameter_ptr_count(function, name, value, count) \
     _will_set_parameter(#function,                                 \
@@ -2382,7 +2382,7 @@ void will_set_errno(#function, intmax_t value);
  * @see will_set_errno_always()
  * @see will_set_errno_maybe()
  */
-void will_set_errno_count(#function, intmax_t value, size_t cont);
+void will_set_errno_count(#function, intmax_t value, size_t count);
 #else
 #define will_set_errno_count(function, value, count)    \
     _will_set_parameter(#function,                      \
@@ -2746,7 +2746,7 @@ void expect_int_in_set_count(#function, #parameter, intmax_t value_array[], size
  *
  * @see check_expected().
  */
-void expect_int_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
+void expect_uint_in_set_count(#function, #parameter, uintmax_t value_array[], size_t count);
 #else
 #define expect_uint_in_set_count(function, parameter, value_array, count) \
     _expect_uint_in_set(cmocka_tostring(function),                        \
