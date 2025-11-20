@@ -28,12 +28,12 @@ static void mock_test_b_called(void)
 
 static void mock_test_a_expected(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_b_expected(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static int mock_test_a_will_return(void)

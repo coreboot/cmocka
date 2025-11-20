@@ -7,12 +7,12 @@
 
 static void mock_test_int(intmax_t value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_uint(uintmax_t value)
 {
-    check_expected(value);
+    check_expected_uint(value);
 }
 
 static void test_expect_int_not_in_set_count(void **state)

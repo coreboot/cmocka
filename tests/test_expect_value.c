@@ -7,17 +7,17 @@
 
 static void mock_test_int(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_intmax(intmax_t value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_uint(uintmax_t value)
 {
-    check_expected(value);
+    check_expected_uint(value);
 }
 
 static void test_expect_int_value_with_int(void **state)

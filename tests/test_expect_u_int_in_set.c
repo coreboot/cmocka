@@ -8,12 +8,12 @@
 
 static void mock_test_int(intmax_t value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_uint(uintmax_t value)
 {
-    check_expected(value);
+    check_expected_uint(value);
 }
 
 static void mock_test_float(float value)

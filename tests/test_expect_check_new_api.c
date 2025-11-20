@@ -30,7 +30,7 @@
 
 static void mock_test_a(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 static void mock_test_b(void *ptr)

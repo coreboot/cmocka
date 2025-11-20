@@ -5,7 +5,7 @@
 
 static void mock_test_a(int value)
 {
-    check_expected(value);
+    check_expected_int(value);
 }
 
 int custom_checker(CMockaValueData param, CMockaValueData check);
