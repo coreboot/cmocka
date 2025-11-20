@@ -58,6 +58,10 @@ int __stdcall IsDebuggerPresent();
 #define CMOCKA_DLLEXTERN // only needed on MSVC compiler when using a DLL
 #endif /* ndef CMOCKA_DLLEXTERN */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @defgroup cmocka The CMocka API
  *
@@ -6802,5 +6806,9 @@ void cmocka_set_skip_filter(const char *pattern);
 /** @} */ /* cmocka_config */
 
 /** @} */ /* cmocka */
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif /* CMOCKA_H_ */
