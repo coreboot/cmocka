@@ -342,33 +342,8 @@ set(OUTPUT_TESTS
     test_setup_fail)
 
 set(TEST_OUTPUT_FMTS
-    tap
     subunit
     xml)
-
-set(test_basics_tap_out
-    "^TAP version 13"
-    "1\\.\\.2"
-    "ok 1 - null_test_success"
-    "ok 2 - int_test_success"
-    "# ok - tests")
-set(test_assert_macros_fail_tap_out
-    "^TAP version 13"
-    "1\\.\\.1"
-    "not ok 1 - test_assert_return_code_fail"
-    "#[^\n\r]+[\n\r]#[^\n\r]+[\n\r]# not ok - tests")
-set(test_groups_tap_out
-    "^TAP version 13"
-    "1\\.\\.1"
-    "ok 1 - null_test_success"
-    "# ok - test_group1"
-    "1\\.\\.1"
-    "ok 1 - int_test_success"
-    "# ok - test_group2 num=<'\"2&2'\">")
-set(test_skip_tap_out
-    "ok 1 # SKIP")
-set(test_setup_fail_tap_out
-    "not ok 1 - int_test_ignored Could not run test: Test setup failed")
 
 set(test_basics_subunit_out
     "^test: null_test_success"
@@ -440,3 +415,19 @@ foreach(_TEST_OUTPUT_FMT ${TEST_OUTPUT_FMTS})
         )
     endforeach()
 endforeach()
+
+### TAP 14 test
+
+add_cmocka_test(test_tap14
+                SOURCES test_tap14.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS} -D_GNU_SOURCE -D_XOPEN_SOURCE=700
+                LINK_LIBRARIES cmocka::static
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS})
+target_include_directories(test_tap14 PRIVATE ${cmocka_BINARY_DIR})
+
+set_tests_properties(
+    test_tap14
+    PROPERTIES
+    PASS_REGULAR_EXPRESSION
+    "^TAP version 14[ \n\r]+1\\.\\.5[ \n\r]+ok 1 - test_success[ \n\r]+not ok 2 - test_failure[ \n\r]+  ---[ \n\r]+  message: \\|-[ \n\r]+.*[ \n\r]+  severity: fail[ \n\r]+  \\.\\.\\.[ \n\r]+not ok 3 - test_with_setup_error[ \n\r]+  ---[ \n\r]+  message: '.*'[ \n\r]+  severity: error[ \n\r]+  \\.\\.\\.[ \n\r]+ok 4 - test_skipped # SKIP[ \n\r]+not ok 5 - test_multiline_failure"
+)

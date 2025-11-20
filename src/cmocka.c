@@ -4595,7 +4595,7 @@ static void cmprintf_group_start_tap(const size_t num_tests)
 {
     static bool version_printed = false;
     if (!version_printed) {
-        print_message("TAP version 13\n");
+        print_message("TAP version 14\n");
         version_printed = true;
     }
 
@@ -4626,41 +4626,56 @@ static void cmprintf_tap(enum cm_printf_type type,
         print_message("ok %u - %s\n", (unsigned)test_number, test_name);
         break;
     case PRINTF_TEST_FAILURE:
+    case PRINTF_TEST_ERROR:
         print_message("not ok %u - %s\n", (unsigned)test_number, test_name);
         if (error_message != NULL) {
             char *msg;
             char *p;
+            bool is_multiline;
 
             msg = strdup(error_message);
             if (msg == NULL) {
                 return;
             }
-            p = msg;
 
-            while (p[0] != '\0') {
-                char *q = p;
+            /* Check if message contains newlines */
+            is_multiline = (strchr(error_message, '\n') != NULL);
 
-                p = strchr(q, '\n');
-                if (p != NULL) {
-                    p[0] = '\0';
+            print_message("  ---\n");
+
+            if (is_multiline) {
+                /* Multi-line message - use block literal style */
+                print_message("  message: |-\n");
+                p = msg;
+                while (p[0] != '\0') {
+                    char *q = p;
+
+                    p = strchr(q, '\n');
+                    if (p != NULL) {
+                        p[0] = '\0';
+                    }
+
+                    print_message("    %s\n", q);
+
+                    if (p == NULL) {
+                        break;
+                    }
+                    p++;
                 }
-
-                print_message("# %s\n", q);
-
-                if (p == NULL) {
-                    break;
-                }
-                p++;
+            } else {
+                /* Single-line message - use quoted string */
+                print_message("  message: '%s'\n", error_message);
             }
+
             libc_free(msg);
+
+            print_message("  severity: %s\n",
+                          (type == PRINTF_TEST_FAILURE) ? "fail" : "error");
+            print_message("  ...\n");
         }
         break;
     case PRINTF_TEST_SKIPPED:
-        print_message("ok %u # SKIP %s\n", (unsigned)test_number, test_name);
-        break;
-    case PRINTF_TEST_ERROR:
-        print_message("not ok %u - %s %s\n",
-                      (unsigned)test_number, test_name, error_message);
+        print_message("ok %u - %s # SKIP\n", (unsigned)test_number, test_name);
         break;
     }
 }
