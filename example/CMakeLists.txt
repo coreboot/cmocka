@@ -98,6 +98,22 @@ set_tests_properties(output_override_test
                         PASS_REGULAR_EXPRESSION ${output_override_test_output}
 )
 
+### Expect check data example
+add_cmocka_test(expect_check_data_example
+                SOURCES expect_check_data_example.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+add_cmocka_test_environment(expect_check_data_example)
+
+### Expect check data advanced example
+add_cmocka_test(expect_check_data_advanced
+                SOURCES expect_check_data_advanced.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+add_cmocka_test_environment(expect_check_data_advanced)
+
 if (NOT WIN32)
     add_subdirectory(mock)
 endif()
