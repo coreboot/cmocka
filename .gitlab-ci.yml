@@ -421,7 +421,7 @@ ubuntu/x86_64:
         -DUNIT_TESTING=ON ..
   script:
     - cmake --build .
-    - ctest --output-on-failure
+    - ctest -C Debug --output-on-failure
 
 visualstudio/x86_64:
   extends: .vs

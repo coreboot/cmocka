@@ -295,7 +295,7 @@ set_tests_properties(
         1
 )
 
-add_test(test_setup_fail_1_failed ${TARGET_SYSTEM_EMULATOR} test_setup_fail)
+add_test(NAME test_setup_fail_1_failed COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_setup_fail>)
 add_cmocka_test_environment(test_setup_fail_1_failed)
 set_tests_properties(
     test_setup_fail_1_failed
@@ -304,7 +304,7 @@ set_tests_properties(
         "\\[  ERROR   \\] int_test_ignored"
 )
 
-add_test (test_setup_fail_1_passed ${TARGET_SYSTEM_EMULATOR} test_setup_fail)
+add_test(NAME test_setup_fail_1_passed COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_setup_fail>)
 add_cmocka_test_environment(test_setup_fail_1_passed)
 set_tests_properties(
     test_setup_fail_1_passed
@@ -313,7 +313,7 @@ set_tests_properties(
         "\\[  PASSED  \\] 1 test\\(s\\)."
 )
 
-add_test (test_setup_fail_match_failed ${TARGET_SYSTEM_EMULATOR} test_setup_fail)
+add_test(NAME test_setup_fail_match_failed COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_setup_fail>)
 add_cmocka_test_environment(test_setup_fail_match_failed)
 set_tests_properties(
     test_setup_fail_match_failed
@@ -322,7 +322,7 @@ set_tests_properties(
         "\\[  ERROR   \\] int_test_ignored"
 )
 
-add_test (test_setup_fail_match_passed ${TARGET_SYSTEM_EMULATOR} test_setup_fail)
+add_test(NAME test_setup_fail_match_passed COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_setup_fail>)
 add_cmocka_test_environment(test_setup_fail_match_passed)
 set_tests_properties(
     test_setup_fail_match_passed
@@ -387,7 +387,7 @@ set(test_setup_fail_xml_out
 foreach(_TEST_OUTPUT_FMT ${TEST_OUTPUT_FMTS})
     foreach(_OUTPUT_TEST ${OUTPUT_TESTS})
         set(TEST_NAME ${_OUTPUT_TEST}_${_TEST_OUTPUT_FMT})
-        add_test(${TEST_NAME} ${TARGET_SYSTEM_EMULATOR} ${_OUTPUT_TEST})
+        add_test(NAME ${TEST_NAME} COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:${_OUTPUT_TEST}>)
         add_cmocka_test_environment(${TEST_NAME})
 
         set_property(

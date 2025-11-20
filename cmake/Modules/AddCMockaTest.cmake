@@ -69,6 +69,9 @@ if (CMAKE_CROSSCOMPILING)
         find_program(WINE_EXECUTABLE
                      NAMES wine)
         set(TARGET_SYSTEM_EMULATOR ${WINE_EXECUTABLE} CACHE INTERNAL "")
+        if (WINE_EXECUTABLE AND NOT CMAKE_CROSSCOMPILING_EMULATOR)
+            set(CMAKE_CROSSCOMPILING_EMULATOR ${WINE_EXECUTABLE} CACHE FILEPATH "")
+        endif()
     endif()
 endif()
 
@@ -116,10 +119,9 @@ function(ADD_CMOCKA_TEST _TARGET_NAME)
         )
     endif()
 
-    add_test(${_TARGET_NAME}
-        ${TARGET_SYSTEM_EMULATOR} ${_TARGET_NAME}
+    add_test(NAME ${_TARGET_NAME}
+        COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:${_TARGET_NAME}>
     )
-
 endfunction (ADD_CMOCKA_TEST)
 
 function(ADD_CMOCKA_TEST_ENVIRONMENT _TARGET_NAME)
