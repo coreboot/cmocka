@@ -76,6 +76,7 @@ set(CMOCKA_TESTS
     test_string
     test_wildcard
     test_skip_filter
+    test_mock_exit
     )
 
 if (TEST_EXCEPTION_HANDLER)
@@ -264,6 +265,14 @@ if (TEST_EXCEPTION_HANDLER)
                              PASS_REGULAR_EXPRESSION
                              "Test failed with exception")
 endif (TEST_EXCEPTION_HANDLER)
+
+# test_mock_exit - verify error message is printed when mock() called outside test
+set_tests_properties(
+    test_mock_exit
+        PROPERTIES
+        PASS_REGULAR_EXPRESSION
+        "Could not get value to mock function"
+)
 
 set_tests_properties(
     test_setup_fail

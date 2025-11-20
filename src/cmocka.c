@@ -523,6 +523,9 @@ static void exit_test(const bool quit_application)
     } else if (global_running_test) {
         cm_longjmp(global_run_test_env, 1);
     } else if (quit_application) {
+        if (cm_error_message != NULL) {
+            print_error("%s", cm_error_message);
+        }
         exit(EXIT_FAILURE);
 #ifdef __has_builtin
 #if __has_builtin(__builtin_unreachable)
