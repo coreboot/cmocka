@@ -75,8 +75,6 @@ extern "C" {
  * In order to simplify building software against CMocka those files are
  * included by default. In case someone wants to use their own headers,
  * they are free to `#define CMOCKA_NO_STANDARD_INCLUDES`.
- *
- * @{
  */
 
 #ifndef CMOCKA_NO_STANDARD_INCLUDES
@@ -86,6 +84,16 @@ extern "C" {
 #include <stdint.h>
 #include <setjmp.h>
 #endif
+
+/**
+ * @defgroup cmocka_util 🔨 Utility Macros and Types
+ * @ingroup cmocka
+ * @brief Type conversions, casting helpers, and common data structures.
+ *
+ * Internal utilities and data types used throughout the CMocka API.
+ *
+ * @{
+ */
 
 /* Perform an signed cast to intmax_t. */
 #define cast_to_intmax_type(value) \
@@ -237,6 +245,8 @@ extern "C" {
 
 #define EXPECT_ALWAYS -1
 #define EXPECT_MAYBE -2
+
+/** @} */ /* cmocka_util */
 
 /**
  * @defgroup cmocka_mock 🎪 Mock Objects
@@ -6196,6 +6206,8 @@ void expect_assert_failure(function fn_call);
 /** @} */ /* cmocka_mock_assert */
 
 /**
+ * @ingroup cmocka_util
+ *
  * CMocka value data type.
  *
  * Allows storing multiple types of values in CMocka functions without using
@@ -6218,26 +6230,50 @@ typedef union {
     void *(*func)(void);
 } CMockaValueData;
 
-/* Function prototype for setup, test and teardown functions. */
+/**
+ * @ingroup cmocka_exec
+ *
+ * Function prototype for setup, test and teardown functions.
+ */
 typedef void (*UnitTestFunction)(void **state);
 
-/* Function that determines whether a function parameter value is correct (old API). */
+/**
+ * @ingroup cmocka_param
+ *
+ * Function that determines whether a function parameter value is correct (old API).
+ */
 typedef int (*CheckParameterValue)(const uintmax_t value,
                                    const uintmax_t check_value_data);
 
-/* Function that determines whether a function parameter value is correct (new API with CMockaValueData). */
+/**
+ * @ingroup cmocka_param
+ *
+ * Function that determines whether a function parameter value is correct (new API with CMockaValueData).
+ */
 typedef int (*CheckParameterValueData)(const CMockaValueData value,
                                        const CMockaValueData check_value_data);
 
-/* Function that determines whether a function parameter value is correct. */
+/**
+ * @ingroup cmocka_param
+ *
+ * Function that determines whether a function parameter value is correct.
+ */
 typedef int (*CheckIntParameterValue)(const intmax_t value,
                                       const intmax_t check_value_data);
 
-/* Function that determines whether a function parameter value is correct. */
+/**
+ * @ingroup cmocka_param
+ *
+ * Function that determines whether a function parameter value is correct.
+ */
 typedef int (*CheckUintParameterValue)(const uintmax_t value,
                                        const uintmax_t check_value_data);
 
-/* Type of the unit test function. */
+/**
+ * @ingroup cmocka_exec
+ *
+ * Type of the unit test function.
+ */
 typedef enum UnitTestFunctionType {
     UNIT_TEST_FUNCTION_TYPE_TEST = 0,
     UNIT_TEST_FUNCTION_TYPE_SETUP,
@@ -6246,7 +6282,9 @@ typedef enum UnitTestFunctionType {
     UNIT_TEST_FUNCTION_TYPE_GROUP_TEARDOWN,
 } UnitTestFunctionType;
 
-/*
+/**
+ * @ingroup cmocka_exec
+ *
  * Stores a unit test function with its name and type.
  * NOTE: Every setup function must be paired with a teardown function.  It's
  * possible to specify NULL function pointers.
@@ -6257,6 +6295,9 @@ typedef struct UnitTest {
     UnitTestFunctionType function_type;
 } UnitTest;
 
+/**
+ * @ingroup cmocka_exec
+ */
 typedef struct GroupTest {
     UnitTestFunction setup;
     UnitTestFunction teardown;
@@ -6264,12 +6305,23 @@ typedef struct GroupTest {
     const size_t number_of_tests;
 } GroupTest;
 
-/* Function prototype for test functions. */
+/**
+ * @ingroup cmocka_exec
+ *
+ * Function prototype for test functions.
+ */
 typedef void (*CMUnitTestFunction)(void **state);
 
-/* Function prototype for setup and teardown functions. */
+/**
+ * @ingroup cmocka_exec
+ *
+ * Function prototype for setup and teardown functions.
+ */
 typedef int (*CMFixtureFunction)(void **state);
 
+/**
+ * @ingroup cmocka_exec
+ */
 struct CMUnitTest {
     const char *name;
     CMUnitTestFunction test_func;
@@ -6278,14 +6330,21 @@ struct CMUnitTest {
     void *initial_state;
 };
 
-/* Location within some source code. */
+/**
+ * @ingroup cmocka_param
+ *
+ * Location within some source code.
+ */
 typedef struct SourceLocation {
     const char* file;
     int line;
 } SourceLocation;
 
-/* Event that's called to check a parameter value. */
-/* Event that's called to check a parameter value (old API). */
+/**
+ * @ingroup cmocka_param
+ *
+ * Event that's called to check a parameter value (old API).
+ */
 typedef struct CheckParameterEvent {
     SourceLocation location;
     const char *parameter_name;
@@ -6293,7 +6352,11 @@ typedef struct CheckParameterEvent {
     uintmax_t check_value_data;
 } CheckParameterEvent;
 
-/* Event that's called to check a parameter value (new API with CMockaValueData). */
+/**
+ * @ingroup cmocka_param
+ *
+ * Event that's called to check a parameter value (new API with CMockaValueData).
+ */
 typedef struct CheckParameterEventData {
     SourceLocation location;
     const char *parameter_name;
@@ -6457,8 +6520,6 @@ void cmocka_set_test_filter(const char *pattern);
 void cmocka_set_skip_filter(const char *pattern);
 
 /** @} */ /* cmocka_config */
-
-/** @} */ /* cmocka */
 
 /**
  * @cond INTERNAL
