@@ -22,7 +22,7 @@ uintmax_t mock_function_uint(void)
 void *mock_function_ptr(void);
 void *mock_function_ptr(void)
 {
-    return mock_ptr_type(void *);
+    return mock_ptr_type_checked(void *);
 }
 
 
@@ -89,7 +89,7 @@ static void test_will_return_ptr_type_mismatch(void **state)
 
     (void) state;
 
-    will_return_ptr_type(mock_function_uint, value, const char *);
+    will_return_ptr_type(mock_function_ptr, value, const char *);
     mock_function_ptr();
 }
 

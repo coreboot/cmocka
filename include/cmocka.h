@@ -500,7 +500,8 @@ double mock_double(void);
  * @brief Retrieve a typed return value of the current function.
  *
  * The value would be casted to type internally to avoid having the
- * caller to do the cast manually.
+ * caller to do the cast manually. This macro does NOT perform type checking.
+ * For type-safe pointer retrieval, use mock_ptr_type_checked() instead.
  *
  * @param[in]  #type  The expected type of the return value
  *
@@ -512,11 +513,40 @@ double mock_double(void);
  * param = mock_ptr_type(char *);
  * @endcode
  *
- * @see will_return_ptr_type()
+ * @see will_return_ptr()
+ * @see mock_ptr_type_checked()
  */
 type mock_ptr_type(#type);
 #else
 #define mock_ptr_type(type) \
+    ((type)(_mock(__func__, __FILE__, __LINE__, NULL)).ptr)
+#endif
+
+#ifdef DOXYGEN
+/**
+ * @brief Retrieve a typed return value of the current function with type checking.
+ *
+ * The value would be casted to type internally to avoid having the
+ * caller to do the cast manually. This macro DOES perform type checking
+ * and will fail the test if the type used with will_return_ptr_type()
+ * does not match the type passed to this macro.
+ *
+ * @param[in]  #type  The expected type of the return value
+ *
+ * @return The value which was stored to return by this function.
+ *
+ * @code
+ * char *param;
+ *
+ * param = mock_ptr_type_checked(char *);
+ * @endcode
+ *
+ * @see will_return_ptr_type()
+ * @see mock_ptr_type()
+ */
+type mock_ptr_type_checked(#type);
+#else
+#define mock_ptr_type_checked(type) \
     ((type)(_mock(__func__, __FILE__, __LINE__, #type)).ptr)
 #endif
 
@@ -1416,19 +1446,21 @@ void will_return_ptr(#function, void *value);
 
 #ifdef DOXYGEN
 /**
- * @brief Store a pointer value to be returned by mock_ptr_type() later.
+ * @brief Store a pointer value to be returned by mock_ptr_type_checked() later.
  *
- * This will also check that the type matches and if not will fail().
+ * This will also check that the type matches and if not will fail(). The type
+ * checking only works when used in conjunction with mock_ptr_type_checked().
+ * If you use mock_ptr_type() to retrieve the value, no type checking will occur.
  *
  * @param[in]  #function  The function which should return the given value.
  *
- * @param[in]  value The value to be returned by mock_ptr_type().
+ * @param[in]  value The value to be returned by mock_ptr_type_checked().
  *
- * @param[in]  value The type of the pointer.
+ * @param[in]  #type The type of the pointer.
  * @code
  * const char *return_pointer(void)
  * {
- *      return mock_ptr_type(const char *);
+ *      return mock_ptr_type_checked(const char *);
  * }
  *
  * static void test_pointer_return(void **state)
@@ -1439,7 +1471,7 @@ void will_return_ptr(#function, void *value);
  * }
  * @endcode
  *
- * @see mock_ptr_type()
+ * @see mock_ptr_type_checked()
  */
 void will_return_ptr_type(#function, void *value, type);
 #else

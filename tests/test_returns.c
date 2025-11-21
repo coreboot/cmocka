@@ -46,7 +46,7 @@ double mock_function_double(void)
 const char *mock_function_ptr(void);
 const char *mock_function_ptr(void)
 {
-    return mock_ptr_type(const char *);
+    return mock_ptr_type_checked(const char *);
 }
 
 void mock_function_call_times(size_t times, int expectedValue)
