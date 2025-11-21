@@ -30,16 +30,16 @@ execution environment.
 
 The CMocka library provides:
 
- - Support for mock objects.
- - Test fixtures.
- - Only requires a C library
- - Exception handling for signals (SIGSEGV, SIGILL, ...)
- - No use of fork()
- - Very well tested
- - Testing of memory leaks, buffer overflows and underflows.
- - A set of assert macros.
- - Several supported output formats (stdout, TAP, JUnit XML, Subunit)
- - License: Apache License 2.0
+ - 🎪 Support for mock objects.
+ - 🔧 Test fixtures.
+ - 📚 Only requires a C library
+ - ⚡ Exception handling for signals (SIGSEGV, SIGILL, ...)
+ - 🚫 No use of fork()
+ - ✅ Very well tested
+ - 🧩 Testing of memory leaks, buffer overflows and underflows.
+ - 🛡️ A set of assert macros.
+ - 📊 Several supported output formats (stdout, TAP, JUnit XML, Subunit)
+ - 📜 License: Apache License 2.0
 
 @section main-test A cmocka test
 
