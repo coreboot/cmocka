@@ -6288,6 +6288,174 @@ typedef struct CheckParameterEventData {
     CMockaValueData check_value_data;
 } CheckParameterEventData;
 
+/**
+ * @defgroup cmocka_config 🔧 Configuration and Output
+ * @ingroup cmocka
+ *
+ * Configure test execution behavior and output formatting.
+ *
+ * This module provides functions to customize CMocka's behavior, including
+ * setting custom output callbacks, controlling output format (STANDARD,
+ * SUBUNIT, TAP, XML), and filtering which tests to run or skip.
+ *
+ * @{
+ */
+
+/* Standard output and error print methods. */
+void print_message(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
+void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
+void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
+
+/**
+ * Callbacks which can be set via cmocka_set_callbacks().
+ *
+ * @ingroup cmocka_config
+ * @sa cmocka_set_callbacks()
+ */
+struct CMCallbacks {
+    /** A callback for printing out standard messages.
+     * The supplied callback function will be invoked by the standard output
+     * print methods. If no callback has been supplied, the default action
+     * is to print to `stdout`.
+     *
+     * The one exception at present is XML output, which is always written directly
+     * to a file handle, even if that is set to `stdout`. */
+    void (*vprint_message)(const char * const format, va_list args);
+
+    /** A callback for printing out error messages.
+     * The supplied callback function will be invoked by the standard output
+     * print methods. If no callback has been supplied, the default action
+     * is to print to `stdout`.
+     *
+     * The one exception at present is XML output, which is always written directly
+     * to a file handle, even if that is set to `stdout`. */
+    void (*vprint_error)(const char * const format, va_list args);
+};
+
+/**
+ * @brief Set callback functions for CMocka.
+ *
+ * Input is a structure containing function pointers to one or more
+ * user-supplied callback functions. A NULL pointer for a particular
+ * callback will set that callback to the default implementation.
+ *
+ * See the CMCallbacks documentation for details of each callback.
+ *
+ * @param[in] f_callbacks A structure containing the user callbacks to use.
+ *
+ * @ingroup cmocka_config
+ * @sa CMCallbacks
+ */
+void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
+
+/**
+ * @brief Output format options for test results.
+ *
+ * @ingroup cmocka_config
+ */
+enum cm_message_output {
+    /** Standard CMocka output format */
+    CM_OUTPUT_STANDARD = 1,
+    /** Alias for CM_OUTPUT_STANDARD (for API compatibility) */
+    CM_OUTPUT_STDOUT = 1,
+    /** Subunit output format for test result aggregation */
+    CM_OUTPUT_SUBUNIT = 2,
+    /** Test Anything Protocol (TAP) output format */
+    CM_OUTPUT_TAP = 4,
+    /** JUnit-compatible XML output format */
+    CM_OUTPUT_XML = 8,
+};
+
+#ifdef DOXYGEN
+/**
+ * @deprecated Use cmocka_print_error()
+ */
+void cm_print_error(const char* const format, ...);
+#else
+#define cm_print_error(format, ...)                           \
+    do {                                                      \
+        CMOCKA_DEPRECATION_WARNING(                           \
+            "cm_print_error: use cmocka_print_error instead") \
+        cmocka_print_error(format, ##__VA_ARGS__);            \
+    } while (0)
+#endif
+
+/**
+ * @brief Print error message using the cmocka output format.
+ *
+ * This prints an error message using the message output defined by the
+ * environment variable CMOCKA_MESSAGE_OUTPUT or
+ * cmocka_set_message_output().
+ *
+ * @param format  The format string fprintf(3) uses.
+ * @param ...     The parameters used to fill format.
+ *
+ * @ingroup cmocka_config
+ */
+void cmocka_print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
+
+/**
+ * @brief Function to set the output format for a test.
+ *
+ * The output format(s) for the test can either be set globally using this
+ * function or overwritten with environment variable CMOCKA_MESSAGE_OUTPUT.
+ *
+ * The environment variable can be set to STANDARD, SUBUNIT, TAP or XML.
+ * Multiple outputs separated with comma are permitted.
+ * (e.g. export CMOCKA_MESSAGE_OUTPUT=STANDARD,XML)
+ *
+ * @param[in] output    The output format from cm_message_output to use
+ *                      for the test. For multiple outputs OR options
+ *                      together.
+ *
+ * @ingroup cmocka_config
+ */
+void cmocka_set_message_output(uint32_t output);
+
+
+/**
+ * @brief Set a pattern to only run the test matching the pattern.
+ *
+ * This allows to filter tests and only run the ones matching the pattern.
+ * The pattern can include two wildcards. The first is '*', a wildcard that
+ * matches zero or more characters, or '?', a wildcard that matches exactly
+ * one character.
+ *
+ * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
+ *
+ * @ingroup cmocka_config
+ */
+void cmocka_set_test_filter(const char *pattern);
+
+/**
+ * @brief Set a pattern to skip tests matching the pattern.
+ *
+ * This allows to filter tests and skip the ones matching the pattern. The
+ * pattern can include two wildcards. The first is '*', a wildcard that
+ * matches zero or more characters, or '?', a wildcard that matches exactly
+ * one character.
+ *
+ * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
+ *
+ * @ingroup cmocka_config
+ */
+void cmocka_set_skip_filter(const char *pattern);
+
+/** @} */ /* cmocka_config */
+
+/** @} */ /* cmocka */
+
+/**
+ * @cond INTERNAL
+ *
+ * Internal functions used by CMocka macros.
+ *
+ * These functions are implementation details and should not be called directly.
+ * Users should only use the documented macros that wrap these functions.
+ * These are excluded from the documentation to avoid confusion.
+ */
+
 /* Used by expect_assert_failure() and mock_assert(). */
 CMOCKA_DLLEXTERN extern int global_expecting_assert;
 CMOCKA_DLLEXTERN extern jmp_buf global_expect_assert_env;
@@ -6675,163 +6843,7 @@ int _cmocka_run_group_tests(const char *group_name,
                             CMFixtureFunction group_setup,
                             CMFixtureFunction group_teardown);
 
-/**
- * @defgroup cmocka_config 🔧 Configuration and Output
- * @ingroup cmocka
- *
- * Configure test execution behavior and output formatting.
- *
- * This module provides functions to customize CMocka's behavior, including
- * setting custom output callbacks, controlling output format (STANDARD,
- * SUBUNIT, TAP, XML), and filtering which tests to run or skip.
- *
- * @{
- */
-
-/* Standard output and error print methods. */
-void print_message(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
-void print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
-void vprint_message(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
-void vprint_error(const char* const format, va_list args) CMOCKA_PRINTF_ATTRIBUTE(1, 0);
-
-/**
- * Callbacks which can be set via cmocka_set_callbacks().
- *
- * @ingroup cmocka_config
- * @sa cmocka_set_callbacks()
- */
-struct CMCallbacks {
-    /** A callback for printing out standard messages.
-     * The supplied callback function will be invoked by the standard output
-     * print methods. If no callback has been supplied, the default action
-     * is to print to `stdout`.
-     *
-     * The one exception at present is XML output, which is always written directly
-     * to a file handle, even if that is set to `stdout`. */
-    void (*vprint_message)(const char * const format, va_list args);
-
-    /** A callback for printing out error messages.
-     * The supplied callback function will be invoked by the standard output
-     * print methods. If no callback has been supplied, the default action
-     * is to print to `stdout`.
-     *
-     * The one exception at present is XML output, which is always written directly
-     * to a file handle, even if that is set to `stdout`. */
-    void (*vprint_error)(const char * const format, va_list args);
-};
-
-/**
- * @brief Set callback functions for CMocka.
- *
- * Input is a structure containing function pointers to one or more
- * user-supplied callback functions. A NULL pointer for a particular
- * callback will set that callback to the default implementation.
- *
- * See the CMCallbacks documentation for details of each callback.
- *
- * @param[in] f_callbacks A structure containing the user callbacks to use.
- *
- * @ingroup cmocka_config
- * @sa CMCallbacks
- */
-void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
-
-/**
- * @brief Output format options for test results.
- *
- * @ingroup cmocka_config
- */
-enum cm_message_output {
-    /** Standard CMocka output format */
-    CM_OUTPUT_STANDARD = 1,
-    /** Alias for CM_OUTPUT_STANDARD (for API compatibility) */
-    CM_OUTPUT_STDOUT = 1,
-    /** Subunit output format for test result aggregation */
-    CM_OUTPUT_SUBUNIT = 2,
-    /** Test Anything Protocol (TAP) output format */
-    CM_OUTPUT_TAP = 4,
-    /** JUnit-compatible XML output format */
-    CM_OUTPUT_XML = 8,
-};
-
-#ifdef DOXYGEN
-/**
- * @deprecated Use cmocka_print_error()
- */
-void cm_print_error(const char* const format, ...);
-#else
-#define cm_print_error(format, ...)                           \
-    do {                                                      \
-        CMOCKA_DEPRECATION_WARNING(                           \
-            "cm_print_error: use cmocka_print_error instead") \
-        cmocka_print_error(format, ##__VA_ARGS__);            \
-    } while (0)
-#endif
-
-/**
- * @brief Print error message using the cmocka output format.
- *
- * This prints an error message using the message output defined by the
- * environment variable CMOCKA_MESSAGE_OUTPUT or
- * cmocka_set_message_output().
- *
- * @param format  The format string fprintf(3) uses.
- * @param ...     The parameters used to fill format.
- *
- * @ingroup cmocka_config
- */
-void cmocka_print_error(const char* const format, ...) CMOCKA_PRINTF_ATTRIBUTE(1, 2);
-
-/**
- * @brief Function to set the output format for a test.
- *
- * The output format(s) for the test can either be set globally using this
- * function or overwritten with environment variable CMOCKA_MESSAGE_OUTPUT.
- *
- * The environment variable can be set to STANDARD, SUBUNIT, TAP or XML.
- * Multiple outputs separated with comma are permitted.
- * (e.g. export CMOCKA_MESSAGE_OUTPUT=STANDARD,XML)
- *
- * @param[in] output    The output format from cm_message_output to use
- *                      for the test. For multiple outputs OR options
- *                      together.
- *
- * @ingroup cmocka_config
- */
-void cmocka_set_message_output(uint32_t output);
-
-
-/**
- * @brief Set a pattern to only run the test matching the pattern.
- *
- * This allows to filter tests and only run the ones matching the pattern.
- * The pattern can include two wildcards. The first is '*', a wildcard that
- * matches zero or more characters, or '?', a wildcard that matches exactly
- * one character.
- *
- * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
- *
- * @ingroup cmocka_config
- */
-void cmocka_set_test_filter(const char *pattern);
-
-/**
- * @brief Set a pattern to skip tests matching the pattern.
- *
- * This allows to filter tests and skip the ones matching the pattern. The
- * pattern can include two wildcards. The first is '*', a wildcard that
- * matches zero or more characters, or '?', a wildcard that matches exactly
- * one character.
- *
- * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
- *
- * @ingroup cmocka_config
- */
-void cmocka_set_skip_filter(const char *pattern);
-
-/** @} */ /* cmocka_config */
-
-/** @} */ /* cmocka */
+/** @endcond */
 
 #ifdef __cplusplus
 } /* extern "C" */
