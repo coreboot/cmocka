@@ -6286,6 +6286,14 @@ typedef union {
     void *(*func)(void);
 } CMockaValueData;
 
+#ifndef DOXYGEN
+/**
+ * @deprecated This type was replaced by uintmax_t for better type clarity.
+ *             Use uintmax_t directly instead.
+ */
+#define LargestIntegralType uintmax_t
+#endif
+
 /**
  * @ingroup cmocka_exec
  *
