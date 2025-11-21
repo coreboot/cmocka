@@ -253,12 +253,6 @@ extern "C" {
 #endif
 /** @endcond */
 
-#define WILL_RETURN_ALWAYS -1
-#define WILL_RETURN_ONCE -2
-
-#define EXPECT_ALWAYS -1
-#define EXPECT_MAYBE -2
-
 /** @} */ /* cmocka_util */
 
 /**
@@ -312,6 +306,55 @@ extern "C" {
  *
  * @{
  */
+
+/**
+ * @brief Return a value indefinitely when used with will_return_count().
+ *
+ * This constant can be passed as the count parameter to will_return_count()
+ * and related functions to indicate that the specified value should be
+ * returned every time the mocked function is called, without limit.
+ *
+ * @see will_return_count()
+ * @see will_return_int_count()
+ * @see will_return_uint_count()
+ * @see will_return_ptr_count()
+ */
+#define WILL_RETURN_ALWAYS -1
+
+/**
+ * @brief Return a value once when used with will_return_count().
+ *
+ * This constant can be passed as the count parameter to will_return_count()
+ * and related functions to indicate that the specified value should be
+ * returned only the next time the mocked function is called. This is the
+ * default behavior of will_return() and related macros.
+ *
+ * @see will_return_count()
+ * @see will_return()
+ */
+#define WILL_RETURN_ONCE -2
+
+/**
+ * @brief Check a parameter every time when used with expect_check_data_count().
+ *
+ * This constant can be passed as the count parameter to expect_check_data_count()
+ * to indicate that the parameter check should be performed every time the mocked
+ * function is called. The test will fail if the function is never called.
+ *
+ * @see expect_check_data_count()
+ */
+#define EXPECT_ALWAYS -1
+
+/**
+ * @brief Optionally check a parameter when used with expect_check_data_count().
+ *
+ * This constant can be passed as the count parameter to expect_check_data_count()
+ * to indicate that the parameter check is optional. The check will be performed
+ * if the function is called, but the test will not fail if it's never called.
+ *
+ * @see expect_check_data_count()
+ */
+#define EXPECT_MAYBE -2
 
 #ifdef DOXYGEN
 /**
