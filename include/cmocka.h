@@ -56,7 +56,7 @@ extern "C" {
 #endif
 
 /**
- * @defgroup cmocka The CMocka API
+ * @defgroup cmocka 📚 The CMocka API
  *
  * These headers or their equivalents MUST be included prior to including
  * this header file.
@@ -238,7 +238,7 @@ extern "C" {
 #define EXPECT_MAYBE -2
 
 /**
- * @defgroup cmocka_mock Mock Objects
+ * @defgroup cmocka_mock 🎪 Mock Objects
  * @ingroup cmocka
  *
  * Mock objects are simulated objects that mimic the behavior of
@@ -2451,7 +2451,7 @@ void will_set_errno_maybe(#function, intmax_t value);
 /** @} */ /* cmocka_mock */
 
 /**
- * @defgroup cmocka_param Checking Parameters
+ * @defgroup cmocka_param ✅ Checking Parameters
  * @ingroup cmocka
  *
  * Functionality to store expected values for mock function parameters.
@@ -4633,7 +4633,7 @@ void check_expected_double(#parameter);
 /** @} */ /* cmocka_param */
 
 /**
- * @defgroup cmocka_asserts Assert Macros
+ * @defgroup cmocka_asserts 🛡️ Assert Macros
  * @ingroup cmocka
  *
  * Assertion macros for validating test conditions.
@@ -5517,7 +5517,7 @@ void assert_float_not_in_set(double value, double values[], size_t count, double
 /** @} */ /* cmocka_asserts */
 
 /**
- * @defgroup cmocka_call_order Call Ordering
+ * @defgroup cmocka_call_order 🔢 Call Ordering
  * @ingroup cmocka
  *
  * Verify that functions are called in the expected order.
@@ -5654,7 +5654,7 @@ void ignore_function_calls(#function);
 /** @} */ /* cmocka_call_order */
 
 /**
- * @defgroup cmocka_exec Running Tests
+ * @defgroup cmocka_exec ▶️ Running Tests
  * @ingroup cmocka
  *
  * Test execution framework and test runners.
@@ -5978,7 +5978,7 @@ int cmocka_run_group_tests_name(const char *group_name,
 /** @} */ /* cmocka_exec */
 
 /**
- * @defgroup cmocka_alloc Dynamic Memory Allocation
+ * @defgroup cmocka_alloc 🧩 Dynamic Memory Allocation
  * @ingroup cmocka
  *
  * Memory leaks, buffer overflows and underflows can be checked using cmocka.
@@ -6087,7 +6087,7 @@ void test_free(void *ptr);
 /** @} */ /* cmocka_alloc */
 
 /**
- * @defgroup cmocka_mock_assert Standard Assertions
+ * @defgroup cmocka_mock_assert 🎯 Standard Assertions
  * @ingroup cmocka
  *
  * How to handle assert(3) of the standard C library.
@@ -6676,7 +6676,7 @@ int _cmocka_run_group_tests(const char *group_name,
                             CMFixtureFunction group_teardown);
 
 /**
- * @defgroup cmocka_config Configuration and Output
+ * @defgroup cmocka_config 🔧 Configuration and Output
  * @ingroup cmocka
  *
  * Configure test execution behavior and output formatting.
