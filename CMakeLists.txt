@@ -14,7 +14,7 @@ include(DefineCMakeDefaults)
 include(DefineCompilerFlags)
 include(DefinePlatformDefaults)
 
-project(cmocka VERSION 1.1.5 LANGUAGES C)
+project(cmocka VERSION 1.9.0 LANGUAGES C)
 
 # global needed variables
 set(APPLICATION_NAME ${PROJECT_NAME})
