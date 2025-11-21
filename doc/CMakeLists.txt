@@ -47,6 +47,10 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_MARKDOWN_SUPPORT YES)
     # Warn about undocumented members to improve documentation quality
     set(DOXYGEN_WARN_IF_UNDOCUMENTED YES)
+    # Do not extract private class members
+    set(DOXYGEN_EXTRACT_PRIVATE NO)
+    # Do not include internal documentation
+    set(DOXYGEN_INTERNAL_DOCS NO)
     # Disable built-in clipboard (using doxygen-awesome extension instead)
     set(DOXYGEN_HTML_COPY_CLIPBOARD NO)
     # Disable page outline panel (using interactive TOC extension instead)

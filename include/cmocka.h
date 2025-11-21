@@ -5757,8 +5757,10 @@ static inline void _unit_test_dummy(void **state) {
     (CMOCKA_DEPRECATION_WARNING("unit_test: use cmocka_unit_test instead")( \
         UnitTest){#f, f, UNIT_TEST_FUNCTION_TYPE_TEST})
 
+/** @cond INTERNAL */
 #define _unit_test_setup(test, setup) \
     { #test "_" #setup, setup, UNIT_TEST_FUNCTION_TYPE_SETUP }
+/** @endcond */
 
 /** Initializes a UnitTest structure with a setup function.
  *
@@ -5770,8 +5772,10 @@ static inline void _unit_test_dummy(void **state) {
     _unit_test_setup(test, setup), unit_test(test),            \
         _unit_test_teardown(test, _unit_test_dummy)
 
+/** @cond INTERNAL */
 #define _unit_test_teardown(test, teardown) \
     { #test "_" #teardown, teardown, UNIT_TEST_FUNCTION_TYPE_TEARDOWN }
+/** @endcond */
 
 /** Initializes a UnitTest structure with a teardown function.
  *
