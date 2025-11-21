@@ -190,6 +190,7 @@ extern "C" {
 /* Nested macros are not expanded when they appear along with # or ## */
 #define cmocka_tostring(val) #val
 
+/** @cond INTERNAL */
 /* GCC have printf type attribute check.  */
 #ifdef __GNUC__
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b) \
@@ -232,16 +233,13 @@ extern "C" {
 #define CMOCKA_NORETURN
 #endif
 
-/**
- * @def CMOCKA_NO_ACCESS_ATTRIBUTE
- *
- * Function attribute that tells the compiler that we never access the value
+/* Function attribute that tells the compiler that we never access the value
  * of a/b, just the pointer address.
  *
  * Without this, newer compilers like GCC-12 will print
  * `-Wmaybe-uninitialized` warnings.
  *
- * @see
+ * See:
  * https://gcc.gnu.org/onlinedocs/gcc-12.2.0/gcc/Common-Function-Attributes.html#Common-Function-Attributes
  */
 #ifdef __has_attribute
@@ -253,6 +251,7 @@ extern "C" {
 #ifndef CMOCKA_NO_ACCESS_ATTRIBUTE
 #define CMOCKA_NO_ACCESS_ATTRIBUTE
 #endif
+/** @endcond */
 
 #define WILL_RETURN_ALWAYS -1
 #define WILL_RETURN_ONCE -2
