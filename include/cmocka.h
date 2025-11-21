@@ -633,7 +633,7 @@ double mock_parameter_double(#name);
  * @see will_set_parameter()
  * @see will_set_parameter_ptr()
  */
-void *mock_parameter_ptr(#name)
+void *mock_parameter_ptr(#name);
 #else
 #define mock_parameter_ptr(name) \
     ((_mock_parameter(__func__, #name, __FILE__, __LINE__, NULL)).ptr)
@@ -660,7 +660,7 @@ void *mock_parameter_ptr(#name)
  * @see will_set_parameter()
  * @see will_set_parameter_ptr_type()
  */
-type mock_parameter_ptr_type(#name, #type)
+type mock_parameter_ptr_type(#name, #type);
 #else
 #define mock_parameter_ptr_type(name, type) \
     ((type)(_mock_parameter(__func__, #name, __FILE__, __LINE__, #type)).ptr)
@@ -673,10 +673,8 @@ type mock_parameter_ptr_type(#name, #type)
  * @code
  * mock_errno();
  * @endcode
- *
- * @see will_set_errno()
  */
-void mock_errno()
+void mock_errno(void);
 #else
 #define mock_errno()                      \
     do {                                  \
@@ -3598,7 +3596,7 @@ void expect_float_in_range(#function, #parameter, double minimum, double maximum
  *                    should be returned by check_expected(). If count is set
  *                    to -1 the value will always be returned.
  *
- * @see check_expected_float(
+ * @see check_expected_float()
  */
 void expect_float_in_range_count(#function, #parameter, double minimum, double maximum, double epsilon, size_t count);
 #else
