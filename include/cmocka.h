@@ -2528,12 +2528,12 @@ void will_set_errno_maybe(#function, intmax_t value);
  * In addition to storing the return values of mock functions, cmocka provides
  * functionality to store expected values for mock function parameters using
  * the expect_*() functions provided. A mock function parameter can then be
- * validated using the check_expected() macro.
+ * validated using the check_expected_*() macros.
  *
  * Successive calls to expect_*() macros for a parameter queues values to check
- * the specified parameter. check_expected() checks a function parameter
+ * the specified parameter. check_expected_*() checks a function parameter
  * against the next value queued using expect_*(), if the parameter check fails
- * a test failure is signalled. In addition if check_expected() is called and
+ * a test failure is signalled. In addition if check_expected_*() is called and
  * no more parameter values are queued a test failure occurs.
  *
  * The following test stub illustrates how to do this. First is the the function
@@ -2553,7 +2553,7 @@ void will_set_errno_maybe(#function, intmax_t value);
  * @code
  * int chef_cook(const char *order, char **dish_out)
  * {
- *     check_expected(order);
+ *     check_expected_ptr(order);
  * }
  * @endcode
  *
