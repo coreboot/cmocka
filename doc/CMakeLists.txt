@@ -72,6 +72,8 @@ if (DOXYGEN_FOUND)
     set(DOXYGEN_PREDEFINED DOXYGEN
                            CMOCKA_PRINTF_ATTRIBUTE\(x,y\))
 
+    # Custom layout file to rename "Topics" to "API Reference" and simplify navigation
+    set(DOXYGEN_LAYOUT_FILE ${CMAKE_CURRENT_SOURCE_DIR}/DoxygenLayout.xml)
     # Custom HTML header with doxygen-awesome extension initialization
     set(DOXYGEN_HTML_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/header.html)
     # Modern CSS theme for documentation with custom cmocka.org color scheme

@@ -5,6 +5,11 @@
 This is the online reference for developing with the cmocka library. It
 documents the cmocka C API.
 
+<div style="background-color: #fff8e6; border-left: 4px solid #feb41c; padding: 15px; margin: 20px 0;">
+<strong>📚 Looking for the API documentation?</strong><br/>
+See the <a href="topics.html"><b>API Reference</b></a> for detailed documentation of all functions, macros, and data structures.
+</div>
+
 cmocka is an elegant unit testing framework for C with support for mock
 objects. It only requires the standard C library, works on a lot of platforms
 (including embedded) and with different compilers.
