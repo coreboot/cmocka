@@ -57,6 +57,7 @@ extern "C" {
 
 /**
  * @defgroup cmocka 📚 The CMocka API
+ * @brief Unit testing framework for C with support for mock objects.
  *
  * These headers or their equivalents MUST be included prior to including
  * this header file.
@@ -240,6 +241,7 @@ extern "C" {
 /**
  * @defgroup cmocka_mock 🎪 Mock Objects
  * @ingroup cmocka
+ * @brief Simulate objects and control function return values in tests.
  *
  * Mock objects are simulated objects that mimic the behavior of
  * real objects. Instead of calling the real objects, the tested object calls a
@@ -2453,6 +2455,7 @@ void will_set_errno_maybe(#function, intmax_t value);
 /**
  * @defgroup cmocka_param ✅ Checking Parameters
  * @ingroup cmocka
+ * @brief Validate function parameters match expected values.
  *
  * Functionality to store expected values for mock function parameters.
  *
@@ -4635,6 +4638,7 @@ void check_expected_double(#parameter);
 /**
  * @defgroup cmocka_asserts 🛡️ Assert Macros
  * @ingroup cmocka
+ * @brief Verify conditions and fail tests when assertions don't hold.
  *
  * Assertion macros for validating test conditions.
  *
@@ -5519,6 +5523,7 @@ void assert_float_not_in_set(double value, double values[], size_t count, double
 /**
  * @defgroup cmocka_call_order 🔢 Call Ordering
  * @ingroup cmocka
+ * @brief Ensure functions are called in the correct sequence.
  *
  * Verify that functions are called in the expected order.
  *
@@ -5656,6 +5661,7 @@ void ignore_function_calls(#function);
 /**
  * @defgroup cmocka_exec ▶️ Running Tests
  * @ingroup cmocka
+ * @brief Execute test suites with setup and teardown functions.
  *
  * Test execution framework and test runners.
  *
@@ -5980,8 +5986,10 @@ int cmocka_run_group_tests_name(const char *group_name,
 /**
  * @defgroup cmocka_alloc 🧩 Dynamic Memory Allocation
  * @ingroup cmocka
+ * @brief Detect memory leaks, buffer overflows, and allocation errors.
  *
- * Memory leaks, buffer overflows and underflows can be checked using cmocka.
+ * @warning This shouldn't be used anymore, better use
+ * <a href="https://clang.llvm.org/docs/AddressSanitizer.html">AddressSanitizer</a>.
  *
  * To test for memory leaks, buffer overflows and underflows a module being
  * tested by cmocka should replace calls to malloc(), calloc() and free() to
@@ -6089,6 +6097,7 @@ void test_free(void *ptr);
 /**
  * @defgroup cmocka_mock_assert 🎯 Standard Assertions
  * @ingroup cmocka
+ * @brief Test code that uses assert(3) from the standard C library.
  *
  * How to handle assert(3) of the standard C library.
  *
@@ -6291,6 +6300,7 @@ typedef struct CheckParameterEventData {
 /**
  * @defgroup cmocka_config 🔧 Configuration and Output
  * @ingroup cmocka
+ * @brief Control test output formats and execution behavior.
  *
  * Configure test execution behavior and output formatting.
  *
