@@ -59,8 +59,15 @@ extern "C" {
  * @defgroup cmocka 📚 The CMocka API
  * @brief Unit testing framework for C with support for mock objects.
  *
- * These headers or their equivalents MUST be included prior to including
- * this header file.
+ * cmocka is an elegant unit testing framework for C with support for mock
+ * objects. It only requires the standard C library, works on a lot of platforms
+ * (including embedded) and with different compilers.
+ *
+ * @section cmocka-includes Standard includes
+ *
+ * CMocka requires the include of the following list of standard headers or
+ * their equivalent.
+ *
  * @code
  * #include <stdarg.h>
  * #include <stdbool.h>
@@ -69,12 +76,19 @@ extern "C" {
  * #include <setjmp.h>
  * @endcode
  *
- * This allows test applications to use custom definitions of C standard
- * library functions and types.
+ * The header file 'cmocka.h' includes those headers already and in case your
+ * platform does not provide those header files, you must
+ * `#define CMOCKA_NO_STANDARD_INCLUDES` in order to prevent the include of
+ * those files.
  *
- * In order to simplify building software against CMocka those files are
- * included by default. In case someone wants to use their own headers,
- * they are free to `#define CMOCKA_NO_STANDARD_INCLUDES`.
+ * An example of how your code which uses CMocka could look like is given below.
+ *
+ * @code
+ * #include "path/to/cmocka_platform.h"
+ * #define CMOCKA_NO_STANDARD_INCLUDES
+ * #include <cmocka.h>
+ * // ... your test code goes here ...
+ * @endcode
  */
 
 #ifndef CMOCKA_NO_STANDARD_INCLUDES
