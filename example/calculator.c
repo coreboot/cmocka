@@ -1,5 +1,6 @@
 /*
  * Copyright 2008 Google Inc.
+ * Copyright 2025 Andreas Schneider <asn@cryptomilk.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,142 +15,204 @@
  * limitations under the License.
  */
 
-/* A calculator example used to demonstrate the cmocka testing library. */
+/**
+ * @file calculator.c
+ * @brief A simple calculator demonstrating the cmocka testing library.
+ *
+ * This file implements a command-line calculator that performs basic arithmetic
+ * operations (addition, subtraction, multiplication, division) on integers.
+ * It demonstrates how to structure code for testing with cmocka by using
+ * function pointers, modular design, and conditional compilation for test
+ * hooks.
+ *
+ * Example usage:
+ *   ./calculator 10 + 5 - 3
+ *   Output:
+ *     10
+ *       + 5 = 15
+ *       - 3 = 12
+ *     = 12
+ */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include <assert.h>
-#ifdef HAVE_MALLOC_H
-#include <malloc.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-/* If this is being built for a unit test. */
 #ifdef UNIT_TESTING
 
-/* Redirect printf to a function in the test application so it's possible to
- * test the standard output. */
+/**
+ * When built for unit testing, redirect printf to a mock function so tests
+ * can verify output.
+ */
 #ifdef printf
 #undef printf
-#endif /* printf */
+#endif
 extern int example_test_printf(const char *format, ...);
 #define printf example_test_printf
 
-extern void print_message(const char *format, ...);
-
-/* Redirect fprintf to a function in the test application so it's possible to
- * test error messages. */
+/**
+ * When built for unit testing, redirect fprintf to a mock function so tests
+ * can verify error messages.
+ */
 #ifdef fprintf
 #undef fprintf
-#endif /* fprintf */
+#endif
 #define fprintf example_test_fprintf
+extern int example_test_fprintf(FILE *const file, const char *format, ...);
 
-extern int example_test_fprintf(FILE * const file, const char *format, ...);
-
-/* Redirect assert to mock_assert() so assertions can be caught by cmocka. */
+/**
+ * Redirect assert to mock_assert() so assertions can be caught by cmocka.
+ */
 #ifdef assert
 #undef assert
-#endif /* assert */
+#endif
 #define assert(expression) \
     mock_assert((int)(expression), #expression, __FILE__, __LINE__)
-void mock_assert(const int result, const char* expression, const char *file,
+void mock_assert(const int result,
+                 const char *expression,
+                 const char *file,
                  const int line);
 
-/* Redirect calloc and free to test_calloc() and test_free() so cmocka can
- * check for memory leaks. */
-#ifdef calloc
-#undef calloc
-#endif /* calloc */
-#define calloc(num, size) _test_calloc(num, size, __FILE__, __LINE__)
-#ifdef free
-#undef free
-#endif /* free */
-#define free(ptr) _test_free(ptr, __FILE__, __LINE__)
-void* _test_calloc(const size_t number_of_elements, const size_t size,
-                   const char* file, const int line);
-void _test_free(void* const ptr, const char* file, const int line);
-
+/**
+ * Rename main to example_main so the test suite can define its own main.
+ */
 int example_main(int argc, char *argv[]);
-/* main is defined in the unit test so redefine name of the the main function
- * here. */
 #define main example_main
 
-/* All functions in this object need to be exposed to the test application,
- * so redefine static to nothing. */
+/**
+ * Expose static functions to tests by removing the static keyword.
+ */
 #define static
 
 #endif /* UNIT_TESTING */
 
-
-/* A binary arithmetic integer operation (add, subtract etc.) */
+/**
+ * @typedef BinaryOperator
+ * @brief Function pointer type for binary arithmetic operations.
+ *
+ * @param a First operand
+ * @param b Second operand
+ * @return Result of the operation
+ */
 typedef int (*BinaryOperator)(int a, int b);
 
-/* Structure which maps operator strings to functions. */
-typedef struct OperatorFunction {
-    const char* operator;
-    BinaryOperator function;
-} OperatorFunction;
+/**
+ * @struct OperatorFunction
+ * @brief Maps operator symbols (e.g., "+", "-") to their implementation
+ * functions.
+ */
+struct OperatorFunction {
+    const char *operator;    /**< Operator symbol (e.g., "+", "-") */
+    BinaryOperator function; /**< Function implementing the operation */
+};
 
-
+/* Function declarations */
 BinaryOperator find_operator_function_by_string(
-        const size_t number_of_operator_functions,
-        const OperatorFunction * const operator_functions,
-        const char* const operator_string);
+    const size_t number_of_operator_functions,
+    const struct OperatorFunction *const operator_functions,
+    const char *const operator_string);
 
-int perform_operation(
-        int number_of_arguments, char *arguments[],
-        const size_t number_of_operator_functions,
-        const OperatorFunction * const operator_functions,
-        int * const number_of_intermediate_values,
-        int ** const intermediate_values, int * const error_occurred);
+int perform_operation(int number_of_arguments,
+                      char *arguments[],
+                      const size_t number_of_operator_functions,
+                      const struct OperatorFunction *const operator_functions,
+                      size_t *const number_of_intermediate_values,
+                      int **const intermediate_values,
+                      int *const error_occurred);
 
 static int add(int a, int b);
 static int subtract(int a, int b);
 static int multiply(int a, int b);
 static int divide(int a, int b);
 
-/* Associate operator strings to functions. */
-static OperatorFunction operator_function_map[] = {
+/**
+ * @brief Lookup table mapping operator symbols to functions.
+ */
+static struct OperatorFunction operator_function_map[] = {
     {"+", add},
     {"-", subtract},
     {"*", multiply},
     {"/", divide},
 };
 
-static int add(int a, int b) {
+/**
+ * @brief Adds two integers.
+ *
+ * @param a First operand
+ * @param b Second operand
+ * @return Sum of a and b
+ */
+static int add(int a, int b)
+{
     return a + b;
 }
 
-static int subtract(int a, int b) {
+/**
+ * @brief Subtracts one integer from another.
+ *
+ * @param a First operand (minuend)
+ * @param b Second operand (subtrahend)
+ * @return Difference (a - b)
+ */
+static int subtract(int a, int b)
+{
     return a - b;
 }
 
-static int multiply(int a, int b) {
+/**
+ * @brief Multiplies two integers.
+ *
+ * @param a First operand
+ * @param b Second operand
+ * @return Product of a and b
+ */
+static int multiply(int a, int b)
+{
     return a * b;
 }
 
-static int divide(int a, int b) {
-    assert(b);  /* Check for divide by zero. */
+/**
+ * @brief Divides one integer by another.
+ *
+ * @param a Dividend
+ * @param b Divisor
+ * @return Quotient (a / b)
+ *
+ * @note Asserts if b is zero to prevent division by zero.
+ */
+static int divide(int a, int b)
+{
+    assert(b); /* Check for divide by zero */
     return a / b;
 }
 
-/* Searches the specified array of operator_functions for the function
- * associated with the specified operator_string.  This function returns the
- * function associated with operator_string if successful, NULL otherwise.
+/**
+ * @brief Finds the function associated with an operator symbol.
+ *
+ * Searches through the operator_functions array to find a function matching
+ * the specified operator string.
+ *
+ * @param number_of_operator_functions Size of the operator_functions array
+ * @param operator_functions Array of OperatorFunction structures to search
+ * @param operator_string Operator symbol to find (e.g., "+", "-")
+ * @return Function pointer if found, NULL otherwise
+ *
+ * @pre operator_functions must be non-NULL if number_of_operator_functions > 0
+ * @pre operator_string must be non-NULL
  */
 BinaryOperator find_operator_function_by_string(
-        const size_t number_of_operator_functions,
-        const OperatorFunction * const operator_functions,
-        const char* const operator_string) {
+    const size_t number_of_operator_functions,
+    const struct OperatorFunction *const operator_functions,
+    const char *const operator_string)
+{
     size_t i;
+
     assert(!number_of_operator_functions || operator_functions);
     assert(operator_string != NULL);
 
     for (i = 0; i < number_of_operator_functions; i++) {
-        const OperatorFunction *const operator_function =
+        const struct OperatorFunction *const operator_function =
             &operator_functions[i];
         if (strcmp(operator_function->operator, operator_string) == 0) {
             return operator_function->function;
@@ -158,29 +221,44 @@ BinaryOperator find_operator_function_by_string(
     return NULL;
 }
 
-/* Perform a series of binary arithmetic integer operations with no operator
- * precedence.
+/**
+ * @brief Performs a sequence of binary arithmetic operations.
  *
- * The input expression is specified by arguments which is an array of
- * containing number_of_arguments strings.  Operators invoked by the expression
- * are specified by the array operator_functions containing
- * number_of_operator_functions, OperatorFunction structures.  The value of
- * each binary operation is stored in a pointer returned to intermediate_values
- * which is allocated by malloc().
+ * Evaluates an expression given as an array of strings in the format:
+ * number operator number operator number ...
+ * Operations are performed left-to-right with no operator precedence.
  *
- * If successful, this function returns the integer result of the operations.
- * If an error occurs while performing the operation error_occurred is set to
- * 1, the operation is aborted and 0 is returned.
+ * Example: ["10", "+", "5", "*", "2"] evaluates as ((10 + 5) * 2) = 30
+ *
+ * @param number_of_arguments Number of strings in the arguments array
+ * @param arguments Array of strings representing the expression
+ * @param number_of_operator_functions Size of operator_functions array
+ * @param operator_functions Array mapping operator symbols to functions
+ * @param[out] number_of_intermediate_values Number of operations performed
+ * @param[out] intermediate_values Allocated array of intermediate results
+ * @param[out] error_occurred Set to 1 if an error occurs, 0 otherwise
+ * @return Final result of the calculation, or 0 if an error occurred
+ *
+ * @note The caller is responsible for freeing the intermediate_values array.
+ * @note intermediate_values is set to NULL if an error occurs.
+ *
+ * @pre arguments must be non-NULL if number_of_arguments > 0
+ * @pre operator_functions must be non-NULL if number_of_operator_functions > 0
+ * @pre error_occurred, number_of_intermediate_values, and intermediate_values
+ *      must be non-NULL
  */
-int perform_operation(
-        int number_of_arguments, char *arguments[],
-        const size_t number_of_operator_functions,
-        const OperatorFunction * const operator_functions,
-        int * const number_of_intermediate_values,
-        int ** const intermediate_values, int * const error_occurred) {
+int perform_operation(int number_of_arguments,
+                      char *arguments[],
+                      const size_t number_of_operator_functions,
+                      const struct OperatorFunction *const operator_functions,
+                      size_t *const number_of_intermediate_values,
+                      int **const intermediate_values,
+                      int *const error_occurred)
+{
     char *end_of_integer;
     int value;
     int i;
+
     assert(!number_of_arguments || arguments);
     assert(!number_of_operator_functions || operator_functions);
     assert(error_occurred != NULL);
@@ -190,43 +268,55 @@ int perform_operation(
     *error_occurred = 0;
     *number_of_intermediate_values = 0;
     *intermediate_values = NULL;
-    if (!number_of_arguments)
-        return 0;
 
-    /* Parse the first value. */
+    if (!number_of_arguments) {
+        return 0;
+    }
+
+    /* Parse the first value */
     value = (int)strtol(arguments[0], &end_of_integer, 10);
     if (end_of_integer == arguments[0]) {
-        /* If an error occurred while parsing the integer. */
-        fprintf(stderr, "Unable to parse integer from argument %s\n",
+        fprintf(stderr,
+                "Unable to parse integer from argument %s\n",
                 arguments[0]);
         *error_occurred = 1;
         return 0;
     }
 
-    /* Allocate an array for the output values. */
-    *intermediate_values = calloc(((number_of_arguments - 1) / 2),
+    /* Allocate array for intermediate results */
+    *intermediate_values = malloc(((number_of_arguments - 1) / 2) *
                                   sizeof(**intermediate_values));
+    if (*intermediate_values == NULL) {
+        fprintf(stderr, "Failed to allocate memory for intermediate values\n");
+        *error_occurred = 1;
+        return 0;
+    }
 
+    /* Process operator-operand pairs */
     i = 1;
     while (i < number_of_arguments) {
         int other_value;
-        const char* const operator_string = arguments[i];
+        const char *const operator_string = arguments[i];
         const BinaryOperator function = find_operator_function_by_string(
             number_of_operator_functions, operator_functions, operator_string);
-        int * const intermediate_value =
-            &((*intermediate_values)[*number_of_intermediate_values]);
-        (*number_of_intermediate_values) ++;
+        int *const intermediate_value = &(
+            (*intermediate_values)[*number_of_intermediate_values]);
+
+        (*number_of_intermediate_values)++;
 
         if (!function) {
-            fprintf(stderr, "Unknown operator %s, argument %d\n",
-                    operator_string, i);
+            fprintf(stderr,
+                    "Unknown operator %s, argument %d\n",
+                    operator_string,
+                    i);
             *error_occurred = 1;
             break;
         }
-        i ++;
+        i++;
 
         if (i == number_of_arguments) {
-            fprintf(stderr, "Binary operator %s missing argument\n",
+            fprintf(stderr,
+                    "Binary operator %s missing argument\n",
                     operator_string);
             *error_occurred = 1;
             break;
@@ -234,50 +324,72 @@ int perform_operation(
 
         other_value = (int)strtol(arguments[i], &end_of_integer, 10);
         if (end_of_integer == arguments[i]) {
-            /* If an error occurred while parsing the integer. */
-            fprintf(stderr, "Unable to parse integer %s of argument %d\n",
-                    arguments[i], i);
+            fprintf(stderr,
+                    "Unable to parse integer %s of argument %d\n",
+                    arguments[i],
+                    i);
             *error_occurred = 1;
             break;
         }
-        i ++;
+        i++;
 
-        /* Perform the operation and store the intermediate value. */
+        /* Perform the operation and store the result */
         *intermediate_value = function(value, other_value);
         value = *intermediate_value;
     }
+
     if (*error_occurred) {
         free(*intermediate_values);
         *intermediate_values = NULL;
         *number_of_intermediate_values = 0;
         return 0;
     }
+
     return value;
 }
 
-int main(int argc, char *argv[]) {
+/**
+ * @brief Main entry point for the calculator program.
+ *
+ * Processes command-line arguments as an arithmetic expression and displays
+ * the intermediate steps and final result.
+ *
+ * @param argc Number of command-line arguments
+ * @param argv Array of command-line argument strings
+ * @return 0 on success, non-zero on error
+ */
+int main(int argc, char *argv[])
+{
     int return_value;
-    int number_of_intermediate_values;
+    size_t number_of_intermediate_values;
     int *intermediate_values;
-    /* Peform the operation. */
-    const int result = perform_operation(
-        argc - 1, &argv[1],
-        sizeof(operator_function_map) / sizeof(operator_function_map[0]),
-        operator_function_map, &number_of_intermediate_values,
-        &intermediate_values, &return_value);
 
-    /* If no errors occurred display the result. */
-    if (!return_value && argc > 1) {
-        int i;
-        int intermediate_value_index = 0;
+    /* Perform the operation */
+    const int result = perform_operation(argc - 1,
+                                         &argv[1],
+                                         sizeof(operator_function_map) /
+                                             sizeof(operator_function_map[0]),
+                                         operator_function_map,
+                                         &number_of_intermediate_values,
+                                         &intermediate_values,
+                                         &return_value);
+
+    /* Display the result if no errors occurred */
+    if (return_value == 0 && argc > 1) {
+        size_t intermediate_value_index = 0;
+        size_t i;
+
         printf("%s\n", argv[1]);
         for (i = 2; i < argc; i += 2) {
             assert(intermediate_value_index < number_of_intermediate_values);
-            printf("  %s %s = %d\n", argv[i], argv[i + 1],
+            printf("  %s %s = %d\n",
+                   argv[i],
+                   argv[i + 1],
                    intermediate_values[intermediate_value_index++]);
         }
         printf("= %d\n", result);
     }
+
     if (intermediate_values) {
         free(intermediate_values);
     }

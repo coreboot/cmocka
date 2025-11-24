@@ -1,12 +1,24 @@
 project(cmocka-examples C)
 
-set_source_files_properties(calculator.c
-                            allocate_module.c
+set_source_files_properties(allocate_module.c
                             assert_module.c
                             PROPERTIES
                                 COMPILE_DEFINITIONS
                                     UNIT_TESTING=1)
 
+### Calculator executable
+add_executable(calculator calculator.c)
+target_compile_options(calculator PRIVATE ${DEFAULT_C_COMPILE_FLAGS})
+target_link_options(calculator PRIVATE ${DEFAULT_LINK_FLAGS})
+
+### Calculator test
+add_cmocka_test(calculator_test
+                SOURCES calculator.c calculator_test.c
+                COMPILE_OPTIONS ${DEFAULT_C_COMPILE_FLAGS}
+                LINK_OPTIONS ${DEFAULT_LINK_FLAGS}
+                LINK_LIBRARIES cmocka::cmocka)
+target_compile_definitions(calculator_test PRIVATE UNIT_TESTING=1)
+add_cmocka_test_environment(calculator_test)
 
 ### The most simple test
 add_cmocka_test(simple_test
