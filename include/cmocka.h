@@ -6324,6 +6324,22 @@ typedef union {
  *             Use uintmax_t directly instead.
  */
 #define LargestIntegralType uintmax_t
+
+/**
+ * @deprecated Use cast_ptr_to_uintmax_type instead
+ */
+#if defined(__GNUC__)
+#define cast_ptr_to_largest_integral_type(value)     \
+    __extension__({                                  \
+        CMOCKA_DEPRECATION_WARNING(                  \
+            "cast_ptr_to_largest_integral_type: "    \
+            "use cast_ptr_to_uintmax_type instead"); \
+        cast_ptr_to_uintmax_type(value);             \
+    })
+#else
+#define cast_ptr_to_largest_integral_type(value) \
+    cast_ptr_to_uintmax_type(value)
+#endif
 #endif
 
 /**
