@@ -1,5 +1,5 @@
 /*
- * Copyright 2008 Google Inc.
+ * Copyright 2025 Andreas Schneider <asn@cryptomilk.org>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,23 +17,60 @@
 #include <string.h>
 #include "assert_macro.h"
 
-static const char* status_code_strings[] = {
-    "Address not found",
-    "Connection dropped",
-    "Connection timed out",
-};
+void player_init(struct player_stats *stats, const char *username)
+{
+    if (stats == NULL || username == NULL) {
+        return;
+    }
 
-const char* get_status_code_string(const unsigned int status_code) {
-    return status_code_strings[status_code];
+    stats->score = 0;
+    stats->level = 1;
+    strncpy(stats->username, username, sizeof(stats->username) - 1);
+    stats->username[sizeof(stats->username) - 1] = '\0';
 }
 
-unsigned int string_to_status_code(const char* const status_code_string) {
-    unsigned int i;
-    for (i = 0; i < sizeof(status_code_strings) /
-                    sizeof(status_code_strings[0]); i++) {
-        if (strcmp(status_code_strings[i], status_code_string) == 0) {
-            return i;
-        }
+void player_award_points(struct player_stats *stats, uint32_t points)
+{
+    if (stats == NULL) {
+        return;
     }
-    return ~0U;
+
+    stats->score += points;
+
+    /* Auto level-up based on score thresholds */
+    if (stats->score >= 500) {
+        stats->level = 4;
+    } else if (stats->score >= 250) {
+        stats->level = 3;
+    } else if (stats->score >= 100) {
+        stats->level = 2;
+    }
+}
+
+uint8_t player_get_level(const struct player_stats *stats)
+{
+    if (stats == NULL) {
+        return 0;
+    }
+
+    return stats->level;
+}
+
+const char *player_get_username(const struct player_stats *stats)
+{
+    if (stats == NULL) {
+        return NULL;
+    }
+
+    return stats->username;
+}
+
+void player_copy_stats(struct player_stats *dest,
+                       const struct player_stats *src)
+{
+    if (dest == NULL || src == NULL) {
+        return;
+    }
+
+    memcpy(dest, src, sizeof(struct player_stats));
 }
