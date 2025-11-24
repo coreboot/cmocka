@@ -1,4 +1,4 @@
-#define UNIT_TESTING 1
+#include <stdlib.h>
 
 #include <cmocka.h>
 

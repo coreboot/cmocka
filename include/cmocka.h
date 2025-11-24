@@ -6107,6 +6107,41 @@ int cmocka_run_group_tests_name(const char *group_name,
  * means memory corruption from a single test case could potentially cause the
  * test application to exit prematurely.
  *
+ * <b>Automatic Allocation Redirection (Deprecated):</b>
+ *
+ * When both UNIT_TESTING and ALLOCATION_TESTING are defined, the standard
+ * C library allocation functions (malloc, calloc, realloc, free) are
+ * automatically redirected to cmocka's test allocators. This enables
+ * automatic memory leak detection and helps ensure proper memory management
+ * in tested code.
+ *
+ * @note This feature is deprecated and should not be used in new code.
+ *       Better use
+ *       <a href="https://clang.llvm.org/docs/AddressSanitizer.html">AddressSanitizer</a>.
+ *
+ * To enable allocation testing, define both macros before including cmocka.h:
+ *
+ * @code
+ * #include <stdlib.h>
+ *
+ * #define UNIT_TESTING 1
+ * #define ALLOCATION_TESTING 1
+ * #include <cmocka.h>
+ *
+ * // This code will have malloc/free automatically redirected
+ * void* ptr = malloc(100);  // Actually calls test_malloc()
+ * free(ptr);                // Actually calls test_free()
+ * @endcode
+ *
+ * With ALLOCATION_TESTING enabled:
+ * - malloc() → test_malloc()
+ * - calloc() → test_calloc()
+ * - realloc() → test_realloc()
+ * - free() → test_free()
+ *
+ * @warning Mixing regular allocations with test allocations can lead to
+ *          memory corruption. Ensure consistent usage throughout your
+ *          test code.
  * @{
  */
 
@@ -6186,13 +6221,12 @@ void test_free(void *ptr);
 #define test_free(ptr) _test_free(ptr, __FILE__, __LINE__)
 #endif
 
-/* Redirect malloc, calloc and free to the unit test allocators. */
-#ifdef UNIT_TESTING
+#if defined(UNIT_TESTING) && defined(ALLOCATION_TESTING)
 #define malloc test_malloc
 #define realloc test_realloc
 #define calloc test_calloc
 #define free test_free
-#endif /* UNIT_TESTING */
+#endif /* UNIT_TESTING && ALLOCATION_TESTING */
 
 /** @} */ /* cmocka_alloc */
 

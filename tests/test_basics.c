@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-/* Use the unit test allocators */
-#define UNIT_TESTING 1
+#include <stdlib.h>
 
 #include <cmocka.h>
 

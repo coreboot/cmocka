@@ -1,6 +1,4 @@
-/* Use the unit test allocators */
-#define UNIT_TESTING 1
-
+#include <stdlib.h>
 #include <cmocka.h>
 
 static int group_setup(void **state)
@@ -32,7 +30,7 @@ static void test_value_range(void **state)
 {
     int a = *((int *)*state);
 
-    assert_in_range(a, 0, 100);
+    assert_int_in_range(a, 0, 100);
 }
 
 int main(void) {

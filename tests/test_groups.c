@@ -16,6 +16,7 @@
 
 /* Use the unit test allocators */
 #define UNIT_TESTING 1
+#define ALLOCATION_TESTING 1
 
 #include <cmocka.h>
 
