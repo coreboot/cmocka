@@ -96,5 +96,6 @@ if (DOXYGEN_FOUND)
     doxygen_add_docs(docs
                      ${cmocka-library_SOURCE_DIR}
                      ${cmocka-header_SOURCE_DIR}
+                     ${cmocka-header_BINARY_DIR}
                      ${CMAKE_CURRENT_SOURCE_DIR})
 endif(DOXYGEN_FOUND)

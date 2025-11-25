@@ -62,22 +62,25 @@
  */
 
 /**
- * @internal
+ * @cond INTERNAL
+ */
+
+/**
  * @brief Helper macro to create an integer version value (internal use).
  */
 #define CM_VERSION_INT(a, b, c) ((a) << 16 | (b) << 8 | (c))
 
 /**
- * @internal
  * @brief Helper macro to create a version string (internal use).
  */
 #define CM_VERSION_DOT(a, b, c) a ##.## b ##.## c
 
 /**
- * @internal
  * @brief Helper macro to create a version string (internal use).
  */
 #define CM_VERSION(a, b, c) CMOCKA_VERSION_DOT(a, b, c)
+
+/** @endcond */
 
 /**
  * @brief cmocka major version number.
