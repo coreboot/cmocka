@@ -4787,11 +4787,35 @@ void cmocka_set_message_output(uint32_t output)
 
 void cmocka_set_test_filter(const char *pattern)
 {
+    const size_t max_pattern_len = 1024*32;
+    size_t pattern_len = 0;
+
+    if (pattern == NULL) {
+        return;
+    }
+
+    pattern_len = strlen(pattern);
+    if (pattern_len == 0 || pattern_len > max_pattern_len) {
+        return;
+    }
+
     global_test_filter_pattern = pattern;
 }
 
 void cmocka_set_skip_filter(const char *pattern)
 {
+    const size_t max_pattern_len = 1024*32;
+    size_t pattern_len = 0;
+
+    if (pattern == NULL) {
+        return;
+    }
+
+    pattern_len = strlen(pattern);
+    if (pattern_len == 0 || pattern_len > max_pattern_len) {
+        return;
+    }
+
     global_skip_filter_pattern = pattern;
 }
 
