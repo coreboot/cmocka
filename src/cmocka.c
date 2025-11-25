@@ -5097,12 +5097,23 @@ int _cmocka_run_group_tests(const char *group_name,
     size_t total_errors = 0;
     size_t total_skipped = 0;
     double total_runtime = 0;
+    const char *env = NULL;
     size_t i;
     int rc;
 
     cm_tests = libc_calloc(1, sizeof(struct CMUnitTestState) * num_tests);
     if (cm_tests == NULL) {
         return -1;
+    }
+
+    env = getenv("CMOCKA_TEST_FILTER");
+    if (env != NULL) {
+        cmocka_set_test_filter(env);
+    }
+
+    env = getenv("CMOCKA_SKIP_FILTER");
+    if (env != NULL) {
+        cmocka_set_skip_filter(env);
     }
 
     /* Setup cmocka test array */

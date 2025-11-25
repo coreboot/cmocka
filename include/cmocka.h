@@ -6645,6 +6645,9 @@ void cmocka_set_message_output(uint32_t output);
  * matches zero or more characters, or '?', a wildcard that matches exactly
  * one character.
  *
+ * The same can also be achieved by setting the environment variable
+ * CMOCKA_TEST_FILTER, without needing to recompile the application.
+ *
  * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
  *
  * @ingroup cmocka_config
@@ -6658,6 +6661,9 @@ void cmocka_set_test_filter(const char *pattern);
  * pattern can include two wildcards. The first is '*', a wildcard that
  * matches zero or more characters, or '?', a wildcard that matches exactly
  * one character.
+ *
+ * The same can also be achieved by setting the environment variable
+ * CMOCKA_SKIP_FILTER, without needing to recompile the application.
  *
  * @param[in]  pattern    The pattern to match, e.g. "test_wurst*"
  *
