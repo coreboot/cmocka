@@ -76,6 +76,7 @@ set(CMOCKA_TESTS
     test_string
     test_wildcard
     test_skip_filter
+    test_skip_filter_env
     test_mock_exit
     )
 
@@ -93,6 +94,12 @@ foreach(_CMOCKA_TEST ${CMOCKA_TESTS})
 
     add_cmocka_test_environment(${_CMOCKA_TEST})
 endforeach()
+
+### Environment
+
+# test_skip_filter_env
+set_property(TEST test_skip_filter_env
+    PROPERTY ENVIRONMENT "CMOCKA_TEST_FILTER=test_skip*;CMOCKA_SKIP_FILTER=test_skip2")
 
 ### Exceptions
 
