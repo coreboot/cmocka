@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+#### Test Filtering
+- Environment variable support for test filtering:
+  - `CMOCKA_TEST_FILTER`: Filter tests to run by pattern
+  - `CMOCKA_SKIP_FILTER`: Filter tests to skip by pattern
+- Improved `cmocka_set_test_filter()` and `cmocka_set_skip_filter()` functions
+
 #### Output Formats
 - **TAP 14 support**: Updated Test Anything Protocol output to
   version 14 with YAML diagnostics
@@ -102,10 +108,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Better mock object examples
 
 #### Build System and Compatibility
-- Meson build system support
+- CMake minimum required version bumped to 3.13
 - CMake namespace support (`cmocka::cmocka`, `cmocka::static`)
-- CMake config mode support for build tree usage
-- Modern CMake (3.10+) with improved target properties
+- Meson build system support
 - `extern "C"` wrapper for C++ compatibility
 - Version header (`cmocka_version.h`)
 
@@ -137,6 +142,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Address sanitizer support for MSVC
 - Stack protector flags always passed to linker
 
+#### Documentation Improvements
+- Enhanced API documentation with better organization
+- Cleaned up internal functions from public documentation
+- Better grouping of macros and functions
+- Improved page layout and styling
+- Updated README with more details
+
+#### Examples
+- Modernized and rebuilt calculator example
+- Added new assert_macro examples demonstrating common assertions
+- Removed deprecated allocate module example (use AddressSanitizer instead)
+
 ### Deprecated
 
 - `expect_check()`: Use `expect_check_data()` instead
@@ -166,6 +183,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Fixed missing `cmocka_version.h` in documentation
 - Fixed TAP output for skipped tests
 - Fixed floating-point comparison for `INFINITY` and `NAN`
 - Fixed `expect_not_float()` implementation
