@@ -38,10 +38,7 @@
 #   executable.
 #
 # ``LINK_OPTIONS``:
-#   Optional, expects one or more ``LINK_FLAGS`` to be passed to the linker.
-#   For CMake <3.13 compatibility, this is **not** set as the ``LINK_OPTIONS``
-#   property. Instead, these values are set the ``LINK_FLAGS`` property.
-#   See https://cmake.org/cmake/help/latest/prop_tgt/LINK_FLAGS.html
+#   Optional, expects one or more options to be passed to the linker.
 #
 #
 # Example:
@@ -113,9 +110,8 @@ function(ADD_CMOCKA_TEST _TARGET_NAME)
     endif()
 
     if (DEFINED _add_cmocka_test_LINK_OPTIONS)
-        set_target_properties(${_TARGET_NAME}
-            PROPERTIES LINK_FLAGS
-            ${_add_cmocka_test_LINK_OPTIONS}
+        target_link_options(${_TARGET_NAME}
+            PRIVATE ${_add_cmocka_test_LINK_OPTIONS}
         )
     endif()
 
