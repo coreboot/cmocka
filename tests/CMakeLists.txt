@@ -423,6 +423,28 @@ foreach(_TEST_OUTPUT_FMT ${TEST_OUTPUT_FMTS})
     endforeach()
 endforeach()
 
+### Test mixed output formats
+# Test that mixing multiple non-XML formats falls back to the first format
+# Test that TAP+SUBUNIT becomes just SUBUNIT (lowest bit wins)
+add_test(NAME test_basics_mixed_tap_subunit
+         COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_basics>)
+add_cmocka_test_environment(test_basics_mixed_tap_subunit)
+set_property(TEST test_basics_mixed_tap_subunit
+             APPEND PROPERTY ENVIRONMENT CMOCKA_MESSAGE_OUTPUT=TAP,SUBUNIT)
+set_tests_properties(test_basics_mixed_tap_subunit
+                     PROPERTIES PASS_REGULAR_EXPRESSION
+                     "^test: ")
+
+# Test that STANDARD+TAP becomes just STANDARD (first format wins)
+add_test(NAME test_basics_mixed_standard_tap
+         COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:test_basics>)
+add_cmocka_test_environment(test_basics_mixed_standard_tap)
+set_property(TEST test_basics_mixed_standard_tap
+             APPEND PROPERTY ENVIRONMENT CMOCKA_MESSAGE_OUTPUT=STANDARD,TAP)
+set_tests_properties(test_basics_mixed_standard_tap
+                     PROPERTIES PASS_REGULAR_EXPRESSION
+                     "^\\[==========\\]")
+
 ### TAP 14 test
 
 add_cmocka_test(test_tap14
