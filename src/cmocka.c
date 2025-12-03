@@ -4788,6 +4788,44 @@ static void cmprintf(enum cm_printf_type type,
 
 void cmocka_set_message_output(uint32_t output)
 {
+    uint32_t non_xml_formats = 0;
+    uint32_t format_count = 0;
+
+    /* Count how many non-XML output formats are set */
+    non_xml_formats = output & ~CM_OUTPUT_XML;
+
+    /* Count the number of bits set in non_xml_formats */
+    while (non_xml_formats) {
+        format_count += non_xml_formats & 1;
+        non_xml_formats >>= 1;
+    }
+
+    /* If more than one non-XML format is set, we can't mix them */
+    if (format_count > 1) {
+        /* Keep only the first format set and XML if present */
+        uint32_t first_format = 0;
+        uint32_t xml_output = output & CM_OUTPUT_XML;
+
+        /* Find the first non-XML format bit that is set */
+        if (output & CM_OUTPUT_STANDARD) {
+            first_format = CM_OUTPUT_STANDARD;
+        } else if (output & CM_OUTPUT_SUBUNIT) {
+            first_format = CM_OUTPUT_SUBUNIT;
+        } else if (output & CM_OUTPUT_TAP) {
+            first_format = CM_OUTPUT_TAP;
+        }
+
+        /* Set output to first format plus XML (if global_xml_file is set) */
+        if (global_xml_file != NULL) {
+            global_msg_output = first_format | xml_output;
+            return;
+        }
+
+        global_msg_output = first_format;
+        return;
+    }
+
+    /* Only one non-XML format (or just XML), allow it */
     global_msg_output = output;
 }
 
