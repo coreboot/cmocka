@@ -421,6 +421,7 @@ static CMOCKA_THREAD SourceLocation global_last_call_ordering_location;
 static CMOCKA_THREAD ListNode global_allocated_blocks;
 
 static uint32_t global_msg_output = UINT32_MAX;
+static const char *global_xml_file;
 
 static const char *global_test_filter_pattern;
 
@@ -4332,6 +4333,15 @@ static uint32_t cm_get_output(void)
     }
     cmocka_set_message_output(CM_OUTPUT_STANDARD);
 
+    /* Check CMOCKA_XML_FILE first */
+    env = getenv("CMOCKA_XML_FILE");
+    if (env != NULL) {
+        len = strlen(env);
+        if (len > 0 && len < PATH_MAX) {
+            global_xml_file = env;
+        }
+    }
+
     env = getenv("CMOCKA_MESSAGE_OUTPUT");
     if (env == NULL) {
         return global_msg_output;
@@ -4404,17 +4414,15 @@ static void cmprintf_group_finish_xml(const char *group_name,
 {
     FILE *fp = stdout;
     int file_opened = 0;
-    char *env;
     size_t i;
 
-    env = getenv("CMOCKA_XML_FILE");
-    if (env != NULL) {
+    if (global_xml_file != NULL) {
         char buf[1024];
 
-        snprintf(buf, sizeof(buf), "%s", env);
+        snprintf(buf, sizeof(buf), "%s", global_xml_file);
 
         if (!c_strreplace(buf, sizeof(buf), "%g", group_name, NULL)) {
-            snprintf(buf, sizeof(buf), "%s", env);
+            snprintf(buf, sizeof(buf), "%s", global_xml_file);
         }
 
         fp = fopen(buf, "r");

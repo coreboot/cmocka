@@ -93,6 +93,14 @@
 #define PRIXMAX "I64X"
 #endif
 
+#ifndef PATH_MAX
+#ifdef MAX_PATH
+#define PATH_MAX MAX_PATH
+#else
+#define PATH_MAX 256
+#endif /* MAX_PATH */
+#endif /* PATH_MAX */
+
 #else /* _WIN32 */
 
 #ifndef __PRI64_PREFIX
