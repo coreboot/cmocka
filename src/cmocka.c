@@ -420,7 +420,7 @@ static CMOCKA_THREAD SourceLocation global_last_call_ordering_location;
 /* List of all currently allocated blocks. */
 static CMOCKA_THREAD ListNode global_allocated_blocks;
 
-static uint32_t global_msg_output = CM_OUTPUT_STANDARD;
+static uint32_t global_msg_output = UINT32_MAX;
 
 static const char *global_test_filter_pattern;
 
@@ -4320,7 +4320,6 @@ void vprint_error(const char* const format, va_list args)
 /* New formatter */
 static uint32_t cm_get_output(void)
 {
-    static bool env_checked = false;
     char *env = NULL;
     size_t len = 0;
     uint32_t new_output = 0;
@@ -4328,9 +4327,10 @@ static uint32_t cm_get_output(void)
     char *str_output = NULL;
     char *saveptr = NULL;
 
-    if (env_checked) {
+    if (global_msg_output != UINT32_MAX) {
         return global_msg_output;
     }
+    cmocka_set_message_output(CM_OUTPUT_STANDARD);
 
     env = getenv("CMOCKA_MESSAGE_OUTPUT");
     if (env == NULL) {
@@ -4366,10 +4366,8 @@ static uint32_t cm_get_output(void)
     libc_free(str_output_list);
 
     if (new_output != 0) {
-        global_msg_output = new_output;
+        cmocka_set_message_output(new_output);
     }
-
-    env_checked = true;
 
     return global_msg_output;
 }
