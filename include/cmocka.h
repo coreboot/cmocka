@@ -6575,19 +6575,22 @@ void cmocka_set_callbacks(const struct CMCallbacks *f_callbacks);
 /**
  * @brief Output format options for test results.
  *
+ * These are bitfield flags that can be combined using bitwise OR to enable
+ * multiple output formats simultaneously.
+ *
  * @ingroup cmocka_config
  */
 enum cm_message_output {
-    /** Standard CMocka output format */
-    CM_OUTPUT_STANDARD = 1,
+    /** Standard CMocka output format (bit 0) */
+    CM_OUTPUT_STANDARD = 0x00000001,
     /** Alias for CM_OUTPUT_STANDARD (for API compatibility) */
-    CM_OUTPUT_STDOUT = 1,
-    /** Subunit output format for test result aggregation */
-    CM_OUTPUT_SUBUNIT = 2,
-    /** Test Anything Protocol (TAP) output format */
-    CM_OUTPUT_TAP = 4,
-    /** JUnit-compatible XML output format */
-    CM_OUTPUT_XML = 8,
+    CM_OUTPUT_STDOUT = 0x00000001,
+    /** Subunit output format for test result aggregation (bit 1) */
+    CM_OUTPUT_SUBUNIT = 0x00000002,
+    /** Test Anything Protocol (TAP) output format (bit 2) */
+    CM_OUTPUT_TAP = 0x00000004,
+    /** JUnit-compatible XML output format (bit 3) */
+    CM_OUTPUT_XML = 0x00000008,
 };
 
 #ifdef DOXYGEN
