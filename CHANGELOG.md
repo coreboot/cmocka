@@ -4,7 +4,7 @@ All notable changes to cmocka since version 0.1 are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [2.0.0] - 2015-12-04
+## [2.0.0] - 2025-12-04
 
 ### Added
 
