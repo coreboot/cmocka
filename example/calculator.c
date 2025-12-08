@@ -380,7 +380,7 @@ int main(int argc, char *argv[])
         size_t i;
 
         printf("%s\n", argv[1]);
-        for (i = 2; i < argc; i += 2) {
+        for (i = 2; i < (size_t)argc; i += 2) {
             assert(intermediate_value_index < number_of_intermediate_values);
             printf("  %s %s = %d\n",
                    argv[i],
