@@ -39,7 +39,16 @@
 #define vsnprintf _vsnprintf
 #endif
 
+#include <stdint.h>
+
 #define array_length(x) (sizeof(x) / sizeof((x)[0]))
+
+/**
+ * @brief Cast away const qualifier for passing to functions with non-const API.
+ *
+ * Used for example_main() which has the standard main() signature.
+ */
+#define discard_const_p(type, ptr) ((type)((uintptr_t)(ptr)))
 
 /**
  * Type definitions duplicated from calculator.c to avoid needing a shared
@@ -67,7 +76,7 @@ extern BinaryOperator find_operator_function_by_string(
     const char *const operator_string);
 extern int perform_operation(
     int number_of_arguments,
-    char *arguments[],
+    const char *const *arguments,
     const size_t number_of_operator_functions,
     const struct OperatorFunction *const operator_functions,
     size_t *const number_of_intermediate_values,
@@ -352,7 +361,7 @@ static void test_perform_operation_null_operator_functions(void **state)
     (void)state;
 
     expect_assert_failure(perform_operation(array_length(args),
-                                            (char **)args,
+                                            args,
                                             1,
                                             NULL,
                                             &number_of_intermediate_values,
@@ -377,7 +386,7 @@ static void test_perform_operation_null_number_of_intermediate_values(
     (void)state;
 
     expect_assert_failure(perform_operation(array_length(args),
-                                            (char **)args,
+                                            args,
                                             1,
                                             operator_functions,
                                             NULL,
@@ -401,7 +410,7 @@ static void test_perform_operation_null_intermediate_values(void **state)
     (void)state;
 
     expect_assert_failure(perform_operation(array_length(args),
-                                            (char **)args,
+                                            args,
                                             array_length(operator_functions),
                                             operator_functions,
                                             &number_of_intermediate_values,
@@ -456,7 +465,7 @@ static void test_perform_operation_first_arg_not_integer(void **state)
                   "Unable to parse integer from argument test\n");
 
     assert_int_equal(perform_operation(array_length(args),
-                                       (char **)args,
+                                       args,
                                        array_length(operator_functions),
                                        operator_functions,
                                        &number_of_intermediate_values,
@@ -487,7 +496,7 @@ static void test_perform_operation_unknown_operator(void **state)
                   "Unknown operator *, argument 1\n");
 
     assert_int_equal(perform_operation(array_length(args),
-                                       (char **)args,
+                                       args,
                                        array_length(operator_functions),
                                        operator_functions,
                                        &number_of_intermediate_values,
@@ -521,7 +530,7 @@ static void test_perform_operation_missing_argument(void **state)
                   "Binary operator + missing argument\n");
 
     assert_int_equal(perform_operation(array_length(args),
-                                       (char **)args,
+                                       args,
                                        array_length(operator_functions),
                                        operator_functions,
                                        &number_of_intermediate_values,
@@ -556,7 +565,7 @@ static void test_perform_operation_no_integer_after_operator(void **state)
                   "Unable to parse integer test of argument 2\n");
 
     assert_int_equal(perform_operation(array_length(args),
-                                       (char **)args,
+                                       args,
                                        array_length(operator_functions),
                                        operator_functions,
                                        &number_of_intermediate_values,
@@ -604,7 +613,7 @@ static void test_perform_operation(void **state)
     will_return_int(binary_operator, 40);
 
     assert_int_equal(perform_operation(array_length(args),
-                                       (char **)args,
+                                       args,
                                        array_length(operator_functions),
                                        operator_functions,
                                        &number_of_intermediate_values,
@@ -636,7 +645,9 @@ static void test_example_main_no_args(void **state)
 
     (void)state;
 
-    assert_int_equal(example_main(array_length(args), (char **)args), 0);
+    assert_int_equal(example_main(array_length(args),
+                                  discard_const_p(char **, args)),
+                     0);
 }
 
 /**
@@ -665,7 +676,9 @@ static void test_example_main(void **state)
     expect_string(example_test_printf, temporary_buffer, "  * 10 = 40\n");
     expect_string(example_test_printf, temporary_buffer, "= 40\n");
 
-    assert_int_equal(example_main(array_length(args), (char **)args), 0);
+    assert_int_equal(example_main(array_length(args),
+                                  discard_const_p(char **, args)),
+                     0);
 }
 
 /* ========================================================================
