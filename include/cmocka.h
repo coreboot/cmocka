@@ -156,7 +156,7 @@ extern "C" {
 #define cast_ptr_to_cmocka_value(value) \
     (CMockaValueData)                   \
     {                                   \
-        .ptr = (value)                  \
+        .const_ptr = (value)            \
     }
 
 /** Assign an integer value to CMockaValueData. */
@@ -6345,7 +6345,9 @@ typedef union {
     /** Holds double/real floating-pointing types*/
     double real_val; // TODO: Should we use `long double` instead
     /** Holds pointer data */
-    const void *ptr;
+    void *ptr;
+    /** Holds pointer data (const) */
+    const void *const_ptr;
     // The following aren't used by CMocka currently, but are added to avoid
     // breaking ABI compatibility in the future
     /** Holds function pointer data */
