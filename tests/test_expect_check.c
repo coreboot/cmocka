@@ -333,8 +333,8 @@ static void mock_test_struct(struct test_struct s)
 
 static int check_struct_equal(CMockaValueData actual, CMockaValueData expected)
 {
-    struct test_struct *actual_s = (struct test_struct *)actual.ptr;
-    struct test_struct *expected_s = (struct test_struct *)expected.ptr;
+    const struct test_struct *actual_s = actual.ptr;
+    const struct test_struct *expected_s = expected.ptr;
 
     return (actual_s->x == expected_s->x && actual_s->y == expected_s->y);
 }
