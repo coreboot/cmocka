@@ -909,8 +909,8 @@ static void free_symbol_map_value(const void *value,
  * specified function name.
  */
 static bool symbol_names_match(const void *map_value, const void *symbol) {
-    return !strcmp(((SymbolMapValue*)map_value)->symbol_name,
-                   (const char*)symbol);
+    return !strcmp(((const SymbolMapValue *)map_value)->symbol_name,
+                   (const char *)symbol);
 }
 
 /*
@@ -1105,8 +1105,7 @@ static size_t check_for_leftover_values(
 
     for (current = map_head->next; current != map_head;
          current = current->next) {
-        const SymbolMapValue * const value =
-            (SymbolMapValue*)current->value;
+        const SymbolMapValue *const value = current->value;
         const ListNode *child_list;
         assert_non_null(value);
         child_list = &value->symbol_values_list_head;
@@ -1284,7 +1283,7 @@ void _function_called(const char *const function,
     } else {
         const ListNode * const head = &global_call_ordering_head;
         ListNode *current = head->next;
-        FuncOrderingValue *expected_call;
+        const FuncOrderingValue *expected_call;
         bool found = false;
 
         /*
@@ -1292,7 +1291,7 @@ void _function_called(const char *const function,
          * encounter a non-zero refcount greater than -2
          */
         do {
-            expected_call = (FuncOrderingValue *)current->value;
+            expected_call = current->value;
             if (expected_call != NULL) {
                 found = strcmp(expected_call->function, function) == 0;
             } else {
@@ -1391,7 +1390,7 @@ static int old_api_check_wrapper(const CMockaValueData value,
                                  const CMockaValueData check_value_data)
 {
     /* The wrapper pointer is stored in the ptr field of check_value_data */
-    OldAPICheckWrapper *wrapper = (OldAPICheckWrapper *)check_value_data.ptr;
+    const OldAPICheckWrapper *wrapper = check_value_data.const_ptr;
     return wrapper->old_check_function(value.uint_val, wrapper->old_check_data);
 }
 
