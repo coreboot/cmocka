@@ -199,6 +199,12 @@ extern "C" {
 #define CMOCKA_PRINTF_ATTRIBUTE(a,b)
 #endif /* __GNUC__ */
 
+#ifdef CMOCKA_DISABLE_DEPRECTATION_WARNINGS
+#define CMOCKA_DEPRECATED
+#define CMOCKA_DEPRECATION_WARNING(msg)
+#else /* CMOCKA_DISABLE_DEPRECTATION_WARNINGS */
+
+/* Deprecation warnings for functions */
 #if defined(__GNUC__)
 #define CMOCKA_DEPRECATED __attribute__ ((deprecated))
 #else
@@ -224,6 +230,8 @@ extern "C" {
 #else
 #define CMOCKA_DEPRECATION_WARNING(msg)
 #endif
+
+#endif /* CMOCKA_DISABLE_DEPRECTATION_WARNINGS */
 
 #if defined(__GNUC__)
 #define CMOCKA_NORETURN __attribute__ ((noreturn))

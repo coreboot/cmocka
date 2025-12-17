@@ -85,6 +85,31 @@ the mock object to return. CMocka provides an API to easily mock code.
 
 Check out the examples <a href="https://git.cryptomilk.org/projects/cmocka.git/tree/example/mock">here</a>.
 
+@section main-deprecation Disabling Deprecation Warnings
+
+@note Deprecated features will remain available for a long time and are not
+scheduled for removal. The deprecation warnings are intended to help you
+identify older APIs and guide migration to newer alternatives at your own pace.
+
+cmocka marks deprecated functions and features with compiler warnings to help
+you migrate to newer APIs. If you need to suppress these warnings (e.g., during
+a migration period or when building legacy code), you can define the following
+macro before including cmocka.h:
+
+@code
+#define CMOCKA_DISABLE_DEPRECTATION_WARNINGS
+#include <cmocka.h>
+@endcode
+
+Alternatively, you can pass it as a compiler option:
+
+<pre>
+    gcc -DCMOCKA_DISABLE_DEPRECTATION_WARNINGS -o my_test my_test.c -lcmocka
+</pre>
+
+This will disable both the deprecated function attribute warnings and the
+compile-time deprecation messages.
+
 @section main-embedded Embedded platforms
 
 It is possible that some embedded platforms do not provide definitions for
