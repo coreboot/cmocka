@@ -883,14 +883,14 @@ static bool list_first(const ListNode *const head, ListNode **output)
 static void free_value(const void *value, void *cleanup_value_data) {
     (void)cleanup_value_data;
     assert_non_null(value);
-    free((void*)value);
+    free(discard_const(value));
 }
 
 
 /* Releases memory associated to a symbol_map_value. */
 static void free_symbol_map_value(const void *value,
                                   void *cleanup_value_data) {
-    SymbolMapValue * const map_value = (SymbolMapValue*)value;
+    SymbolMapValue *const map_value = discard_const_p(SymbolMapValue, value);
     const uintmax_t children = *(uintmax_t *)cleanup_value_data;
     assert_non_null(value);
     if (children == 0) {
