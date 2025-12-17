@@ -336,10 +336,11 @@ static void list_remove_free(
     ListNode * const node, const CleanupListValue cleanup_value,
     void * const cleanup_value_data);
 static bool list_empty(const ListNode * const head);
-static bool list_find(
-    ListNode * const head, const void *value,
-    const EqualityFunction equal_func, ListNode **output);
-static bool list_first(ListNode * const head, ListNode **output);
+static bool list_find(const ListNode *const head,
+                      const void *value,
+                      const EqualityFunction equal_func,
+                      ListNode **output);
+static bool list_first(const ListNode *const head, ListNode **output);
 static ListNode* list_free(
     ListNode * const head, const CleanupListValue cleanup_value,
     void * const cleanup_value_data);
@@ -849,8 +850,11 @@ static bool list_empty(const ListNode * const head) {
  * Find a value in the list using the equal_func to compare each node with the
  * value.
  */
-static bool list_find(ListNode * const head, const void *value,
-                     const EqualityFunction equal_func, ListNode **output) {
+static bool list_find(const ListNode *const head,
+                      const void *value,
+                      const EqualityFunction equal_func,
+                      ListNode **output)
+{
     ListNode *current;
     assert_non_null(head);
     for (current = head->next; current != head; current = current->next) {
@@ -863,7 +867,8 @@ static bool list_find(ListNode * const head, const void *value,
 }
 
 /* Returns the first node of a list */
-static bool list_first(ListNode * const head, ListNode **output) {
+static bool list_first(const ListNode *const head, ListNode **output)
+{
     ListNode *target_node = NULL;
     assert_non_null(head);
     if (list_empty(head)) {
@@ -873,7 +878,6 @@ static bool list_first(ListNode * const head, ListNode **output) {
     *output = target_node;
     return true;
 }
-
 
 /* Deallocate a value referenced by a list. */
 static void free_value(const void *value, void *cleanup_value_data) {
@@ -976,7 +980,7 @@ static int get_symbol_value(
         assert_non_null(target_node);
         assert_non_null(target_node->value);
 
-        map_value = (SymbolMapValue*)target_node->value;
+        map_value = target_node->value;
         child_list = &map_value->symbol_values_list_head;
 
         if (number_of_symbol_names == 1) {
