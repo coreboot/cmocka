@@ -114,7 +114,7 @@ BinaryOperator find_operator_function_by_string(
     const char *const operator_string);
 
 int perform_operation(int number_of_arguments,
-                      char *arguments[],
+                      const char *const *arguments,
                       const size_t number_of_operator_functions,
                       const struct OperatorFunction *const operator_functions,
                       size_t *const number_of_intermediate_values,
@@ -248,7 +248,7 @@ BinaryOperator find_operator_function_by_string(
  *      must be non-NULL
  */
 int perform_operation(int number_of_arguments,
-                      char *arguments[],
+                      const char *const *arguments,
                       const size_t number_of_operator_functions,
                       const struct OperatorFunction *const operator_functions,
                       size_t *const number_of_intermediate_values,
@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
 
     /* Perform the operation */
     const int result = perform_operation(argc - 1,
-                                         &argv[1],
+                                         (const char *const *)&argv[1],
                                          sizeof(operator_function_map) /
                                              sizeof(operator_function_map[0]),
                                          operator_function_map,
