@@ -103,7 +103,7 @@ static int check_priority_with_default(CMockaValueData actual,
                                        CMockaValueData expected)
 {
     /* Extract the defaults structure from expected.ptr */
-    RequestDefaults *defaults = (RequestDefaults *)expected.ptr;
+    const RequestDefaults *defaults = expected.ptr;
 
     /* Extract the actual integer value */
     int actual_priority = actual.int_val;
@@ -121,8 +121,8 @@ static int check_priority_with_default(CMockaValueData actual,
 static int check_user_with_default(CMockaValueData actual,
                                    CMockaValueData expected)
 {
-    RequestDefaults *defaults = (RequestDefaults *)expected.ptr;
-    const char *actual_user = (const char *)actual.ptr;
+    const RequestDefaults *defaults = expected.ptr;
+    const char *actual_user = actual.ptr;
 
     return (strcmp(actual_user, defaults->user) == 0);
 }
@@ -131,8 +131,8 @@ static int check_user_with_default(CMockaValueData actual,
 static int check_action_with_default(CMockaValueData actual,
                                      CMockaValueData expected)
 {
-    RequestDefaults *defaults = (RequestDefaults *)expected.ptr;
-    const char *actual_action = (const char *)actual.ptr;
+    const RequestDefaults *defaults = expected.ptr;
+    const char *actual_action = actual.ptr;
 
     return (strcmp(actual_action, defaults->action) == 0);
 }
@@ -141,7 +141,7 @@ static int check_action_with_default(CMockaValueData actual,
 static int check_timeout_with_default(CMockaValueData actual,
                                       CMockaValueData expected)
 {
-    RequestDefaults *defaults = (RequestDefaults *)expected.ptr;
+    const RequestDefaults *defaults = (const RequestDefaults *)expected.ptr;
     int actual_timeout = actual.int_val;
 
     return (actual_timeout == defaults->timeout);
@@ -151,7 +151,7 @@ static int check_timeout_with_default(CMockaValueData actual,
 static int check_retries_with_default(CMockaValueData actual,
                                       CMockaValueData expected)
 {
-    RequestDefaults *defaults = (RequestDefaults *)expected.ptr;
+    const RequestDefaults *defaults = (const RequestDefaults *)expected.ptr;
     int actual_retries = actual.int_val;
 
     return (actual_retries == defaults->retries);
@@ -279,7 +279,7 @@ typedef struct {
 static int check_priority_in_range(CMockaValueData actual,
                                    CMockaValueData expected)
 {
-    Range *range = (Range *)expected.ptr;
+    const Range *range = expected.ptr;
     int actual_priority = actual.int_val;
 
     /* Check both bounds */
@@ -357,8 +357,8 @@ typedef struct {
 static int check_user_in_whitelist(CMockaValueData actual,
                                    CMockaValueData expected)
 {
-    UserWhitelist *whitelist = (UserWhitelist *)expected.ptr;
-    const char *actual_user = (const char *)actual.ptr;
+    const UserWhitelist *whitelist = expected.ptr;
+    const char *actual_user = actual.ptr;
 
     /* Check if actual user matches any allowed user */
     for (size_t i = 0; i < whitelist->num_users; i++) {
