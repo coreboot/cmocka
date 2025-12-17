@@ -49,6 +49,12 @@ const char *mock_function_ptr(void)
     return mock_ptr_type_checked(const char *);
 }
 
+char *mock_function_ptr_unchecked(void);
+char *mock_function_ptr_unchecked(void)
+{
+    return mock_ptr_type(char *);
+}
+
 void mock_function_call_times(size_t times, int expectedValue)
 {
     size_t i;
@@ -212,6 +218,16 @@ static void test_will_return_ptr(void **state)
     assert_string_equal(value, mock_function_ptr());
 }
 
+static void test_will_return_ptr_unchecked(void **state)
+{
+    char value[] = "Wurst without const!";
+
+    (void)state; /* unused */
+
+    will_return_ptr(mock_function_ptr_unchecked, value);
+    assert_string_equal(value, mock_function_ptr_unchecked());
+}
+
 static void test_will_return_int_always(void **state)
 {
     intmax_t value = -100;
@@ -316,6 +332,7 @@ int main(int argc, char **argv) {
         cmocka_unit_test(test_will_return_double_count),
         cmocka_unit_test(test_mock_double),
         cmocka_unit_test(test_will_return_ptr),
+        cmocka_unit_test(test_will_return_ptr_unchecked),
         cmocka_unit_test(test_will_return_int_always),
         cmocka_unit_test(test_will_return_uint_always),
         cmocka_unit_test(test_will_return_float_always),
