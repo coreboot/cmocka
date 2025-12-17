@@ -944,7 +944,7 @@ static void add_symbol_value(ListNode * const symbol_map_head,
                                           1);
     }
 
-    target_map_value = (SymbolMapValue*)target_node->value;
+    target_map_value = discard_const_p(SymbolMapValue, target_node->value);
     if (number_of_symbol_names == 1) {
             list_add_value(&target_map_value->symbol_values_list_head,
                                 value, refcount);
@@ -980,7 +980,7 @@ static int get_symbol_value(
         assert_non_null(target_node);
         assert_non_null(target_node->value);
 
-        map_value = target_node->value;
+        map_value = discard_const_p(SymbolMapValue, target_node->value);
         child_list = &map_value->symbol_values_list_head;
 
         if (number_of_symbol_names == 1) {
@@ -991,7 +991,7 @@ static int get_symbol_value(
             if (return_value == 0) {
                 goto out;
             }
-            *output = (void*) value_node->value;
+            *output = discard_const(value_node->value);
             return_value = value_node->refcount;
             if (value_node->refcount - 1 == 0) {
                 list_remove_free(value_node, NULL, NULL);
@@ -1049,7 +1049,8 @@ static void remove_always_return_values(ListNode * const map_head,
     assert_true(number_of_symbol_names);
     current = map_head->next;
     while (current != map_head) {
-        SymbolMapValue * const value = (SymbolMapValue*)current->value;
+        SymbolMapValue *const value = discard_const_p(SymbolMapValue,
+                                                      current->value);
         ListNode * const next = current->next;
         ListNode *child_list;
         assert_non_null(value);
@@ -2221,8 +2222,10 @@ static int memory_not_equal_display_error(
         }
     }
     if (same == size) {
-        cmocka_print_error("%"PRIdS "bytes of %p and %p the same\n",
-                       same, (void *)a, (void *)b);
+        cmocka_print_error("%" PRIdS "bytes of %p and %p the same\n",
+                           same,
+                           discard_const(a),
+                           discard_const(b));
         return false;
     }
     return true;
