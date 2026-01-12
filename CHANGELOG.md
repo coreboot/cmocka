@@ -4,6 +4,12 @@ All notable changes to cmocka since version 0.1 are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [2.0.2] - 2026-01-12
+
+### Fixed
+
+- Fixed typo in `CMOCKA_NO_DEPRECATION_WARNINGS`
+
 ## [2.0.1] - 2025-12-19
 
 ### Added
@@ -425,6 +431,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   generalize the process of writing unit tests for C applications
 
 [Unreleased]: https://gitlab.com/cmocka/cmocka/compare/cmocka-2.0.1...HEAD
+[2.0.2]: https://gitlab.com/cmocka/cmocka/compare/cmocka-2.0.1...cmocka-2.0.2
 [2.0.1]: https://gitlab.com/cmocka/cmocka/compare/cmocka-2.0.0...cmocka-2.0.1
 [1.1.8]: https://gitlab.com/cmocka/cmocka/compare/cmocka-1.1.7...cmocka-1.1.8
 [1.1.7]: https://gitlab.com/cmocka/cmocka/compare/cmocka-1.1.6...cmocka-1.1.7
