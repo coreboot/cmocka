@@ -231,7 +231,7 @@ extern "C" {
 #define CMOCKA_DEPRECATION_WARNING(msg)
 #endif
 
-#endif /* CMOCKA_DISABLE_DEPRETATION_WARNINGS */
+#endif /* CMOCKA_DISABLE_DEPRECATION_WARNINGS */
 
 #if defined(__GNUC__)
 #define CMOCKA_NORETURN __attribute__ ((noreturn))
